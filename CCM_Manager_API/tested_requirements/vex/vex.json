@@ -1,0 +1,291 @@
+{
+  "bomFormat" : "CycloneDX",
+  "specVersion" : "1.5",
+  "serialNumber" : "urn:uuid:0d5f8922-3bbf-4f46-bbd4-b9bc332ae4c0",
+  "version" : 1,
+  "metadata" : {
+    "timestamp" : "2024-10-22T10:46:12Z",
+    "tools" : [
+      {
+        "vendor" : "OWASP",
+        "name" : "Dependency-Track",
+        "version" : "4.12.0"
+      }
+    ],
+    "component" : {
+      "type" : "application",
+      "bom-ref" : "57d04c0d-2b18-458d-9e05-4e0987207de3",
+      "name" : "test2",
+      "version" : "1.0.0"
+    }
+  },
+  "components" : [
+    {
+      "type" : "library",
+      "bom-ref" : "496ba5ea-378d-4873-983f-b250929b0f6b",
+      "name" : "Flask",
+      "version" : "2.0.1",
+      "description" : "requirements line 1: Flask==2.0.1",
+      "purl" : "pkg:pypi/flask@2.0.1",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/Flask/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "2275833c-8f10-4cd7-a95d-3c524aa1df2a",
+      "name" : "Werkzeug",
+      "version" : "2.3.7",
+      "description" : "requirements line 3: Werkzeug==2.3.7",
+      "purl" : "pkg:pypi/werkzeug@2.3.7",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/Werkzeug/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "adea819f-e102-4b84-9730-b68d0b51df18",
+      "name" : "cyclonedx-python-lib",
+      "version" : "8.0.0rc2",
+      "description" : "requirements line 4: cyclonedx-python-lib==8.0.0rc2",
+      "purl" : "pkg:pypi/cyclonedx-python-lib@8.0.0rc2",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/cyclonedx-python-lib/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "f62e089b-34db-4557-be77-da89e39c1305",
+      "name" : "pymongo",
+      "version" : "3.12.0",
+      "description" : "requirements line 2: pymongo==3.12.0",
+      "purl" : "pkg:pypi/pymongo@3.12.0",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/pymongo/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "c6810091-783d-4114-b9e1-24ee008d377c",
+      "name" : "python-dotenv",
+      "version" : "1.0.0",
+      "description" : "requirements line 6: python-dotenv==1.0.0",
+      "purl" : "pkg:pypi/python-dotenv@1.0.0",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/python-dotenv/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "a8053c6a-03cb-40f5-9963-9ccfba504265",
+      "name" : "requests",
+      "version" : "2.32.3",
+      "description" : "requirements line 5: requests==2.32.3",
+      "purl" : "pkg:pypi/requests@2.32.3",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/requests/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    }
+  ],
+  "dependencies" : [
+    {
+      "ref" : "57d04c0d-2b18-458d-9e05-4e0987207de3",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "496ba5ea-378d-4873-983f-b250929b0f6b",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "2275833c-8f10-4cd7-a95d-3c524aa1df2a",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "adea819f-e102-4b84-9730-b68d0b51df18",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "f62e089b-34db-4557-be77-da89e39c1305",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "c6810091-783d-4114-b9e1-24ee008d377c",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "a8053c6a-03cb-40f5-9963-9ccfba504265",
+      "dependsOn" : [ ]
+    }
+  ],
+  "vulnerabilities" : [
+    {
+      "bom-ref" : "031bc569-1c8a-48a2-b009-032e092e5560",
+      "id" : "CVE-2023-30861",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 7.5,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+        }
+      ],
+      "cwes" : [
+        539
+      ],
+      "description" : "Flask is a lightweight WSGI web application framework. When all of the following conditions are met, a response containing data intended for one client may be cached and subsequently sent by the proxy to other clients. If the proxy also caches `Set-Cookie` headers, it may send one client's `session` cookie to other clients. The severity depends on the application's use of the session and the proxy's behavior regarding cookies. The risk depends on all these conditions being met. 1. The application must be hosted behind a caching proxy that does not strip cookies or ignore responses with cookies. 2. The application sets `session.permanent = True` 3. The application does not access or modify the session at any point during a request. 4. `SESSION_REFRESH_EACH_REQUEST` enabled (the default). 5. The application does not set a `Cache-Control` header to indicate that a page is private or should not be cached. This happens because vulnerable versions of Flask only set the `Vary: Cookie` header when the session is accessed or modified, not when it is refreshed (re-sent to update the expiration) without being accessed or modified. This issue has been fixed in versions 2.3.2 and 2.2.5.",
+      "published" : "2023-05-02T18:15:00Z",
+      "updated" : "2023-08-20T21:15:00Z",
+      "affects" : [
+        {
+          "ref" : "496ba5ea-378d-4873-983f-b250929b0f6b"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "d72164b0-fcc0-47b7-96f7-ee5c7ba56124",
+      "id" : "CVE-2023-46136",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 7.5,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "cwes" : [
+        787
+      ],
+      "description" : "Werkzeug is a comprehensive WSGI web application library. If an upload of a file that starts with CR or LF and then is followed by megabytes of data without these characters: all of these bytes are appended chunk by chunk into internal bytearray and lookup for boundary is performed on growing buffer. This allows an attacker to cause a denial of service by sending crafted multipart data to an endpoint that will parse it. The amount of CPU time required can block worker processes from handling legitimate requests. This vulnerability has been patched in version 3.0.1.",
+      "published" : "2023-10-25T18:17:00Z",
+      "updated" : "2024-01-10T18:58:00Z",
+      "affects" : [
+        {
+          "ref" : "2275833c-8f10-4cd7-a95d-3c524aa1df2a"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "241561f0-d482-4072-be1a-f73b5f32521e",
+      "id" : "CVE-2024-34069",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "severity" : "unknown",
+          "method" : "other"
+        }
+      ],
+      "description" : "Werkzeug is a comprehensive WSGI web application library. The debugger in affected versions of Werkzeug can allow an attacker to execute code on a developer's machine under some circumstances. This requires the attacker to get the developer to interact with a domain and subdomain they control, and enter the debugger PIN, but if they are successful it allows access to the debugger even if it is only running on localhost. This also requires the attacker to guess a URL in the developer's application that will trigger the debugger. This vulnerability is fixed in 3.0.3.",
+      "published" : "2024-05-06T15:15:00Z",
+      "updated" : "2024-06-14T13:15:00Z",
+      "affects" : [
+        {
+          "ref" : "2275833c-8f10-4cd7-a95d-3c524aa1df2a"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "d2c88f68-0822-4998-af5c-21409fffb97a",
+      "id" : "CVE-2024-21506",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "severity" : "unknown",
+          "method" : "other"
+        }
+      ],
+      "description" : "Rejected reason: Duplicate of CVE-2024-5629.",
+      "published" : "2024-04-06T05:15:00Z",
+      "updated" : "2024-06-05T15:15:00Z",
+      "affects" : [
+        {
+          "ref" : "f62e089b-34db-4557-be77-da89e39c1305"
+        }
+      ]
+    },
+    {
+      "bom-ref" : "b6ff8ee6-7794-41b2-b805-d0c873ee0cb9",
+      "id" : "CVE-2024-5629",
+      "source" : {
+        "name" : "NVD",
+        "url" : "https://nvd.nist.gov/"
+      },
+      "ratings" : [
+        {
+          "source" : {
+            "name" : "NVD",
+            "url" : "https://nvd.nist.gov/"
+          },
+          "score" : 8.1,
+          "severity" : "high",
+          "method" : "CVSSv3",
+          "vector" : "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:N/A:H"
+        }
+      ],
+      "cwes" : [
+        125
+      ],
+      "description" : "An out-of-bounds read in the 'bson' module of PyMongo 4.6.2 or earlier allows deserialization of malformed BSON provided by a Server to raise an exception which may contain arbitrary application memory.",
+      "published" : "2024-06-05T15:15:00Z",
+      "updated" : "2024-06-18T18:31:00Z",
+      "affects" : [
+        {
+          "ref" : "f62e089b-34db-4557-be77-da89e39c1305"
+        }
+      ]
+    }
+  ]
+}

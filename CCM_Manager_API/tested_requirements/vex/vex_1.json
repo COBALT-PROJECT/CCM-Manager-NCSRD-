@@ -1,0 +1,84 @@
+{
+  "bomFormat" : "CycloneDX",
+  "specVersion" : "1.5",
+  "serialNumber" : "urn:uuid:aa756678-e607-4e1e-ae40-fc87faa422d5",
+  "version" : 1,
+  "metadata" : {
+    "timestamp" : "2024-10-22T10:46:52Z",
+    "tools" : [
+      {
+        "vendor" : "OWASP",
+        "name" : "Dependency-Track",
+        "version" : "4.12.0"
+      }
+    ],
+    "component" : {
+      "type" : "application",
+      "bom-ref" : "96428542-1a9c-4751-bba5-12516527e836",
+      "name" : "test1",
+      "version" : "1.0"
+    }
+  },
+  "components" : [
+    {
+      "type" : "library",
+      "bom-ref" : "9bf4c35f-0739-4bea-99c7-48ba7906645a",
+      "name" : "flask",
+      "description" : "requirements line 3: flask",
+      "purl" : "pkg:pypi/flask",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/flask/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "10955cf9-4711-4bf2-ba86-86a459c84f39",
+      "name" : "numpy",
+      "description" : "requirements line 1: numpy",
+      "purl" : "pkg:pypi/numpy",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/numpy/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "7389fb3e-1887-4261-848e-375f910d5ba8",
+      "name" : "opencv-python-headless",
+      "description" : "requirements line 2: opencv-python-headless",
+      "purl" : "pkg:pypi/opencv-python-headless",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/opencv-python-headless/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    }
+  ],
+  "dependencies" : [
+    {
+      "ref" : "96428542-1a9c-4751-bba5-12516527e836",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "9bf4c35f-0739-4bea-99c7-48ba7906645a",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "10955cf9-4711-4bf2-ba86-86a459c84f39",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "7389fb3e-1887-4261-848e-375f910d5ba8",
+      "dependsOn" : [ ]
+    }
+  ]
+}

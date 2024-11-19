@@ -1,0 +1,44 @@
+Algorithm                     | Classic Security Level | NIST Quantum Security Level | NIST Documentation Reference
+RSA 2048                       | 112                | 128                     | SP 800-57, SP 800-131A
+RSA 3072                       | 128                | 192                     | SP 800-57, SP 800-131A
+RSA 4096                       | 136                | 256                     | SP 800-57, SP 800-131A
+ECDSA P-192                    | 112                | 128                     | SP 800-57, FIPS 186-4
+ECDSA P-224                    | 112                | 128                     | SP 800-57, FIPS 186-4
+ECDSA P-256                    | 128                | 192                     | SP 800-57, FIPS 186-4
+ECDSA P-384                    | 192                | 256                     | SP 800-57, FIPS 186-4
+ECDSA P-521                    | 256                | 256                     | SP 800-57, FIPS 186-4
+DSA (1024-bit)                 | 112                | 128                     | SP 800-57, FIPS 186-4
+DSA (2048-bit)                 | 128                | 192                     | SP 800-57, FIPS 186-4
+AES-128                        | 128                | 128                     | SP 800-57, SP 800-131A
+AES-192                        | 192                | 192                     | SP 800-57, SP 800-131A
+AES-256                        | 256                | 256                     | SP 800-57, SP 800-131A
+ChaCha20                        | 128                | 128                     | NIST SP 800-57
+SHA-1                          | 80                 | 128                     | NIST SP 800-57, FIPS 180-4
+SHA-256                        | 128                | 192                     | NIST SP 800-57, FIPS 180-4
+SHA-384                        | 192                | 256                     | NIST SP 800-57, FIPS 180-4
+SHA-512                        | 256                | 256                     | NIST SP 800-57, FIPS 180-4
+SHA-512/256                    | 256                | 256                     | NIST SP 800-57, FIPS 180-4
+SHA-3-256                      | 128                | 192                     | NIST SP 800-185
+SHA-3-384                      | 192                | 256                     | NIST SP 800-185
+SHA-3-512                      | 256                | 256                     | NIST SP 800-185
+RSA PKCS1 v1.5                 | 112                | 128                     | SP 800-57, SP 800-131A
+RSA OAEP                       | 128                | 192                     | SP 800-57, SP 800-131A
+ECDHE (P-256)                  | 128                | 192                     | SP 800-57, FIPS 186-4
+ECDHE (P-384)                  | 192                | 256                     | SP 800-57, FIPS 186-4
+ECDHE (P-521)                  | 256                | 256                     | SP 800-57, FIPS 186-4
+DH 2048-bit                    | 128                | 192                     | SP 800-57, FIPS 186-4
+DH 3072-bit                    | 128                | 256                     | SP 800-57, FIPS 186-4
+DH 4096-bit                    | 160                | 256                     | SP 800-57, FIPS 186-4
+DH 8192-bit                    | 192                | 256                     | SP 800-57, FIPS 186-4
+X25519 (ECDH)                  | 128                | 128                     | SP 800-57, FIPS 186-4
+X448 (ECDH)                    | 192                | 192                     | SP 800-57, FIPS 186-4
+TLS 1.0                         | 80                 | 128                     | SP 800-57, FIPS 140-2
+TLS 1.1                         | 112                | 128                     | SP 800-57, FIPS 140-2
+TLS 1.2                         | 128                | 192                     | SP 800-57, FIPS 140-2
+TLS 1.3                         | 128                | 192                     | SP 800-57, FIPS 140-2
+Camellia-128                   | 128                | 128                     | NIST SP 800-57
+Camellia-192                   | 192                | 192                     | NIST SP 800-57
+Camellia-256                   | 256                | 256                     | NIST SP 800-57
+IDEA                           | 128                | 128                     | NIST SP 800-57
+SEED                           | 128                | 128                     | NIST SP 800-57
+ARIA                           | 128                | 128                     | NIST SP 800-57

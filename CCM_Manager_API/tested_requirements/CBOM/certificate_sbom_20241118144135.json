@@ -1,0 +1,43 @@
+{
+    "bomFormat": "CycloneDX",
+    "specVersion": "1.6",
+    "serialNumber": "urn:uuid:e6852687-d7b7-4eab-8b0d-7e833b0cd334",
+    "version": 1,
+    "metadata": {
+        "timestamp": "2024-11-18T14:41:35Z",
+        "component": {
+            "type": "application",
+            "name": "my application",
+            "version": "1.0"
+        }
+    },
+    "components": [
+        {
+            "name": "mail.noc.demokritos.gr",
+            "type": "cryptographic-asset",
+            "bom-ref": "crypto/certificate/C = GR, ST = Attik\\C3\\AD, O = Demokritos National Center for Scientific Research, CN = mail.noc.demokritos.gr@2048 bit",
+            "cryptoProperties": {
+                "assetType": "certificate",
+                "certificateProperties": {
+                    "subjectName": "C = GR, ST = Attik\\C3\\AD, O = Demokritos National Center for Scientific Research, CN = mail.noc.demokritos.gr",
+                    "issuerName": "C = NL, O = GEANT Vereniging, CN = GEANT OV RSA CA 4",
+                    "notValidBefore": "2023-11-06T00:00:00Z",
+                    "notValidAfter": "2024-11-05T23:59:59Z",
+                    "signatureAlgorithmRef": "crypto/algorithm/sha384WithRSAEncryption@1.3.6.1.4.1.11.2.4.3.20.74",
+                    "subjectPublicKeyRef": "crypto/key/2048 bit@rsaEncryption",
+                    "certificateFormat": "X.509",
+                    "certificateExtension": "crt"
+                }
+            }
+        }
+    ]
+}
+
+
+
+
+
+
+
+
+
