@@ -9,7 +9,9 @@ from dotenv import load_dotenv
 import json
 import uuid
 from algos_details import details
-from algos_details import resources
+#from algos_details import resources
+import re
+
 
 app = Flask(__name__)
 
@@ -51,7 +53,7 @@ def generate_sbom():
             return jsonify({"error": f"The provided folder path does not exist: {folder_path}"}), 400
 
         # Logging provided folder path to check
-        logging.debug(f"Searching for dependency files in the provided path: {folder_path}")
+        #logging.debug(f"Searching for dependency files in the provided path: {folder_path}")
 
         # Initialize variables for the dependency file and language
         requirements_file = None
@@ -174,7 +176,7 @@ def get_vulnerabilities():
     
 
 @app.route('/generate_cbom', methods=['POST'])
-def generate_crypto_sbom():
+def generate_cbom():
     try:
         if 'file' in request.files:
             file = request.files['file']
@@ -188,33 +190,41 @@ def generate_crypto_sbom():
                 return jsonify({"error": "Failed to decode JSON. Please ensure valid JSON is provided."}), 400
         else:
             return jsonify({"error": "No valid JSON or file provided."}), 400
-
-        algorithms = data.get("algorithms", [])
+        
+        # Handle the cipher info
+        ciphers = data.get("ciphers", {})
+        certificate_info = data.get("certificate", {})
 
         algorithm_components = []
-        algorithm_primitive = "unknown"
-        functions = "unknown"
-        nist_security_category = "0"
-        certificate_level = "none"
-        classic_security_level = ""
+        certificate_components = []
 
-        for algorithm in algorithms:
-            if not algorithm.get("name"):
-                return jsonify({"error": "Algorithm name is required"}), 400
+        # Iterate over the ciphers and construct the SBOM
+        for cipher_name, cipher_data in ciphers.items():
+            # If cipher has essential data, we construct the algorithm component
+            if not cipher_name:
+                return jsonify({"error": "Cipher name is required"}), 400
 
-            if details.get(algorithm["name"]):  
-                algorithm_primitive = details.get(algorithm["name"]).get("Primitive")
-                functions = details.get(algorithm["name"]).get("Functions")
-                nist_security_category = details.get(algorithm["name"]).get("NIST_Security_Category") 
-                certificate_level = details.get(algorithm["name"]).get("certification level")
-            
-            for resource in resources:
-                if resource["Algorithm"] == algorithm["name"]:
-                    classic_security_level = resource.get("Classic Security Level")
-                    break
+            name = cipher_name.split("-")[0]
+            if name == "RC4":
+                name = "RC4"
+            else:
+                integers = re.findall(r'\d+', name)
+                integers = [int(i) for i in integers]
+                
+                result = re.sub(r'\d+', '', name)
+                name = result
+                if integers:
+                    name = result+"-"+str(integers[0])
+
+            if details.get(name):
+                algorithm_primitive = details.get(name).get("Primitive", "Unknown")
+                functions = details.get(name).get("Functions", "Unknown")
+                nist_security_category = details.get(name).get("NIST_Security_Category", "0")
+                certificate_level = details.get(name).get("certification level", "Unknown")
+                classic_security_level = integers[0]
 
             algorithm_components.append({
-                "name": algorithm.get("name"),
+                "name": cipher_name,
                 "type": "cryptographic-asset",
                 "cryptoProperties": {
                     "assetType": "algorithm",
@@ -227,10 +237,60 @@ def generate_crypto_sbom():
                         "classicalSecurityLevel": classic_security_level,
                         "nistQuantumSecurityLevel": nist_security_category
                     },
-                    "oid": algorithm.get("oid", "")
+                    "oid": cipher_data.get("oid", "unknown")
                 }
             })
 
+        # Certificate SBOM generation
+        if certificate_info:
+            issuer_name = certificate_info.get("issuerName", "Unknown")
+            subject_name_raw = certificate_info.get("subjectName", "Unknown")
+            subject_name = certificate_info.get("subjectName", "Unknown")
+            not_valid_before = certificate_info.get("notValidBefore", "Unknown")
+            not_valid_after = certificate_info.get("notValidAfter", "Unknown")
+            signature_algorithm = certificate_info.get("signatureAlgorithm", "Unknown")
+            public_key_algorithm = certificate_info.get("publicKeyAlgorithm", "Unknown")
+            rsa_public_key = certificate_info.get("rsaPublicKey", "Unknown")
+            not_valid_before_raw = certificate_info.get("notValidBefore", "Unknown")
+            not_valid_after_raw = certificate_info.get("notValidAfter", "Unknown")
+            cipher_suite = certificate_info.get("cipherSuite", "Unknown")
+            cipher_ref = ciphers.get(cipher_suite, {}).get("oid", "Unknown")
+
+            match = re.search(r"CN\s*=\s*([^,]+)", subject_name_raw)
+            subject_name = match.group(1) if match else "Unknown"
+
+            def convert_to_iso8601(date_str):
+                try:
+                    # Parse the input date string (e.g., "Nov  6 00:00:00 2023 GMT")
+                    parsed_date = datetime.strptime(date_str, "%b %d %H:%M:%S %Y %Z")
+                    # Format to ISO 8601 (e.g., "2016-11-21T08:00:00Z")
+                    return parsed_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+                except ValueError:
+                    return "Unknown"
+
+            not_valid_before = convert_to_iso8601(not_valid_before_raw)
+            not_valid_after = convert_to_iso8601(not_valid_after_raw)
+
+            certificate_components.append({
+                "name": subject_name,
+                "type": "cryptographic-asset",
+                "bom-ref": f"crypto/certificate/{subject_name}@{rsa_public_key}",
+                "cryptoProperties": {
+                    "assetType": "certificate",
+                    "certificateProperties": {
+                        "subjectName": subject_name,
+                        "issuerName": issuer_name,
+                        "notValidBefore": not_valid_before,
+                        "notValidAfter": not_valid_after,
+                        "signatureAlgorithmRef": f"crypto/algorithm/{signature_algorithm}@{cipher_ref}",
+                        "subjectPublicKeyRef": f"crypto/key/{rsa_public_key}@{public_key_algorithm}",
+                        "certificateFormat": "X.509",
+                        "certificateExtension": "crt"
+                    }
+                }
+            })
+
+        # Combine both SBOMs into one response
         algorithm_sbom = {
             "bomFormat": "CycloneDX",
             "specVersion": "1.6",
@@ -247,17 +307,42 @@ def generate_crypto_sbom():
             "components": algorithm_components
         }
 
+        certificate_sbom = {
+            "bomFormat": "CycloneDX",
+            "specVersion": "1.6",
+            "serialNumber": f"urn:uuid:{str(uuid.uuid4())}",
+            "version": 1,
+            "metadata": {
+                "timestamp": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+                "component": {
+                    "type": "application",
+                    "name": "my application",
+                    "version": "1.0"
+                }
+            },
+            "components": certificate_components
+        }
+
+        # Save the SBOMs to files
         algorithm_sbom_filename = f"algorithm_sbom_{datetime.now().strftime('%Y%m%d%H%M%S')}.json"
+        certificate_sbom_filename = f"certificate_sbom_{datetime.now().strftime('%Y%m%d%H%M%S')}.json"
+
         algorithm_sbom_filepath = os.path.join(app.config['UPLOAD_FOLDER'], algorithm_sbom_filename)
+        certificate_sbom_filepath = os.path.join(app.config['UPLOAD_FOLDER'], certificate_sbom_filename)
 
         with open(algorithm_sbom_filepath, 'w+') as algo_file:
             json.dump(algorithm_sbom, algo_file, indent=4)
 
+        with open(certificate_sbom_filepath, 'w+') as cert_file:
+            json.dump(certificate_sbom, cert_file, indent=4)
+
         logging.info(f"Algorithm SBOM saved at {algorithm_sbom_filepath}")
+        logging.info(f"Certificate SBOM saved at {certificate_sbom_filepath}")
 
         return jsonify({
-            "message": "SBOM generated successfully",
-            "algorithm_sbom_file": algorithm_sbom_filename
+            "message": "SBOMs generated successfully",
+            "algorithm_sbom_file": algorithm_sbom_filename,
+            "certificate_sbom_file": certificate_sbom_filename
         }), 200
 
     except Exception as e:
