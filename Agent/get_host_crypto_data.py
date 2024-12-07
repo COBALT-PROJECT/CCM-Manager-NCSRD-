@@ -11,7 +11,6 @@ output_file = f"output-{timestamp}.json"
 oid_mappings_file = "oid_mappings.json"
 algorithms_file = "algorithms-security-levels.txt"
 
-
 def parse_ciphers_file(filepath):
     ciphers = {}  # Initialize an empty dictionary
     with open(filepath, "r") as file:
@@ -31,7 +30,6 @@ def parse_ciphers_file(filepath):
     #print("Ciphers content:", ciphers)
     return ciphers
 
-
 def parse_security_levels(filepath):
 
     # Parse the algorithms-security-levels.txt file to create a mapping of
@@ -42,10 +40,23 @@ def parse_security_levels(filepath):
     with open(filepath, 'r') as file:
         lines = file.readlines()
 
+        #Map header names to corresponding fields
+#        name_col = columns[0].strip()
+#        classic_sec_lvl = columns[1].strip()
+#        nist_quantum_sec_lvl = columns[2].strip()
+#        algo_ref = columns[3].strip()
+
         # Parse the lines for data and skip first row of headers
         for line in lines[1:]:
             columns = line.strip().split('|')
             if len(columns) >= 4:
+#                algorithm = {
+#                    "name": columns[0].strip(),
+#                    "classicSecLvl": int(columns[1].strip().split()[0]),  # Extracting number from '112 bits'
+#                    "nistQuantumSecLvl": int(columns[2].strip().split()[0]),  # Extracting number from '128 bits'
+#                    "references": columns[3].strip(),
+#                }
+#                algorithms.append(algorithm)
                 name_col = columns[0].strip()
                 classic_sec_lvl = int(columns[1].strip().replace(" bits", ""))
                 nist_quantum_sec_lvl = int(columns[2].strip().replace(" bits", ""))
@@ -56,6 +67,8 @@ def parse_security_levels(filepath):
                     "classicSecLvl": classic_sec_lvl,
 #                    "nistQuantumSecLvl": nist_quantum_sec_lvl,
                 }
+
+#    return {"algorithms": algorithms}
     return security_levels
 
 
@@ -68,16 +81,38 @@ def get_disabled_algorithms():
 
     # Split the output by lines and process each line
     for line in output.splitlines():
-        if line.strip():  # Ignore empty lines
+        if line and line != "Disabled algorithms:" :
             disabled_algorithms.add(line.strip())
 
+#    print("Disabled: ", disabled_algorithms)
     return disabled_algorithms
 
 
-# Update function to filter out disabled algorithms
-def filter_disabled_algorithms(algorithms, disabled_algorithms):
-    filtered_algorithms = [algo for algo in algorithms if algo["name"] not in disabled_algorithms]
-    return filtered_algorithms
+# Function to filter out disabled algorithms
+#def filter_disabled_algorithms(algorithms, disabled_algorithms):
+#    filtered_algorithms = [algo for algo in algorithms if algo["name"] not in disabled_algorithms]
+#    return filtered_algorithms
+
+# Function to filter out disabled algorithms
+def filter_enabled_algorithms(algorithms, disabled_algorithms):
+    enabled_algorithms = {}
+
+    for algo_name, algo_data in algorithms.items():
+        # Check if the algorithm name starts with or contains any of the disabled algorithms
+        if not any(disabled in algo_name for disabled in disabled_algorithms):
+            enabled_algorithms[algo_name] = algo_data
+
+    return enabled_algorithms
+
+# Main function to get enabled algorithms
+def get_enabled_algorithms():
+    all_algorithms = get_all_algorithms()
+    disabled_algorithms = get_disabled_algorithms()
+
+    # Filter out the disabled algorithms
+    enabled_algorithms = filter_enabled_algorithms(all_algorithms, disabled_algorithms)
+    return enabled_algorithms
+
 
 def get_ssh_crypto_info():
     try:
@@ -124,6 +159,7 @@ def get_ssh_crypto_info():
     #print(json.dumps({"ssh_crypto_info": ssh_crypto_info}, indent=2))
     return ssh_crypto_info
 
+
 def filter_matching_algorithms(ssh_crypto_info, algorithms):
     # We will now iterate over the algorithm types in ssh_crypto_info
     # Make a copy of the dictionary for safe iteration
@@ -151,7 +187,6 @@ def filter_matching_algorithms(ssh_crypto_info, algorithms):
 
     # Return the updated ssh_crypto_info and algorithms
     return ssh_crypto_info, algorithms
-
 
 
 # Helper function to get certificate information from openssl x509 command
@@ -191,173 +226,3 @@ def get_certificate_info():
         certificate_data['rsaPublicKey'] = rsa_public_key_clean
 
     return certificate_data
-
-# Helper function to execute the openssl list -objects command and save output to JSON
-def get_system_oids():
-    command = ["openssl", "list", "-objects"]
-    output = subprocess.check_output(command, text=True)
-
-    # Default values in case we can't retrieve them
-    classic_sec_lvl = 0
-
-    oid_mappings = []
-
-#    security_levels = parse_security_levels('algorithms-security-levels.txt')
-#    algorithms = json.loads(output)
-#    algorithms_with_security = append_security_levels_to_algorithms(algorithms, security_levels)
-
-
-    # Split the output by lines and process each line
-    for line in output.splitlines():
-        if line.strip():  # Ignore empty lines
-            # Extract the name and OID parts using regex
-            match = re.match(r"([^\s=]+)\s*=\s*(.*)", line)
-            if match:
-                name = match.group(1).strip()
-                alias_oid = match.group(2).strip()
-
-                # Check if the alias_oid is an OID (numeric format)
-                if re.match(r"^\d+(\.\d+)*$", alias_oid):
-                    # It's an OID, no alias
-                    alias = ""
-                    oid = alias_oid
-                else:
-                    # It has both alias and OID
-                    parts = alias_oid.split(",")
-                    if len(parts) == 2:
-                        alias = parts[0].strip()
-                        oid = parts[1].strip()
-                    else:
-                        alias = parts[0].strip()
-                        oid = ""  # If there's only one part, leave OID empty
-
-                # Construct the dictionary for this entry
-                oid_mappings.append({
-                    "name": name,
-                    "alias": alias,
-                    "oid": f"{oid}" if alias else oid,  # Only combine if there's an alias
-                    "classicSecLvl": classic_sec_lvl,
-                })
-
-    # Write the oid mappings to oid_mappings.json
-    with open(oid_mappings_file, "w") as json_file:
-        json.dump(oid_mappings, json_file, indent=2)
-
-#    return algo_data
-
-def get_kernel_info():
-    # Run the command to get information from /proc/crypto
-    command = "cat /proc/crypto"
-    output = subprocess.check_output(command, shell=True, text=True)
-    
-    # Initialize an empty list to store the parsed algorithm data
-    kernel_info = []
-    
-    # Regular expressions for matching algorithm details in /proc/crypto
-    algorithm_pattern = re.compile(r"^name\s*:\s*(?P<name>.*)$")
-    type_pattern = re.compile(r"^type\s*:\s*(?P<type>.*)$")
-    provider_pattern = re.compile(r"^provider\s*:\s*(?P<provider>.*)$")
-    
-    # Variables to store current algorithm's details
-    current_algo = {}
-
-    # Process each line in the output from /proc/crypto
-    for line in output.splitlines():
-        line = line.strip()
-
-        # Match algorithm name
-        match = algorithm_pattern.match(line)
-        if match:
-            if current_algo:
-                # If there's a previous algorithm, add it to the list before starting a new one
-                kernel_info.append(current_algo)
-            current_algo = {"name": match.group("name")}
-
-        # Match algorithm type
-        match = type_pattern.match(line)
-        if match:
-            current_algo["type"] = match.group("type")
-        
-        # Match provider (implementation)
-        match = provider_pattern.match(line)
-        if match:
-            current_algo["provider"] = match.group("provider")
-
-    # Add the last algorithm if it exists
-    if current_algo:
-        kernel_info.append(current_algo)
-    
-    # Return the kernel information in JSON format
-#    return json.dumps(kernel_info, indent=2)
-    return kernel_info
-
-# Main function to populate JSON data
-def populate_json():
-    # First, get the system OIDs and save them in oid_mappings.json
-    get_system_oids()
-
-    # Parse the security levels
-    security_levels = parse_security_levels('algorithms-security-levels.txt')
-
-    # Load the OID mappings to populate the algorithms block
-    with open(oid_mappings_file, "r") as json_file:
-        algorithms = json.load(json_file)
-
-    # Parse the algorithms file for security levels
-#    algorithm_security_levels = parse_algorithms_file(algorithms_file)
-    algorithm_security_levels = parse_security_levels(algorithms_file)
-
-    # Get the list of disabled algorithms
-    disabled_algorithms = get_disabled_algorithms()
-
-    # Filter out the disabled algorithms
-    algorithms = filter_disabled_algorithms(algorithms, disabled_algorithms)
-
-    # Load the OID mappings
-    with open("oid_mappings.json", "r") as json_file:
-        algorithms = json.load(json_file)
-
-    # Update algorithms with security levels
-    for algo in algorithms:
-        name = algo.get("name", "").strip()
-        if name in security_levels:
-            algo.update(security_levels[name])
-    
-    # Gather SSH crypto info (ciphers, MACs, KEX, etc.)
-    ssh_crypto_info = get_ssh_crypto_info()
-
-    # Filter algorithms to ensure only matching ones stay
-#    ssh_crypto_info, algorithms = filter_matching_algorithms(ssh_crypto_info, algorithms)
-
-    # Get cipher details from the ciphers file
-    ciphers = parse_ciphers_file("ciphers-and-cipher-values.txt")
-
-    # Append security levels to the algorithms
-    # algorithms = append_security_levels_to_algorithms(algorithms, security_levels)
-    # Update cipher data with security levels
-    for cipher_name, cipher in ciphers.items():
-        if cipher_name in security_levels:
-            cipher["classicSecurityLevel"] = security_levels[cipher_name]["classicSecurityLevel"]
-
-    # Get certificate info
-    certificate_info = get_certificate_info()
-
-    # Get kernel info from executing cat /proc/crypto to be used in the creation of the CBOM file in the API
-    kernels = get_kernel_info()
-
-    data = {
-        "algorithms": algorithms,
-        "ciphers": ciphers,
-        "certificate": certificate_info,
-        "ssh_crypto_info": ssh_crypto_info,
-        "kernel_crypto_info": kernels
-    }
-
-    # Append to the JSON file
-    with open(output_file, "w") as json_file:
-        json.dump(data, json_file, indent=2)
-
-# Execute script
-if __name__ == "__main__":
-    populate_json()
-    print(f"Data appended to {output_file}")
