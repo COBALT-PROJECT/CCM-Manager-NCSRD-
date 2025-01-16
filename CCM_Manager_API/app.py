@@ -9,9 +9,10 @@ from dotenv import load_dotenv
 import json
 import uuid
 from algos_details import details
-#from algos_details import resources
+from generate_tree import handle_dynamic_path, Counter, build_tree
+import networkx as nx
 import re
-
+import requests
 
 app = Flask(__name__)
 
@@ -53,7 +54,7 @@ def generate_sbom():
             return jsonify({"error": f"The provided folder path does not exist: {folder_path}"}), 400
 
         # Logging provided folder path to check
-        #logging.debug(f"Searching for dependency files in the provided path: {folder_path}")
+        logging.debug(f"Searching for dependency files in the provided path: {folder_path}")
 
         # Initialize variables for the dependency file and language
         requirements_file = None
@@ -175,179 +176,327 @@ def get_vulnerabilities():
         return jsonify({"error": "Internal server error"}), 500
     
 
+def process_cipher(input_string):
+    valid_modes = ["cbc", "ecb", "ccm", "gcm", "cfb", "ofb", "ctr"]
+    match = re.match(r"(AES(?:[A-Za-z]*))\((\d+)\)", input_string)
+
+    if match:
+        mode = match.group(1).replace("AES", "")
+        key_size = match.group(2)
+        if not mode:
+            mode = "CBC"
+        return f"AES_{mode.upper()}_{key_size}"
+
+    elif "CHACHA20/POLY1305" in input_string:
+        match = re.match(r"CHACHA20/POLY1305\((\d+)\)", input_string)
+        if match:
+            key_size = match.group(1)
+            return f"CHACHA_{key_size}"
+    
+    elif "AESGCM" in input_string:
+        match = re.match(r"AESGCM\((\d+)\)", input_string)
+        if match:
+            key_size = match.group(1)
+            return f"AES_GCM_{key_size}"
+        
+    for mode in valid_modes:
+        if mode in input_string.lower():
+            if "AES" in input_string:
+                match = re.match(r"AES\((\d+)\)", input_string)
+                if match:
+                    key_size = match.group(1)
+                    return f"AES_{mode.upper()}_{key_size}"
+            else:
+                return f"{input_string.upper()}"
+
+    return "Invalid input format"
+
 @app.route('/generate_cbom', methods=['POST'])
 def generate_cbom():
     try:
-        if 'file' in request.files:
-            file = request.files['file']
-            if file.filename.endswith('.json'):
-                data = json.load(file)
-            else:
-                return jsonify({"error": "Invalid file format. Only .json files are allowed."}), 400
-        elif request.is_json:
-            data = request.get_json()
-            if data is None:
-                return jsonify({"error": "Failed to decode JSON. Please ensure valid JSON is provided."}), 400
-        else:
-            return jsonify({"error": "No valid JSON or file provided."}), 400
+        data = request.get_json()
         
-        # Handle the cipher info
-        ciphers = data.get("ciphers", {})
+        if not data:
+            return jsonify({"error": "No data provided."}), 400
+
+        ciphers = data.get("ciphers", {}).get("tls", {})
         certificate_info = data.get("certificate", {})
 
+        if not ciphers and not certificate_info:
+            return jsonify({"error": "Input must contain either 'ciphers' or 'certificate' data."}), 400
+
+        # Initialize graph
+        G = nx.DiGraph()
+        counter = Counter()
+        root_node = "Root"
+        G.add_node(root_node, label=root_node, level=0)
+
+        # Rebuild the tree structure
+        print("Adding primary nodes under the root...")
+        G.add_node("Algorithms", label="Algorithms", level=1)
+        G.add_node("Hash Function", label="Hash Function", level=1)
+        G.add_node("Protocol", label="Protocol", level=1)
+        G.add_edge(root_node, "Algorithms")
+        G.add_edge(root_node, "Hash Function")
+        G.add_edge(root_node, "Protocol")
+        symmetric_node = "Symmetric"
+        asymmetric_node = "Asymmetric"
+        G.add_node(symmetric_node, label="Symmetric", level=2)
+        G.add_node(asymmetric_node, label="Asymmetric", level=2)
+        G.add_edge("Algorithms", symmetric_node)
+        G.add_edge("Algorithms", asymmetric_node)
+
+        for algorithm, details_data in details.items():
+            algorithm_node = f"{algorithm}_{counter.increment()}"
+            category_node = symmetric_node if algorithm in ['AES', 'Camellia', 'Blowfish'] else asymmetric_node
+            
+            G.add_node(algorithm_node, label=algorithm, json=details_data, level=3)
+            G.add_edge(category_node, algorithm_node)
+
+            if isinstance(details_data, dict):
+                build_tree(G, algorithm_node, details_data, counter)
+
+        #visualizer = GraphVisualizer(G)
         algorithm_components = []
         certificate_components = []
+        protocol_components = []
 
-        # Iterate over the ciphers and construct the SBOM
+        # Define the regex pattern for cipher parsing
+        pattern = r"([A-Za-z]+)(\d+)?(?:-([A-Za-z]+)(\d+)?)?(?:-([A-Za-z]+)(\d+))?"
         for cipher_name, cipher_data in ciphers.items():
-            # If cipher has essential data, we construct the algorithm component
             if not cipher_name:
                 return jsonify({"error": "Cipher name is required"}), 400
 
-            name = cipher_name.split("-")[0]
-            if name == "RC4":
-                name = "RC4"
+            # Use the encryption_algorithm as the name for the SBOM
+            encryption_algorithm = cipher_data.get("encryption_algorithm", cipher_name)
+            process_name = process_cipher(encryption_algorithm)
+            normalized_cipher_name = process_name.lower()
+            match = re.match(pattern, normalized_cipher_name)
+            if not match:
+                continue
+
+            algorithm = match.group(1).upper()
+            mode = match.group(2) or 'cbc'
+            key_size = match.group(3) or '128'
+
+            # Search path in the tree
+            search_path = [algorithm, mode, key_size]
+            path_data, information = handle_dynamic_path(G, search_path, counter)
+
+            # Retrieve data from the search results
+            #node_data = visualizer.search(path_data[-1])
+            if not information:
+                resolved_details = {
+                    "Primitive": "Unknown",
+                    "Functions": "Unknown",
+                    "NIST_Security_Category": "0",
+                    "certification level": "Unknown",
+                    "Classic Security Level": "0"
+                }
             else:
-                integers = re.findall(r'\d+', name)
-                integers = [int(i) for i in integers]
-                
-                result = re.sub(r'\d+', '', name)
-                name = result
-                if integers:
-                    name = result+"-"+str(integers[0])
-
-            if details.get(name):
-                algorithm_primitive = details.get(name).get("Primitive", "Unknown")
-                functions = details.get(name).get("Functions", "Unknown")
-                nist_security_category = details.get(name).get("NIST_Security_Category", "0")
-                certificate_level = details.get(name).get("certification level", "Unknown")
-                classic_security_level = integers[0]
-
+                resolved_details = {
+                    "Primitive": information.get("Primitive", "Unknown"),
+                    "Functions": information.get("Functions", "Unknown"),
+                    "NIST_Security_Category": str(information.get("NIST_Security_Category", "0")),
+                    "certification level": information.get("certification level", "Unknown"),
+                    "Classic Security Level": information.get("Classic Security Level", "0")
+                }
+            # Handle Algorithms
             algorithm_components.append({
-                "name": cipher_name,
+                "name": encryption_algorithm,  # Use the encryption_algorithm here
                 "type": "cryptographic-asset",
                 "cryptoProperties": {
                     "assetType": "algorithm",
                     "algorithmProperties": {
-                        "primitive": algorithm_primitive,
+                        "primitive": resolved_details["Primitive"],
                         "executionEnvironment": "software-plain-ram",
                         "implementationPlatform": "x86_64",
-                        "certificationLevel": certificate_level,
-                        "cryptoFunctions": functions,
-                        "classicalSecurityLevel": classic_security_level,
-                        "nistQuantumSecurityLevel": nist_security_category
+                        "certificationLevel": resolved_details["certification level"],
+                        "cryptoFunctions": resolved_details["Functions"],
+                        "classicalSecurityLevel": resolved_details["Classic Security Level"],
+                        "nistQuantumSecurityLevel": resolved_details["NIST_Security_Category"]
                     },
                     "oid": cipher_data.get("oid", "unknown")
                 }
             })
 
-        # Certificate SBOM generation
+            # Handle Protocol
+            protocol_components.append({
+                "name": cipher_name,
+                "type": "cryptographic-asset",
+                "bom-ref": f"crypto/protocol/tls@{cipher_data.get('TLS_version', 'unknown')}",
+                "cryptoProperties": {
+                    "assetType": "protocol",
+                    "protocolProperties": {
+                        "type": "tls",
+                        "version": cipher_data.get("TLS_version", "unknown"),
+                        "cipherSuites": [{
+                            "name": cipher_name,
+                            "algorithms": [
+                                f"crypto/algorithm/{algorithm.lower()}-{mode.lower()}@oid_placeholder",
+                                f"crypto/algorithm/aes-{key_size}-gcm@oid_placeholder"
+                            ],
+                            "identifiers": ["0xC0", "0x30"]
+                        }],
+                        "cryptoRefArray": [
+                            f"crypto/certificate/{cipher_data.get('TLS_version', 'unknown')}@oid_placeholder"
+                        ]
+                    },
+                    "oid": "oid_placeholder"
+                }
+            })
+        # Handle Certificate
         if certificate_info:
-            issuer_name = certificate_info.get("issuerName", "Unknown")
-            subject_name_raw = certificate_info.get("subjectName", "Unknown")
-            subject_name = certificate_info.get("subjectName", "Unknown")
-            not_valid_before = certificate_info.get("notValidBefore", "Unknown")
-            not_valid_after = certificate_info.get("notValidAfter", "Unknown")
-            signature_algorithm = certificate_info.get("signatureAlgorithm", "Unknown")
-            public_key_algorithm = certificate_info.get("publicKeyAlgorithm", "Unknown")
-            rsa_public_key = certificate_info.get("rsaPublicKey", "Unknown")
-            not_valid_before_raw = certificate_info.get("notValidBefore", "Unknown")
-            not_valid_after_raw = certificate_info.get("notValidAfter", "Unknown")
-            cipher_suite = certificate_info.get("cipherSuite", "Unknown")
-            cipher_ref = ciphers.get(cipher_suite, {}).get("oid", "Unknown")
-
-            match = re.search(r"CN\s*=\s*([^,]+)", subject_name_raw)
-            subject_name = match.group(1) if match else "Unknown"
-
             def convert_to_iso8601(date_str):
                 try:
-                    # Parse the input date string (e.g., "Nov  6 00:00:00 2023 GMT")
                     parsed_date = datetime.strptime(date_str, "%b %d %H:%M:%S %Y %Z")
-                    # Format to ISO 8601 (e.g., "2016-11-21T08:00:00Z")
                     return parsed_date.strftime("%Y-%m-%dT%H:%M:%SZ")
                 except ValueError:
                     return "Unknown"
 
-            not_valid_before = convert_to_iso8601(not_valid_before_raw)
-            not_valid_after = convert_to_iso8601(not_valid_after_raw)
+            not_valid_before = convert_to_iso8601(certificate_info.get("notValidBefore", "Unknown"))
+            not_valid_after = convert_to_iso8601(certificate_info.get("notValidAfter", "Unknown"))
+            subject_name_raw = certificate_info.get("subjectName", "Unknown")
+            subject_name = re.search(r"CN\s*=\s*([^,]+)", subject_name_raw).group(1) if subject_name_raw else "Unknown"
 
             certificate_components.append({
                 "name": subject_name,
                 "type": "cryptographic-asset",
-                "bom-ref": f"crypto/certificate/{subject_name}@{rsa_public_key}",
+                "bom-ref": f"crypto/certificate/{subject_name}@{certificate_info.get('rsaPublicKey', 'unknown')}",
                 "cryptoProperties": {
                     "assetType": "certificate",
                     "certificateProperties": {
                         "subjectName": subject_name,
-                        "issuerName": issuer_name,
+                        "issuerName": certificate_info.get("issuerName", "Unknown"),
                         "notValidBefore": not_valid_before,
                         "notValidAfter": not_valid_after,
-                        "signatureAlgorithmRef": f"crypto/algorithm/{signature_algorithm}@{cipher_ref}",
-                        "subjectPublicKeyRef": f"crypto/key/{rsa_public_key}@{public_key_algorithm}",
+                        "signatureAlgorithmRef": f"crypto/algorithm/{certificate_info.get('signatureAlgorithm', 'unknown')}@{certificate_info.get('oid', 'unknown')}",
+                        "subjectPublicKeyRef": f"crypto/key/{certificate_info.get('rsaPublicKey', 'unknown')}@{certificate_info.get('publicKeyAlgorithm', 'unknown')}",
                         "certificateFormat": "X.509",
                         "certificateExtension": "crt"
                     }
                 }
             })
 
-        # Combine both SBOMs into one response
-        algorithm_sbom = {
-            "bomFormat": "CycloneDX",
-            "specVersion": "1.6",
-            "serialNumber": f"urn:uuid:{str(uuid.uuid4())}",
-            "version": 1,
-            "metadata": {
-                "timestamp": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
-                "component": {
-                    "type": "application",
-                    "name": "my application",
-                    "version": "1.0"
-                }
-            },
-            "components": algorithm_components
-        }
+        def generate_sbom(components, sbom_type):
+            return {
+                "bomFormat": "CycloneDX",
+                "specVersion": "1.6",
+                "serialNumber": f"urn:uuid:{str(uuid.uuid4())}",
+                "version": 1,
+                "metadata": {
+                    "timestamp": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+                    "component": {
+                        "type": "application",
+                        "name": "my application",
+                        "version": "1.0"
+                    }
+                },
+                "components": components
+            }
 
-        certificate_sbom = {
-            "bomFormat": "CycloneDX",
-            "specVersion": "1.6",
-            "serialNumber": f"urn:uuid:{str(uuid.uuid4())}",
-            "version": 1,
-            "metadata": {
-                "timestamp": datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
-                "component": {
-                    "type": "application",
-                    "name": "my application",
-                    "version": "1.0"
-                }
-            },
-            "components": certificate_components
-        }
+        algorithm_sbom = generate_sbom(algorithm_components, "algorithm")
+        certificate_sbom = generate_sbom(certificate_components, "certificate")
+        protocol_sbom = generate_sbom(protocol_components, "protocol")
 
-        # Save the SBOMs to files
-        algorithm_sbom_filename = f"algorithm_sbom_{datetime.now().strftime('%Y%m%d%H%M%S')}.json"
-        certificate_sbom_filename = f"certificate_sbom_{datetime.now().strftime('%Y%m%d%H%M%S')}.json"
+        upload_folder = app.config['UPLOAD_FOLDER']
+        algorithm_filename = f"algorithm_sbom_{datetime.now().strftime('%d-%m-%Y_%H-%M-%S')}.json"
+        certificate_filename = f"certificate_sbom_{datetime.now().strftime('%d-%m-%Y_%H-%M-%S')}.json"
+        protocol_filename = f"protocol_sbom_{datetime.now().strftime('%d-%m-%Y_%H-%M-%S')}.json"
 
-        algorithm_sbom_filepath = os.path.join(app.config['UPLOAD_FOLDER'], algorithm_sbom_filename)
-        certificate_sbom_filepath = os.path.join(app.config['UPLOAD_FOLDER'], certificate_sbom_filename)
-
-        with open(algorithm_sbom_filepath, 'w+') as algo_file:
+        with open(os.path.join(upload_folder, algorithm_filename), 'w') as algo_file:
             json.dump(algorithm_sbom, algo_file, indent=4)
 
-        with open(certificate_sbom_filepath, 'w+') as cert_file:
+        with open(os.path.join(upload_folder, certificate_filename), 'w') as cert_file:
             json.dump(certificate_sbom, cert_file, indent=4)
 
-        logging.info(f"Algorithm SBOM saved at {algorithm_sbom_filepath}")
-        logging.info(f"Certificate SBOM saved at {certificate_sbom_filepath}")
+        with open(os.path.join(upload_folder, protocol_filename), 'w') as proto_file:
+            json.dump(protocol_sbom, proto_file, indent=4)
 
         return jsonify({
             "message": "SBOMs generated successfully",
-            "algorithm_sbom_file": algorithm_sbom_filename,
-            "certificate_sbom_file": certificate_sbom_filename
+            "algorithm_sbom": algorithm_filename,
+            "certificate_sbom": certificate_filename,
+            "protocol_sbom": protocol_filename
         }), 200
 
     except Exception as e:
-        logging.error(f"An error occurred: {str(e)}")
-        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+        logging.error(f"Error in generate_cbom: {str(e)}")
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+    
+@app.route('/receive_output', methods=['POST'])
+def receive_files():
+    try:
+        files = request.files
+
+        if not files:
+            return jsonify({"error": "No files provided."}), 400
+
+        json_data = None
+        processed_files = {} 
+
+        for file_key in files:
+            file = files[file_key]
+            filename = file.filename
+
+            if filename.endswith('.json'):
+                try:
+                    json_data = json.load(file)
+                except json.JSONDecodeError:
+                    return jsonify({"error": f"Invalid JSON in file {filename}."}), 400
+
+            elif filename.endswith('.conf'):
+                processed_files['conf'] = file.read().decode('utf-8')
+
+            elif filename.endswith('.log'):
+                processed_files['log'] = file.read().decode('utf-8')
+
+            else:
+                return jsonify({"error": f"Invalid file format for file {filename}. Allowed formats are .json, .conf, and .log."}), 400
+
+        if not json_data:
+            return jsonify({"error": "No valid .json file provided."}), 400
+
+        result = generate_cbom(json_data, processed_files)  # Modify generate_cbom to accept additional data if needed
+        return result
+
+    except Exception as e:
+        logging.error(f"Error in receive_files: {str(e)}")
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+    
+@app.route('/trigger', methods=['POST'])
+def trigger_post():
+    try:
+        ip_list = os.getenv('IP_LIST')
+        if not ip_list:
+            return jsonify({"error": "No IP list found in .env file."}), 500
+        
+        ip_addresses = ip_list.split(',')
+
+        request_data = request.get_json()
+        if not request_data or 'ip' not in request_data:
+            return jsonify({"error": "Please provide an IP in the request body."}), 400
+
+        target_ip = request_data['ip']
+
+        if target_ip not in ip_addresses:
+            return jsonify({"error": f"IP {target_ip} does not exist in the known IPs."}), 404
+
+        url = f"http://{target_ip}:6868/trigger"
+        try:
+            response = requests.post(url, json={"message": "triggered"})
+            return jsonify({
+                "ip": target_ip,
+                "status": "success",
+                "response_code": response.status_code,
+                "response_body": response.json() if response.headers.get("Content-Type") == "application/json" else response.text,
+            }), 200
+
+        except requests.RequestException as e:
+            return jsonify({"error": f"Failed to send POST request to {target_ip}: {str(e)}"}), 500
+
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
