@@ -1,49 +1,14 @@
-<<<<<<< Updated upstream
-import subprocess
-import re
-
-# Helper function to get certificate information from openssl x509 command
-def get_certificate_info():
-    # Ask the user for the path to the certificate file
-    cert_path = input("Please enter the path to the certificate file: ")
-
-    command = ["openssl", "x509", "-noout", "-text", "-in", cert_path]
-    output = subprocess.check_output( command, text=True)
-
-    certificate_data = {}
-    # Define regex for each piece of data to extract
-    issuer_regex = r"Issuer: (.*)"
-    subject_regex = r"Subject: (.*)"
-    validity_not_before_regex = r"Not Before: (.*)"
-    validity_not_after_regex = r"Not After : (.*)"
-    signature_algorithm_regex = r"Signature Algorithm: (.*)"
-    public_key_algorithm_regex = r"Public Key Algorithm: (.*)"
-    public_key_regex = r"Public-Key: (.*)"
-
-    certificate_data['issuerName'] = re.search(issuer_regex, output).group(1)
-    certificate_data['subjectName'] = re.search(subject_regex, output).group(1)
-    certificate_data['notValidBefore'] = re.search(validity_not_before_regex, output).group(1)
-    certificate_data['notValidAfter'] = re.search(validity_not_after_regex, output).group(1)
-    certificate_data['signatureAlgorithm'] = re.search(signature_algorithm_regex, output).group(1)
-    certificate_data['publicKeyAlgorithm'] = re.search(public_key_algorithm_regex, output).group(1)
-
-    # Check if RSA public key exists in the certificate
-    rsa_match = re.search(public_key_regex, output)
-    certificate_data['rsaPublicKey'] = rsa_match.group(1) if rsa_match else "Not Available"
-
-    certificate_data['rsaPublicKey'] = re.search(public_key_regex, output).group(1)
-    if rsa_match:
-        rsa_public_key = rsa_match.group(1)
-        # Remove parentheses and spaces
-        rsa_public_key_clean = rsa_public_key.replace('(', '').replace(')', '').strip()
-        certificate_data['rsaPublicKey'] = rsa_public_key_clean
-
-    return certificate_data
-=======
 import subprocess
 import re
 import os
 import fnmatch
+import logging
+from configure_logger import configure_logger
+
+script_name = os.path.basename(__file__)
+cert_id = 5280
+# logger = logging.getLogger(__name__)
+logger = configure_logger(script_name, cert_id)
 
 # Helper function to get the certificate of the host being validated
 def find_certificate():
@@ -58,6 +23,19 @@ def find_certificate():
 
     preinstalled_certificates = [
         "*.0",
+        "Atos_TrustedRoot_Root_CA_RSA_TLS_2021.pem",
+        "CommScope_Public_Trust_ECC_Root-01.pem",
+        "Sectigo_Public_Server_Authentication_Root_E46.pem",
+        "CommScope_Public_Trust_RSA_Root-02.pem",
+        "Atos_TrustedRoot_Root_CA_ECC_TLS_2021.pem",
+        "CommScope_Public_Trust_ECC_Root-02.pem",
+        "BJCA_Global_Root_CA1.pem",
+        "SSL.com_TLS_RSA_Root_CA_2022.pem",
+        "TrustAsia_Global_Root_CA_G3.pem",
+        "CommScope_Public_Trust_RSA_Root-01.pem",
+        "SSL.com_TLS_ECC_Root_CA_2022.pem",
+        "TrustAsia_Global_Root_CA_G4.pem",
+        "Sectigo_Public_Server_Authentication_Root_R46.pem",
         "ca-certificates.crt",
         "ssl-cert-snakeoil.pem",
         "ACCVRAIZ1.pem",
@@ -77,6 +55,7 @@ def find_certificate():
         "Autoridad_de_Certificacion_Firmaprofesional_CIF_A62634068.pem",
         "Autoridad_de_Certificacion_Firmaprofesional_CIF_A62634068_2.pem",
         "Baltimore_CyberTrust_Root.pem",
+        "BJCA_Global_Root_CA2.pem",
         "Buypass_Class_2_Root_CA.pem",
         "Buypass_Class_3_Root_CA.pem",
         "CA_Disig_Root_R2.pem",
@@ -221,46 +200,47 @@ def find_certificate():
     # Traverse through each directory
     for cert_dir in cert_directories:
         if os.path.exists(cert_dir) and os.path.isdir(cert_dir):
-            print(f"Scanning directory: {cert_dir}")
+            logger.info("Scanning directory: %s", cert_dir)
             for root, dirs, files in os.walk(cert_dir):
-                print(f"Checking directory: {root}")
+                logger.info("Checking directory: %s", root)
                 for file in files:
                     cert_path = os.path.join(root, file)
                     if any(file.endswith(ext) for ext in cert_extensions):
                         if not is_preinstalled_certificate(file):
-                            print(f"Found user-installed certificate: {cert_path}")
+                            logger.info("Found user-installed certificate: %s", cert_path)
                             user_certificates.append(cert_path)
 
     if not user_certificates:
-        print("No user-installed certificates found.")
+        logger.info("No user-installed certificates found.")
         return None
 
-    print("User-installed certificates found:")
+    logger.info("User-installed certificates found.")
     for cert in user_certificates:
-        print(cert)
+        logger.info(f"{cert}")
         return cert
 
 
 # Helper function to get certificate information from openssl x509 command
 def get_certificate_info():
     # Ask the user for the path to the certificate file
-#    cert_path = input("Please enter the path to the certificate file: ")
+#    cert_path = input("Please enter the path to the certificate file:")
 #    cert_path = "/etc/ssl/certs/mail_noc_demokritos_gr_cert.cer"
 
     # Dynamic search of usual certificate locations in the host system
+    logger.info("Dynamic search of usual certificate locations in the system.")
     cert_path = find_certificate()
 
     if not cert_path:
-        print("Certificate not found. Exiting.")
+        logger.info("Certificate not found. Exiting.")
         return {}
 
-    print(f"Using certificate at: {cert_path}")
+    logger.info("Using certificate at: %s", cert_path)
 
     command = ["openssl", "x509", "-noout", "-text", "-in", cert_path]
     try:
        output = subprocess.check_output( command, text=True)
     except subprocess.CalledProcessError as e:
-       print(f"Error executing command: {e}")
+       logger.error(f"Error executing command: {e}")
        return {}
 
     certificate_data = {}
@@ -281,15 +261,17 @@ def get_certificate_info():
     certificate_data['publicKeyAlgorithm'] = re.search(public_key_algorithm_regex, output).group(1)
 
     # Check if RSA public key exists in the certificate
+    logger.info("Checking if RSA public key exists in the certificate.")
     rsa_match = re.search(public_key_regex, output)
     certificate_data['rsaPublicKey'] = rsa_match.group(1) if rsa_match else "Not Available"
 
     certificate_data['rsaPublicKey'] = re.search(public_key_regex, output).group(1)
     if rsa_match:
         rsa_public_key = rsa_match.group(1)
+        logger.info("RSA public key found.")
         # Remove parentheses and spaces
         rsa_public_key_clean = rsa_public_key.replace('(', '').replace(')', '').strip()
         certificate_data['rsaPublicKey'] = rsa_public_key_clean
 
+    logger.info("Return Certificate related data to the main program.")
     return certificate_data
->>>>>>> Stashed changes

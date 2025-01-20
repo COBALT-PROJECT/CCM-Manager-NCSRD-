@@ -1,14 +1,23 @@
 import subprocess
 import json
 import re
+import os
+import logging
+from configure_logger import configure_logger, close_logger
+
+script_name = os.path.basename(__file__)
+ssl_id = 6101
+logger = configure_logger(script_name, ssl_id)
+# logger = logging.getLogger(__name__)
 
 def get_tls_cipher_info():
     # Use openssl ciphers -v to gather information about the ciphers
+    logger.info("Gathering OpenSSL Ciphers information")
     command = ["openssl", "ciphers", "-v"]
     try:
         output = subprocess.check_output(command, text=True)
     except subprocess.CalledProcessError as e:
-        print(f"Error executing command: {e}")
+        logger.error(f"Error executing command: {e}")
         return {}
 
     tls_info = {}
@@ -47,16 +56,18 @@ def get_tls_cipher_info():
             "encryption_algorithm": encryption_algorithm,
             "mac": mac
         }
+    logger.info("Gathered system's ciphers..... returning their values to the main program.")
     return tls_info
 
 
 def get_nmap_tls_info():
     # Run the nmap command to get TLS ciphers
+    logger.info("[%s]: Gathering system's TLS ciphers via NMAP", ssl_id)
     command_nmap = ["nmap", "-sV", "--script", "ssl-enum-ciphers", "-p-", "localhost"]
     try:
         output_nmap = subprocess.check_output(command_nmap, text=True)
     except subprocess.CalledProcessError as e:
-        print(f"Error executing nmap command: {e}")
+        logger.error(f"[{ssl_id}]: Error executing nmap command: {e}")
         return {}
 
     nmap_tls_ssl_info = {"nmap_tls_ssl_enum_ciphers_info": {}}
@@ -76,6 +87,7 @@ def get_nmap_tls_info():
             status = port_match.group(3)
 
             # Initialize port details
+            logger.info("[%s]: Gathering TLS information on port %s.....", ssl_id, curr_port)
             nmap_tls_ssl_info["nmap_tls_ssl_enum_ciphers_info"][curr_port] = {
                 "net_proto": net_proto,
                 "status": status,
@@ -101,4 +113,14 @@ def get_nmap_tls_info():
                 cipher_details = cipher_suite_match.group(1)
                 nmap_tls_ssl_info["nmap_tls_ssl_enum_ciphers_info"][curr_port]["tls_vers_enabled"][curr_tls_version].append(cipher_details)
 
+    # Debug output
+    # print("nmap_tls_ciphers", nmap_tls_info)
+    #close_logger(logger)
     return nmap_tls_ssl_info
+
+
+#if __name__ == "__main__":
+#   # Get NMAP TLS/SSL cipher information
+#   nmap_tls_info = get_nmap_tls_info()
+#   print("Nmap TLS Cipher Info:")
+#   print(json.dumps(nmap_tls_info, indent=2))

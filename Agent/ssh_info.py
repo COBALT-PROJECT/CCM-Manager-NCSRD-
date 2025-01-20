@@ -1,12 +1,21 @@
 import subprocess
+import logging
+import os
+from configure_logger import configure_logger, close_logger
+
+script_name = os.path.basename(__file__)
+ssh_id = 4253
+logger = configure_logger(script_name, ssh_id)
+# logger = logging.getLogger(__name__)
 
 def get_ssh_crypto_info():
+    logger.info("Gathering SSH crypto information....")
     try:
         # Execute the command to gather algorithm-related settings from SSH
         command = ["sshd", "-T"]
         output = subprocess.check_output(command, text=True)
     except subprocess.CalledProcessError as e:
-        print(f"Error executing command: {e}")
+        logger.error(f"[{ssh_id}]: Error executing command: {e}")
         return {}
 
     # Initialize a dictionary to store the algorithms categorized by type
@@ -25,29 +34,31 @@ def get_ssh_crypto_info():
                 # Add the algorithms to the dictionary, using the key as the algorithm type
                 ssh_crypto_info[key] = algorithms
             except ValueError as ve:
-                print(f"Skipping line due to format error: {line} - {ve}")
+                logger.error(f"[{ssh_id}]: Skipping line due to format error: {line} - value error: {ve}")
         elif "ciphers" in line:
             try:
                 key,value = line.split(None, 1)
                 ciphers = value.split(',')
                 ssh_crypto_info[key] = ciphers
             except ValueError as ve:
-                print(f"Skipping line due to format error: {line} - {ve}")
+                logger.error(f"[{ssh_id}]: Skipping line due to format error: {line} - value error: {ve}")
         elif "macs" in line:
             try:
                 key, value = line.split(None, 1)
                 macs = value.split(',')
                 ssh_crypto_info[key] = macs
             except ValueError as ve:
-                print(f"Skipping line due to format error: {line} - {ve}")
+                logger.error(f"[{ssh_id}]: Skipping line due to format error: {line} - value error: {ve}")
 
 
     #print(json.dumps({"ssh_crypto_info": ssh_crypto_info}, indent=2))
+    logger.info("Finished gathering SSH crypto information.")
     return ssh_crypto_info
 
 def filter_matching_algorithms(ssh_crypto_info, algorithms):
     # We will now iterate over the algorithm types in ssh_crypto_info
     # Make a copy of the dictionary for safe iteration
+    logger.info("Starting SSH information iteration for safe iteration")
     ssh_algo_types = list(ssh_crypto_info.keys())
 
     # Iterate over the ssh_algo_types to filter out non-matching algorithms
@@ -71,4 +82,7 @@ def filter_matching_algorithms(ssh_crypto_info, algorithms):
             del ssh_crypto_info[algo_type]
 
     # Return the updated ssh_crypto_info and algorithms
+    logger.info("Finished iteration.")
     return ssh_crypto_info, algorithms
+
+#close_logger(logger)
