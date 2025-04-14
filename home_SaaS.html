@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SaaS BOM Generator (CycloneDX)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    fieldset {
+      margin-bottom: 20px;
+      padding: 10px;
+    }
+    label {
+      display: block;
+      margin: 5px 0;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 5px;
+      box-sizing: border-box;
+    }
+    .entry {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .remove-button {
+      background-color: #ff6666;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    button {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>SaaS BOM Generator (CycloneDX Format)</h1>
+  <form id="bomForm">
+    <!-- BOM Basic Information -->
+    <fieldset>
+      <legend>BOM Information</legend>
+      <label>BOM Format:
+        <input type="text" id="bomFormat" value="CycloneDX" readonly>
+      </label>
+      <label>Specification Version:
+        <input type="text" id="specVersion" value="1.4" readonly>
+      </label>
+      <label>Serial Number:
+        <input type="text" id="serialNumber" value="urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79">
+      </label>
+      <label>Version:
+        <input type="number" id="bomVersion" value="1">
+      </label>
+    </fieldset>
+
+    <!-- Metadata and Component -->
+    <fieldset>
+      <legend>Metadata & Component</legend>
+      <label>Timestamp:
+        <input type="datetime-local" id="timestamp" value="2021-01-10T12:00">
+      </label>
+      <label>Component BOM Ref:
+        <input type="text" id="componentBomRef" value="acme-application">
+      </label>
+      <label>Component Type:
+        <input type="text" id="componentType" value="application">
+      </label>
+      <label>Component Name:
+        <input type="text" id="componentName" value="Acme Cloud Example">
+      </label>
+      <label>Component Version:
+        <input type="text" id="componentVersion" value="2022-1">
+      </label>
+    </fieldset>
+
+    <!-- Main Service -->
+    <fieldset>
+      <legend>Main Service</legend>
+      <label>Service BOM Ref:
+        <input type="text" id="serviceBomRef" value="api-gateway">
+      </label>
+      <label>Provider Name:
+        <input type="text" id="providerName" value="Acme Inc">
+      </label>
+      <label>Provider URL:
+        <input type="text" id="providerURL" value="https://example.com">
+      </label>
+      <label>Group:
+        <input type="text" id="serviceGroup" value="com.example">
+      </label>
+      <label>Service Name:
+        <input type="text" id="serviceName" value="API Gateway">
+      </label>
+      <label>Service Version:
+        <input type="text" id="serviceVersion" value="2022-1">
+      </label>
+      <label>Service Description:
+        <textarea id="serviceDescription">Example API Gateway</textarea>
+      </label>
+      <label>Endpoints (comma separated):
+        <input type="text" id="serviceEndpoints" value="https://example.com/, https://example.com/app">
+      </label>
+      <label>
+        <input type="checkbox" id="serviceAuthenticated">
+        Authenticated
+      </label>
+      <label>
+        <input type="checkbox" id="serviceTrustBoundary" checked>
+        Trust Boundary (x-trust-boundary)
+      </label>
+      <label>Data (format: classification:flow, separated by commas):
+        <input type="text" id="serviceData" value="PII:bi-directional, PIFI:bi-directional, Public:bi-directional">
+      </label>
+      <label>External Reference Type:
+        <input type="text" id="extRefType" value="documentation">
+      </label>
+      <label>External Reference URL:
+        <input type="text" id="extRefURL" value="http://example.com/app/swagger">
+      </label>
+    </fieldset>
+
+    <!-- Microservices (Nested Services) -->
+    <fieldset>
+      <legend>Microservices (Nested Services)</legend>
+      <div id="microservicesContainer"></div>
+      <button type="button" onclick="addMicroservice()">Add Microservice</button>
+    </fieldset>
+
+    <!-- Dependencies -->
+    <fieldset>
+      <legend>Dependencies</legend>
+      <div id="dependenciesContainer"></div>
+      <button type="button" onclick="addDependency()">Add Dependency</button>
+    </fieldset>
+
+    <button type="button" onclick="generateJSON()">Generate JSON</button>
+  </form>
+
+  <h2>Generated SaaS BOM JSON</h2>
+  <pre id="output"></pre>
+
+  <script>
+    // Add a new Microservice entry dynamically
+    function addMicroservice() {
+      const container = document.getElementById('microservicesContainer');
+      const div = document.createElement('div');
+      div.className = 'entry microservice-entry';
+      div.innerHTML = `
+        <h4>Microservice</h4>
+        <label>BOM Ref: <input type="text" name="ms-bom-ref" value="ms-1.example.com"></label>
+        <label>Provider Name: <input type="text" name="ms-provider-name" value="Acme Inc"></label>
+        <label>Provider URL: <input type="text" name="ms-provider-url" value="https://example.com"></label>
+        <label>Group: <input type="text" name="ms-group" value="com.example"></label>
+        <label>Name: <input type="text" name="ms-name" value="Microservice"></label>
+        <label>Version: <input type="text" name="ms-version" value="2022-1"></label>
+        <label>Description: <input type="text" name="ms-description" value="Example Microservice"></label>
+        <label>Endpoints (comma separated): <input type="text" name="ms-endpoints" value="https://ms-1.example.com"></label>
+        <label><input type="checkbox" name="ms-authenticated"> Authenticated</label>
+        <label><input type="checkbox" name="ms-trust-boundary"> Trust Boundary (x-trust-boundary)</label>
+        <label>Data (format: classification:flow, separated by commas):
+          <input type="text" name="ms-data" value="PII:bi-directional">
+        </label>
+        <label>External Reference Type:
+          <input type="text" name="ms-ext-ref-type" value="documentation">
+        </label>
+        <label>External Reference URL:
+          <input type="text" name="ms-ext-ref-url" value="https://ms-1.example.com/swagger">
+        </label>
+        <button type="button" onclick="removeMicroservice(this)" class="remove-button">Remove Microservice</button>
+      `;
+      container.appendChild(div);
+    }
+
+    function removeMicroservice(button) {
+      button.parentElement.remove();
+    }
+
+    // Add a new Dependency entry dynamically
+    function addDependency() {
+      const container = document.getElementById('dependenciesContainer');
+      const div = document.createElement('div');
+      div.className = 'entry dependency-entry';
+      div.innerHTML = `
+        <h4>Dependency</h4>
+        <label>Ref: <input type="text" name="dep-ref" value=""></label>
+        <label>Depends On (comma separated): <input type="text" name="dep-dependsOn" value=""></label>
+        <button type="button" onclick="removeDependency(this)" class="remove-button">Remove Dependency</button>
+      `;
+      container.appendChild(div);
+    }
+
+    function removeDependency(button) {
+      button.parentElement.remove();
+    }
+
+    // Utility: parse comma-separated lists into an array
+    function parseCommaSeparated(input) {
+      return input.split(',').map(item => item.trim()).filter(item => item !== "");
+    }
+
+    // Utility: parse a data string of the form "classification:flow, classification:flow, ..."
+    function parseDataField(input) {
+      return input.split(',')
+                  .map(item => item.trim())
+                  .filter(item => item !== "")
+                  .map(item => {
+                    const parts = item.split(':').map(part => part.trim());
+                    return { classification: parts[0] || "", flow: parts[1] || "" };
+                  });
+    }
+
+    // Gather all the form fields, build the BOM object and display the JSON
+    function generateJSON() {
+      // BOM basic fields
+      const bomFormat = document.getElementById('bomFormat').value;
+      const specVersion = document.getElementById('specVersion').value;
+      const serialNumber = document.getElementById('serialNumber').value;
+      const bomVersion = parseInt(document.getElementById('bomVersion').value, 10);
+
+      // Metadata & Component
+      const timestampInput = document.getElementById('timestamp').value;
+      const timestamp = timestampInput ? new Date(timestampInput).toISOString() : new Date().toISOString();
+      const component = {
+        "bom-ref": document.getElementById('componentBomRef').value,
+        type: document.getElementById('componentType').value,
+        name: document.getElementById('componentName').value,
+        version: document.getElementById('componentVersion').value
+      };
+
+      // Main Service details
+      const serviceData = {
+        "bom-ref": document.getElementById('serviceBomRef').value,
+        provider: {
+          name: document.getElementById('providerName').value,
+          url: parseCommaSeparated(document.getElementById('providerURL').value)
+        },
+        group: document.getElementById('serviceGroup').value,
+        name: document.getElementById('serviceName').value,
+        version: document.getElementById('serviceVersion').value,
+        description: document.getElementById('serviceDescription').value,
+        endpoints: parseCommaSeparated(document.getElementById('serviceEndpoints').value),
+        authenticated: document.getElementById('serviceAuthenticated').checked,
+        "x-trust-boundary": document.getElementById('serviceTrustBoundary').checked,
+        data: parseDataField(document.getElementById('serviceData').value),
+        externalReferences: [
+          {
+            type: document.getElementById('extRefType').value,
+            url: document.getElementById('extRefURL').value
+          }
+        ],
+        services: [] // nested microservices go here
+      };
+
+      // Process nested microservices entries
+      const microserviceEntries = document.getElementsByClassName('microservice-entry');
+      for (let i = 0; i < microserviceEntries.length; i++) {
+        const entry = microserviceEntries[i];
+        const ms = {
+          "bom-ref": entry.querySelector('input[name="ms-bom-ref"]').value,
+          provider: {
+            name: entry.querySelector('input[name="ms-provider-name"]').value,
+            url: parseCommaSeparated(entry.querySelector('input[name="ms-provider-url"]').value)
+          },
+          group: entry.querySelector('input[name="ms-group"]').value,
+          name: entry.querySelector('input[name="ms-name"]').value,
+          version: entry.querySelector('input[name="ms-version"]').value,
+          description: entry.querySelector('input[name="ms-description"]').value,
+          endpoints: parseCommaSeparated(entry.querySelector('input[name="ms-endpoints"]').value),
+          authenticated: entry.querySelector('input[name="ms-authenticated"]').checked,
+          "x-trust-boundary": entry.querySelector('input[name="ms-trust-boundary"]').checked,
+          data: parseDataField(entry.querySelector('input[name="ms-data"]').value),
+          externalReferences: [
+            {
+              type: entry.querySelector('input[name="ms-ext-ref-type"]').value,
+              url: entry.querySelector('input[name="ms-ext-ref-url"]').value
+            }
+          ]
+        };
+        serviceData.services.push(ms);
+      }
+
+      // Process dependencies entries
+      const dependencies = [];
+      const dependencyEntries = document.getElementsByClassName('dependency-entry');
+      for (let i = 0; i < dependencyEntries.length; i++) {
+        const entry = dependencyEntries[i];
+        const depRef = entry.querySelector('input[name="dep-ref"]').value;
+        const dependsOn = parseCommaSeparated(entry.querySelector('input[name="dep-dependsOn"]').value);
+        dependencies.push({
+          ref: depRef,
+          dependsOn: dependsOn
+        });
+      }
+
+      // Assemble the full BOM object
+      const bom = {
+        bomFormat: bomFormat,
+        specVersion: specVersion,
+        serialNumber: serialNumber,
+        version: bomVersion,
+        metadata: {
+          timestamp: timestamp,
+          component: component
+        },
+        services: [ serviceData ],
+        dependencies: dependencies
+      };
+
+      // Display the JSON output
+      document.getElementById('output').textContent = JSON.stringify(bom, null, 2);
+    }
+  </script>
+</body>
+</html>
