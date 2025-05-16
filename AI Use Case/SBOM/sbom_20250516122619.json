@@ -1,0 +1,280 @@
+{
+  "components": [
+    {
+      "bom-ref": "requirements-L7",
+      "description": "requirements line 7: keras==2.2.4",
+      "externalReferences": [
+        {
+          "comment": "implicit dist url",
+          "type": "distribution",
+          "url": "https://pypi.org/simple/keras/"
+        }
+      ],
+      "name": "keras",
+      "purl": "pkg:pypi/keras@2.2.4",
+      "type": "library",
+      "version": "2.2.4"
+    },
+    {
+      "bom-ref": "requirements-L11",
+      "description": "requirements line 11: matplotlib==3.0.3",
+      "externalReferences": [
+        {
+          "comment": "implicit dist url",
+          "type": "distribution",
+          "url": "https://pypi.org/simple/matplotlib/"
+        }
+      ],
+      "name": "matplotlib",
+      "purl": "pkg:pypi/matplotlib@3.0.3",
+      "type": "library",
+      "version": "3.0.3"
+    },
+    {
+      "bom-ref": "requirements-L3",
+      "description": "requirements line 3: numpy==1.16.0",
+      "externalReferences": [
+        {
+          "comment": "implicit dist url",
+          "type": "distribution",
+          "url": "https://pypi.org/simple/numpy/"
+        }
+      ],
+      "name": "numpy",
+      "purl": "pkg:pypi/numpy@1.16.0",
+      "type": "library",
+      "version": "1.16.0"
+    },
+    {
+      "bom-ref": "requirements-L12",
+      "description": "requirements line 12: oct2py==4.0.6",
+      "externalReferences": [
+        {
+          "comment": "implicit dist url",
+          "type": "distribution",
+          "url": "https://pypi.org/simple/oct2py/"
+        }
+      ],
+      "name": "oct2py",
+      "purl": "pkg:pypi/oct2py@4.0.6",
+      "type": "library",
+      "version": "4.0.6"
+    },
+    {
+      "bom-ref": "requirements-L8",
+      "description": "requirements line 8: opencv-python==4.1.0.25",
+      "externalReferences": [
+        {
+          "comment": "implicit dist url",
+          "type": "distribution",
+          "url": "https://pypi.org/simple/opencv-python/"
+        }
+      ],
+      "name": "opencv-python",
+      "purl": "pkg:pypi/opencv-python@4.1.0.25",
+      "type": "library",
+      "version": "4.1.0.25"
+    },
+    {
+      "bom-ref": "requirements-L4",
+      "description": "requirements line 4: pandas==1.16.0",
+      "externalReferences": [
+        {
+          "comment": "implicit dist url",
+          "type": "distribution",
+          "url": "https://pypi.org/simple/pandas/"
+        }
+      ],
+      "name": "pandas",
+      "purl": "pkg:pypi/pandas@1.16.0",
+      "type": "library",
+      "version": "1.16.0"
+    },
+    {
+      "bom-ref": "requirements-L9",
+      "description": "requirements line 9: requests==2.19.1",
+      "externalReferences": [
+        {
+          "comment": "implicit dist url",
+          "type": "distribution",
+          "url": "https://pypi.org/simple/requests/"
+        }
+      ],
+      "name": "requests",
+      "purl": "pkg:pypi/requests@2.19.1",
+      "type": "library",
+      "version": "2.19.1"
+    },
+    {
+      "bom-ref": "requirements-L5",
+      "description": "requirements line 5: scikit-learn==0.19.0",
+      "externalReferences": [
+        {
+          "comment": "implicit dist url",
+          "type": "distribution",
+          "url": "https://pypi.org/simple/scikit-learn/"
+        }
+      ],
+      "name": "scikit-learn",
+      "purl": "pkg:pypi/scikit-learn@0.19.0",
+      "type": "library",
+      "version": "0.19.0"
+    },
+    {
+      "bom-ref": "requirements-L6",
+      "description": "requirements line 6: tensorflow==1.13.1",
+      "externalReferences": [
+        {
+          "comment": "implicit dist url",
+          "type": "distribution",
+          "url": "https://pypi.org/simple/tensorflow/"
+        }
+      ],
+      "name": "tensorflow",
+      "purl": "pkg:pypi/tensorflow@1.13.1",
+      "type": "library",
+      "version": "1.13.1"
+    },
+    {
+      "bom-ref": "requirements-L10",
+      "description": "requirements line 10: tqdm==4.62.3",
+      "externalReferences": [
+        {
+          "comment": "implicit dist url",
+          "type": "distribution",
+          "url": "https://pypi.org/simple/tqdm/"
+        }
+      ],
+      "name": "tqdm",
+      "purl": "pkg:pypi/tqdm@4.62.3",
+      "type": "library",
+      "version": "4.62.3"
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "requirements-L1"
+    },
+    {
+      "ref": "requirements-L10"
+    },
+    {
+      "ref": "requirements-L11"
+    },
+    {
+      "ref": "requirements-L12"
+    },
+    {
+      "ref": "requirements-L2"
+    },
+    {
+      "ref": "requirements-L3"
+    },
+    {
+      "ref": "requirements-L4"
+    },
+    {
+      "ref": "requirements-L5"
+    },
+    {
+      "ref": "requirements-L6"
+    },
+    {
+      "ref": "requirements-L7"
+    },
+    {
+      "ref": "requirements-L8"
+    },
+    {
+      "ref": "requirements-L9"
+    }
+  ],
+  "metadata": {
+    "timestamp": "2025-05-16T09:26:19.295022+00:00",
+    "tools": [
+      {
+        "externalReferences": [
+          {
+            "type": "build-system",
+            "url": "https://github.com/CycloneDX/cyclonedx-python/actions"
+          },
+          {
+            "type": "distribution",
+            "url": "https://pypi.org/project/cyclonedx-bom/"
+          },
+          {
+            "type": "documentation",
+            "url": "https://cyclonedx-bom-tool.readthedocs.io/"
+          },
+          {
+            "type": "issue-tracker",
+            "url": "https://github.com/CycloneDX/cyclonedx-python/issues"
+          },
+          {
+            "type": "license",
+            "url": "https://github.com/CycloneDX/cyclonedx-python/blob/main/LICENSE"
+          },
+          {
+            "type": "release-notes",
+            "url": "https://github.com/CycloneDX/cyclonedx-python/blob/main/CHANGELOG.md"
+          },
+          {
+            "type": "vcs",
+            "url": "https://github.com/CycloneDX/cyclonedx-python/"
+          },
+          {
+            "type": "website",
+            "url": "https://github.com/CycloneDX/cyclonedx-python/#readme"
+          }
+        ],
+        "name": "cyclonedx-bom",
+        "vendor": "CycloneDX",
+        "version": "4.6.1"
+      },
+      {
+        "externalReferences": [
+          {
+            "type": "build-system",
+            "url": "https://github.com/CycloneDX/cyclonedx-python-lib/actions"
+          },
+          {
+            "type": "distribution",
+            "url": "https://pypi.org/project/cyclonedx-python-lib/"
+          },
+          {
+            "type": "documentation",
+            "url": "https://cyclonedx-python-library.readthedocs.io/"
+          },
+          {
+            "type": "issue-tracker",
+            "url": "https://github.com/CycloneDX/cyclonedx-python-lib/issues"
+          },
+          {
+            "type": "license",
+            "url": "https://github.com/CycloneDX/cyclonedx-python-lib/blob/main/LICENSE"
+          },
+          {
+            "type": "release-notes",
+            "url": "https://github.com/CycloneDX/cyclonedx-python-lib/blob/main/CHANGELOG.md"
+          },
+          {
+            "type": "vcs",
+            "url": "https://github.com/CycloneDX/cyclonedx-python-lib"
+          },
+          {
+            "type": "website",
+            "url": "https://github.com/CycloneDX/cyclonedx-python-lib/#readme"
+          }
+        ],
+        "name": "cyclonedx-python-lib",
+        "vendor": "CycloneDX",
+        "version": "7.6.2"
+      }
+    ]
+  },
+  "serialNumber": "urn:uuid:6d58a8a4-0caf-4b96-a8ce-8d3f111664e8",
+  "version": 1,
+  "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5"
+}

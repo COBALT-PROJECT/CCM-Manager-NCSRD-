@@ -1,0 +1,259 @@
+{
+  "bomFormat" : "CycloneDX",
+  "specVersion" : "1.5",
+  "serialNumber" : "urn:uuid:d3d1aa91-bc95-4d0b-912f-9bc7533ba921",
+  "version" : 1,
+  "metadata" : {
+    "timestamp" : "2025-05-16T09:26:19Z",
+    "tools" : [
+      {
+        "vendor" : "OWASP",
+        "name" : "Dependency-Track",
+        "version" : "4.12.1"
+      }
+    ],
+    "component" : {
+      "type" : "application",
+      "bom-ref" : "aeb9a186-cfe4-438a-af14-5b3af69f66a2",
+      "name" : "test_1747387579",
+      "version" : "1.0",
+      "description" : "This is an example project."
+    }
+  },
+  "components" : [
+    {
+      "type" : "library",
+      "bom-ref" : "b7c69b72-e2db-4742-b4a5-07f48d7e7c5c",
+      "name" : "django",
+      "version" : "1.11.15",
+      "description" : "requirements line 1: django==1.11.15",
+      "purl" : "pkg:pypi/django@1.11.15",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/django/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "d37d5e22-68fa-4444-a3f1-3914614b9e92",
+      "name" : "flask",
+      "version" : "0.12.2",
+      "description" : "requirements line 2: flask==0.12.2",
+      "purl" : "pkg:pypi/flask@0.12.2",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/flask/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "4ff5acb1-b3f2-4f12-9fba-5da303835df7",
+      "name" : "keras",
+      "version" : "2.2.4",
+      "description" : "requirements line 7: keras==2.2.4",
+      "purl" : "pkg:pypi/keras@2.2.4",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/keras/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "c0fe9204-9084-4736-a22f-3c62bd053852",
+      "name" : "matplotlib",
+      "version" : "3.0.3",
+      "description" : "requirements line 11: matplotlib==3.0.3",
+      "purl" : "pkg:pypi/matplotlib@3.0.3",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/matplotlib/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "25facda3-3cec-4c94-b373-7a4c7011ce9d",
+      "name" : "numpy",
+      "version" : "1.16.0",
+      "description" : "requirements line 3: numpy==1.16.0",
+      "purl" : "pkg:pypi/numpy@1.16.0",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/numpy/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "d69ea9dc-6d5a-4758-9d21-491bd8bc6950",
+      "name" : "oct2py",
+      "version" : "4.0.6",
+      "description" : "requirements line 12: oct2py==4.0.6",
+      "purl" : "pkg:pypi/oct2py@4.0.6",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/oct2py/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "a26ff643-351c-45b0-90ec-14861d27926e",
+      "name" : "opencv-python",
+      "version" : "4.1.0.25",
+      "description" : "requirements line 8: opencv-python==4.1.0.25",
+      "purl" : "pkg:pypi/opencv-python@4.1.0.25",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/opencv-python/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "2096315a-0c74-4978-b9ee-5fcf95b8a0ed",
+      "name" : "pandas",
+      "version" : "1.16.0",
+      "description" : "requirements line 4: pandas==1.16.0",
+      "purl" : "pkg:pypi/pandas@1.16.0",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/pandas/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "fc804f43-405e-444f-b6a7-ca9e829d844f",
+      "name" : "requests",
+      "version" : "2.19.1",
+      "description" : "requirements line 9: requests==2.19.1",
+      "purl" : "pkg:pypi/requests@2.19.1",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/requests/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "4672eb01-0870-4022-b3cf-0662b9e3fd79",
+      "name" : "scikit-learn",
+      "version" : "0.19.0",
+      "description" : "requirements line 5: scikit-learn==0.19.0",
+      "purl" : "pkg:pypi/scikit-learn@0.19.0",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/scikit-learn/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "bf18b0a1-d273-4446-8e8c-23b51124817a",
+      "name" : "tensorflow",
+      "version" : "1.13.1",
+      "description" : "requirements line 6: tensorflow==1.13.1",
+      "purl" : "pkg:pypi/tensorflow@1.13.1",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/tensorflow/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    },
+    {
+      "type" : "library",
+      "bom-ref" : "2b24673a-1053-425a-b63f-5d196327d499",
+      "name" : "tqdm",
+      "version" : "4.62.3",
+      "description" : "requirements line 10: tqdm==4.62.3",
+      "purl" : "pkg:pypi/tqdm@4.62.3",
+      "externalReferences" : [
+        {
+          "type" : "distribution",
+          "url" : "https://pypi.org/simple/tqdm/",
+          "comment" : "implicit dist url"
+        }
+      ]
+    }
+  ],
+  "dependencies" : [
+    {
+      "ref" : "aeb9a186-cfe4-438a-af14-5b3af69f66a2",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "b7c69b72-e2db-4742-b4a5-07f48d7e7c5c",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "d37d5e22-68fa-4444-a3f1-3914614b9e92",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "4ff5acb1-b3f2-4f12-9fba-5da303835df7",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "c0fe9204-9084-4736-a22f-3c62bd053852",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "25facda3-3cec-4c94-b373-7a4c7011ce9d",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "d69ea9dc-6d5a-4758-9d21-491bd8bc6950",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "a26ff643-351c-45b0-90ec-14861d27926e",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "2096315a-0c74-4978-b9ee-5fcf95b8a0ed",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "fc804f43-405e-444f-b6a7-ca9e829d844f",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "4672eb01-0870-4022-b3cf-0662b9e3fd79",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "bf18b0a1-d273-4446-8e8c-23b51124817a",
+      "dependsOn" : [ ]
+    },
+    {
+      "ref" : "2b24673a-1053-425a-b63f-5d196327d499",
+      "dependsOn" : [ ]
+    }
+  ]
+}
