@@ -1,0 +1,92 @@
+{
+  "profile": {
+    "uuid": "74c8ba1e-5cd4-4ad1-bbfd-d888e2f6c724",
+    "metadata": {
+      "title": "Cobalt Review Catalog ",
+      "published": "2024-10-29T09:15:27.916543+01:00",
+      "last-modified": "2024-10-29T09:15:27.916543+01:00",
+      "version": "1.0",
+      "oscal-version": "1.1.2",
+      "props": [
+        {
+          "name": "keywords",
+          "value": "cobalt, quantum, artificial intelligence ,cybersecurity, information security, information system, OSCAL, Open Security Controls Assessment Language"
+        }
+      ],
+      "links": [
+        {
+          "href": "3ab41d8a-66e3-4732-ae28-07405dad5127",
+          "rel": "alternate"
+        }
+      ],
+      "roles": [
+        {
+          "id": "publisher",
+          "title": "Source document converter to OSCAL."
+        },
+        {
+          "id": "author",
+          "title": "Source document author."
+        },
+        {
+          "id": "contact",
+          "title": "Contact."
+        }
+      ],
+      "parties": [
+        {
+          "uuid": "f550d94e-0f01-415f-a1e2-c8188c9ff4a5",
+          "type": "organization",
+          "name": "ENISA",
+          "email-addresses": [
+            "name@domain.eu"
+          ],
+          "addresses": [
+            {
+              "addr-lines": [
+                "ENISA",
+                "Attn: Somebody",
+                "1 Some Street"
+              ],
+              "city": "City",
+              "country": "EU"
+            }
+          ]
+        }
+      ],
+      "responsible-parties": [
+        {
+          "role-id": "publisher",
+          "party-uuids": [
+            "f550d94e-0f01-415f-a1e2-c8188c9ff4a5"
+          ]
+        },
+        {
+          "role-id": "author",
+          "party-uuids": [
+            "f550d94e-0f01-415f-a1e2-c8188c9ff4a5"
+          ]
+        },
+        {
+          "role-id": "contact",
+          "party-uuids": [
+            "f550d94e-0f01-415f-a1e2-c8188c9ff4a5"
+          ]
+        }
+      ],
+      "remarks": "The following is a short excerpt from COBALT Catalog. This work is pro-vided here under copyright fair use for non-profit, educational purposes only. Copy-rights for this work are held by the publisher."
+    },
+    "imports": [
+      {
+        "href": "review_control_catalogue.json",
+        "include-controls": [
+          {
+            "with-ids": [
+              "COBALLT-02.1"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

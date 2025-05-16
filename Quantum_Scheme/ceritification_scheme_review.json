@@ -1,0 +1,102 @@
+{
+  "compliance_metrics": [
+    {
+      "id": "quantum_01",
+      "name": "one_qubit_gate_error_rate",
+      "description": "metric 1 for review demonstration",
+      "comment": "",
+      "implementation_evidence": "Configuration, Result",
+      "frequency": 1, 
+      "data_source_type": "QPU",
+      "reporting_format": "float",
+      "target_values": {
+        "target_value_scale": "float",
+        "target_value": "0.05"
+      },
+      "associated_control": {
+        "associated_control_framework": "qunatum_control_list",
+        "associated_control_category": "quantum",
+        "associated_control_requirement": "COBALLT-02.1"
+      }
+    },
+    {
+      "id": "quantum_02",
+      "name": "spam_error_rate",
+      "description": "metric 2 for review demonstration",
+      "comment": "",
+      "implementation_evidence": "Configuration, Result",
+      "frequency": 1, 
+      "data_source_type": "QPU",
+      "reporting_format": "float",
+      "target_values": {
+        "target_value_scale": "float",
+        "target_value": "0.05"
+      },
+      "associated_control": {
+        "associated_control_framework": "qunatum_control_list",
+        "associated_control_category": "quantum",
+        "associated_control_requirement": "COBALLT-02.2"
+      }
+    },
+    {
+      "id": "quantum_03",
+      "name": "two_qubit_gate_error_rate",
+      "description": "metric 2 for review demonstration",
+      "comment": "",
+      "implementation_evidence": "Configuration, Result",
+      "frequency": 1, 
+      "data_source_type": "QPU",
+      "reporting_format": "float",
+      "target_values": {
+        "target_value_scale": "float",
+        "target_value": "0.05"
+      },
+      "associated_control": {
+        "associated_control_framework": "qunatum_control_list",
+        "associated_control_category": "quantum",
+        "associated_control_requirement": "COBALT-02.3H"
+      }
+    }
+  ],
+  "certifiable_standards_mapping": [
+    {
+      "metric_id": "quantum_01",
+      "standard": "COBALT",
+      "control_id": "COBALT-02.1",
+      "description": " text description"
+    }
+  ],
+  "boundary_conditions": {
+    "environment": "qpu",
+    "scope": "evaluation",
+    "associated_component": "BOM_ID",
+    "dependencies": []
+  },
+  "risk_catalogue": [
+    {
+      "risk_id": "quantum-risk-001",
+      "risk_name": "Output Data Integriy Violation",
+      "risk_details": "the output from the quantum apllication is not reliable",
+      "risk_category": "Operational",
+      "associated_framework": "COBALT-02",
+      "mapped_threats": [
+        {
+          "threat_id": "THREAT-001",
+          "name": " Results are not accurate  | Data Integrity Compromise"
+        }
+      ],
+      "mapped_metrics": [
+        {
+          "metric_id": "quantum_01",
+          "impact": "High"
+        },        {
+          "metric_id": "quantum_02",
+          "impact": "Low"
+        },        {
+          "metric_id": "quantum_03",
+          "impact": "High"
+        }
+      ]
+    }
+  ]
+}
