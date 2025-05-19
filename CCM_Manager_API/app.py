@@ -12,10 +12,13 @@ from algos_details import details
 from generate_tree import handle_dynamic_path, Counter, build_tree
 import networkx as nx
 import re
+import hashlib
+from uuid import uuid4
 import requests
+from flask_cors import CORS
 
 app = Flask(__name__)
-
+CORS(app)
 # Configuration settings
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Limit to 16 MB
 client: MongoClient = MongoClient('mongodb://localhost:27017/')
@@ -29,7 +32,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(TMP_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = {'txt'}
-
+FORWARD_URL = os.getenv("FORWARD_URL")
 # Set up detailed logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -127,7 +130,6 @@ def generate_sbom():
             env={**os.environ}
         )
 
-        # Additional logging to verify subprocess execution results
         logging.debug(f"Create project script return code: {result.returncode}")
         logging.debug(f"Create project script output: {result.stdout}")
         logging.error(f"Create project script stderr: {result.stderr}")
@@ -139,7 +141,7 @@ def generate_sbom():
                 "stdout": result.stdout
             }), 500
 
-        # Retrieve and read the VEX JSON file, assuming it's generated in UPLOAD_FOLDER
+        # Retrieve and read the VEX JSON file
         vex_files = sorted([f for f in os.listdir(UPLOAD_FOLDER) if f.startswith('vex_') and f.endswith('.json')], reverse=True)
         if vex_files:
             vex_filepath = os.path.join(UPLOAD_FOLDER, vex_files[0])
@@ -214,11 +216,28 @@ def process_cipher(input_string):
 @app.route('/generate_cbom', methods=['POST'])
 def generate_cbom():
     try:
-        data = request.get_json()
+        # Get the hashed IP from the request
+        hashed_ip = request.form.get('hashed_ip')
+        if hashed_ip:
+            print(f"Received Hashed IP: {hashed_ip}")
+        else:
+            print("No hashed IP received")
+
+        if 'file' not in request.files:
+            return jsonify({"error": "No file part in the request."}), 400
+
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({"error": "No selected file."}), 400
+        
+        try:
+            data = json.load(file)
+        except json.JSONDecodeError:
+            return jsonify({"error": "Invalid JSON file."}), 400
         
         if not data:
             return jsonify({"error": "No data provided."}), 400
-
+        
         ciphers = data.get("ciphers", {}).get("tls", {})
         certificate_info = data.get("certificate", {})
 
@@ -256,6 +275,14 @@ def generate_cbom():
             if isinstance(details_data, dict):
                 build_tree(G, algorithm_node, details_data, counter)
 
+        existing_names = set()
+
+        def is_duplicate(name):
+            if name in existing_names:
+                return True
+            existing_names.add(name)
+            return False
+
         #visualizer = GraphVisualizer(G)
         algorithm_components = []
         certificate_components = []
@@ -270,6 +297,8 @@ def generate_cbom():
             # Use the encryption_algorithm as the name for the SBOM
             encryption_algorithm = cipher_data.get("encryption_algorithm", cipher_name)
             process_name = process_cipher(encryption_algorithm)
+            if is_duplicate(process_name):
+                continue
             normalized_cipher_name = process_name.lower()
             match = re.match(pattern, normalized_cipher_name)
             if not match:
@@ -303,7 +332,7 @@ def generate_cbom():
                 }
             # Handle Algorithms
             algorithm_components.append({
-                "name": encryption_algorithm,  # Use the encryption_algorithm here
+                "name": encryption_algorithm,
                 "type": "cryptographic-asset",
                 "cryptoProperties": {
                     "assetType": "algorithm",
@@ -358,7 +387,6 @@ def generate_cbom():
             not_valid_after = convert_to_iso8601(certificate_info.get("notValidAfter", "Unknown"))
             subject_name_raw = certificate_info.get("subjectName", "Unknown")
             subject_name = re.search(r"CN\s*=\s*([^,]+)", subject_name_raw).group(1) if subject_name_raw else "Unknown"
-
             certificate_components.append({
                 "name": subject_name,
                 "type": "cryptographic-asset",
@@ -398,6 +426,16 @@ def generate_cbom():
         algorithm_sbom = generate_sbom(algorithm_components, "algorithm")
         certificate_sbom = generate_sbom(certificate_components, "certificate")
         protocol_sbom = generate_sbom(protocol_components, "protocol")
+        
+        sbom_data = {
+            "_id": hashed_ip,  # Use hashed IP as the document ID
+            "algorithm_sbom": algorithm_sbom,
+            "certificate_sbom": certificate_sbom,
+            "protocol_sbom": protocol_sbom
+        }
+        
+        # Insert the SBOM data into MongoDB
+        collection.insert_one(sbom_data)
 
         upload_folder = app.config['UPLOAD_FOLDER']
         algorithm_filename = f"algorithm_sbom_{datetime.now().strftime('%d-%m-%Y_%H-%M-%S')}.json"
@@ -423,80 +461,433 @@ def generate_cbom():
     except Exception as e:
         logging.error(f"Error in generate_cbom: {str(e)}")
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
-    
+
+def hash_ip(ip):
+    """Hashes the IP address using SHA-256."""
+    return hashlib.sha256(ip.encode('utf-8')).hexdigest()
+
 @app.route('/receive_output', methods=['POST'])
-def receive_files():
+def receive_output():
     try:
-        files = request.files
+        client_ip = request.remote_addr
+        hashed_ip = hash_ip(client_ip)
+        print(f"Hashed IP: {hashed_ip}")
 
-        if not files:
-            return jsonify({"error": "No files provided."}), 400
+        if 'file' in request.files:
+            file = request.files['file']
+            if not file.filename.endswith('.json'):
+                return jsonify({"error": "Invalid file format. Only .json files are allowed."}), 400
+            
+            temp_filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(temp_filepath)
 
-        json_data = None
-        processed_files = {} 
+            with app.test_request_context('/generate_cbom', method='POST', data={'file': open(temp_filepath, 'rb'), 'hashed_ip': hashed_ip}):
+                return generate_cbom()
 
-        for file_key in files:
-            file = files[file_key]
-            filename = file.filename
+        elif request.is_json:
+            data = request.get_json()
+            if not data:
+                return jsonify({"error": "Invalid JSON data."}), 400
+            
+            temp_filename = "temp_data.json"
+            temp_filepath = os.path.join(app.config['UPLOAD_FOLDER'], temp_filename)
+            with open(temp_filepath, 'w') as temp_file:
+                json.dump(data, temp_file)
 
-            if filename.endswith('.json'):
-                try:
-                    json_data = json.load(file)
-                except json.JSONDecodeError:
-                    return jsonify({"error": f"Invalid JSON in file {filename}."}), 400
+            with app.test_request_context('/generate_cbom', method='POST', data={'file': open(temp_filepath, 'rb'), 'hashed_ip': hashed_ip}):
+                return generate_cbom()
 
-            elif filename.endswith('.conf'):
-                processed_files['conf'] = file.read().decode('utf-8')
-
-            elif filename.endswith('.log'):
-                processed_files['log'] = file.read().decode('utf-8')
-
-            else:
-                return jsonify({"error": f"Invalid file format for file {filename}. Allowed formats are .json, .conf, and .log."}), 400
-
-        if not json_data:
-            return jsonify({"error": "No valid .json file provided."}), 400
-
-        result = generate_cbom(json_data, processed_files)  # Modify generate_cbom to accept additional data if needed
-        return result
+        else:
+            return jsonify({"error": "No valid input provided."}), 400
 
     except Exception as e:
-        logging.error(f"Error in receive_files: {str(e)}")
+        logging.error(f"Error in receive_output: {str(e)}")
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
     
-@app.route('/trigger', methods=['POST'])
-def trigger_post():
-    try:
-        ip_list = os.getenv('IP_LIST')
-        if not ip_list:
-            return jsonify({"error": "No IP list found in .env file."}), 500
-        
-        ip_addresses = ip_list.split(',')
+def generate_hash(data):
+    return hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()
 
-        request_data = request.get_json()
-        if not request_data or 'ip' not in request_data:
-            return jsonify({"error": "Please provide an IP in the request body."}), 400
+@app.route('/upload_oscal', methods=['POST'])
+def upload_oscal():
+    if request.is_json:
+        oscal_json = request.get_json()
+    elif 'file' in request.files:
+        file = request.files['file']
+        oscal_json = json.load(file)
+    else:
+        return jsonify({"error": "No JSON data or file provided."}), 400
 
-        target_ip = request_data['ip']
+    oscal_type = None
+    if "component-definition" in oscal_json:
+        oscal_type = "component-definition"
+        doc_uuid = str(uuid4())  # generate new UUID for this type
+    elif "catalog" in oscal_json and "uuid" in oscal_json["catalog"]:
+        oscal_type = "catalog"
+        doc_uuid = oscal_json["catalog"]["uuid"]
+    elif "profile" in oscal_json and "uuid" in oscal_json["profile"]:
+        oscal_type = "profile"
+        doc_uuid = oscal_json["profile"]["uuid"]
+    else:
+        return jsonify({"error": "Unrecognized OSCAL type or missing UUID."}), 400
 
-        if target_ip not in ip_addresses:
-            return jsonify({"error": f"IP {target_ip} does not exist in the known IPs."}), 404
+    doc_hash = generate_hash(oscal_json)
 
-        url = f"http://{target_ip}:6868/trigger"
-        try:
-            response = requests.post(url, json={"message": "triggered"})
+    if oscal_type in ["catalog", "profile"]:
+        existing = collection.find_one({"uuid": doc_uuid})
+        if existing:
+            if oscal_type in existing:
+                return jsonify({
+                    "message": f"Duplicate {oscal_type} already exists for this UUID.",
+                    "uuid": doc_uuid
+                }), 200
+
+            collection.update_one(
+                {"uuid": doc_uuid},
+                {"$set": {
+                    oscal_type: oscal_json,
+                    f"{oscal_type}_hash": doc_hash
+                }}
+            )
             return jsonify({
-                "ip": target_ip,
-                "status": "success",
-                "response_code": response.status_code,
-                "response_body": response.json() if response.headers.get("Content-Type") == "application/json" else response.text,
+                "message": f"{oscal_type} added to existing UUID.",
+                "uuid": doc_uuid
             }), 200
 
-        except requests.RequestException as e:
-            return jsonify({"error": f"Failed to send POST request to {target_ip}: {str(e)}"}), 500
+        new_doc = {
+            "uuid": doc_uuid,
+            oscal_type: oscal_json,
+            f"{oscal_type}_hash": doc_hash
+        }
+        collection.insert_one(new_doc)
+        return jsonify({
+            "message": f"{oscal_type} document saved successfully.",
+            "uuid": doc_uuid
+        }), 200
+
+    else:
+        existing = collection.find_one({"oscal_type": oscal_type, "hash": doc_hash})
+        if existing:
+            return jsonify({
+                "message": "Duplicate document already exists.",
+                "uuid": existing["uuid"]
+            }), 200
+
+        wrapped_doc = {
+            "uuid": doc_uuid,
+            "hash": doc_hash,
+            "oscal_type": oscal_type,
+            "content": oscal_json
+        }
+        collection.insert_one(wrapped_doc)
+        return jsonify({
+            "message": f"{oscal_type} document saved successfully.",
+            "uuid": doc_uuid
+        }), 200
+
+@app.route('/oscal_ids/<doc_uuid>', methods=['GET'])
+def get_oscal_ids_by_doc_uuid(doc_uuid):
+    doc = collection.find_one({"uuid": doc_uuid})
+    if not doc or "content" not in doc or "profile" not in doc["content"]:
+        return jsonify({"error": "Profile not found"}), 404
+
+    control_ids = []
+    imports = doc["content"]["profile"].get("imports", [])
+    for imp in imports:
+        for control in imp.get("include-controls", []):
+            control_ids.extend(control.get("with-ids", []))
+
+    return jsonify({"control_ids": list(set(control_ids))}), 200
+
+
+def is_valid_uuid(value):
+    if not isinstance(value, str) or not value.startswith("urn:uuid:"):
+        return False
+    try:
+        uuid_str = value.replace("urn:uuid:", "")
+        uuid.UUID(uuid_str)
+        return True
+    except ValueError:
+        return False
+
+@app.route('/upload_saasbom', methods=['POST'])
+def upload_saasbom():
+    if not request.is_json:
+        return jsonify({"error": "No JSON data provided."}), 400
+
+    saasbom_json = request.get_json()
+
+    if saasbom_json.get("bomFormat") != "CycloneDX":
+        return jsonify({"error": "'bomFormat' must be 'CycloneDX'."}), 400
+
+    if saasbom_json.get("specVersion") != "1.4":
+        return jsonify({"error": "'specVersion' must be '1.4'."}), 400
+
+    if "serialNumber" not in saasbom_json:
+        saasbom_json["serialNumber"] = f"urn:uuid:{str(uuid.uuid4())}"
+    elif not is_valid_uuid(saasbom_json["serialNumber"]):
+        return jsonify({"error": "'serialNumber' must be a valid 'urn:uuid'."}), 400
+
+    if not isinstance(saasbom_json.get("version"), int):
+        return jsonify({"error": "'version' must be an integer."}), 400
+
+    metadata = saasbom_json.get("metadata", {})
+    if "component" not in metadata:
+        return jsonify({"error": "Missing 'component' in 'metadata'."}), 400
+
+    services = saasbom_json.get("services")
+    if not isinstance(services, list) or not services:
+        return jsonify({"error": "Missing or invalid 'services' field — not a SaaSBOM."}), 400
+
+    has_saasbom_indicators = any(
+        isinstance(s, dict) and "data" in s and "x-trust-boundary" in s for s in services
+    )
+    if not has_saasbom_indicators:
+        return jsonify({
+            "error": "Service entries must contain 'data' and 'x-trust-boundary' — likely not a SaaSBOM."
+        }), 400
+
+    try:
+        result = collection.insert_one(saasbom_json)
+        logging.info(f"Document inserted with ID: {result.inserted_id}")
+    except Exception as e:
+        return jsonify({"error": f"Error inserting into database: {e}"}), 500
+
+    return jsonify({
+        "message": "SaaSBOM saved successfully.",
+        "serialNumber": saasbom_json["serialNumber"]
+    }), 200
+
+@app.route("/upload_toe_descriptor", methods=["POST"])
+def upload_toe_descriptor():
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "No JSON payload provided"}), 400
+
+    oscal_component = data.get("component")
+    if not oscal_component:
+        return jsonify({"error": "Missing 'component' in payload"}), 400
+
+    component_definition = oscal_component.get("component-definition")
+    if not component_definition:
+        return jsonify({"error": "Missing 'component-definition' in 'component'"}), 400
+
+    components = component_definition.get("components", [])
+    if not components:
+        return jsonify({"error": "No components found in 'component-definition'"}), 400
+
+    component = components[0]
+
+    toe_id = component.get("uuid")
+    name = component.get("title")
+
+    if not toe_id or not name:
+        return jsonify({"error": "Missing 'toeId' (uuid) or 'name' (title) in 'components'"}), 400
+
+    bills_of_material = data.get("bills-of-material", {})
+    if not bills_of_material:
+        print("Optional 'bills-of-material' section missing, proceeding without it.")
+
+    sbom = bills_of_material.get("sbom")
+    vex = bills_of_material.get("vex")
+    cbom = bills_of_material.get("cbom")
+    saasbo = bills_of_material.get("saasbo")
+
+    if not sbom or not vex or not cbom or not saasbo:
+        print("Some optional sub-sections in 'bills-of-material' are missing.")
+
+    mud = data.get("mud", {})
+    if not mud:
+        print("Optional 'mud' section missing, proceeding without it.")
+
+    threat_mud = data.get("threat-mud", {})
+    if not threat_mud:
+        print("Optional 'threat-mud' section missing, proceeding without it.")
+
+    try:
+        response = requests.post(FORWARD_URL, json=data)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return jsonify({"error": "Failed to forward data", "details": str(e)}), 502
+
+    return jsonify({
+        "status": "Descriptor received and forwarded successfully",
+        "forward_status": response.status_code
+    }), 200
+
+@app.route("/upload_certification_scheme", methods=["POST"])
+def upload_certification_scheme():
+    data = request.get_json()
+
+    if "certificationScheme" not in data:
+        return jsonify({"error": "'certificationScheme' object is missing in the request"}), 400
+
+    scheme = data["certificationScheme"]
+    required_fields = ["id", "complianceMetrics", "controls", "boundaryConditions", "productProfile"]
+
+    if not all(field in scheme for field in required_fields):
+        return jsonify({"error": "Missing required fields in Certification Scheme"}), 400
+
+    scheme["type"] = "certification_scheme"
+    scheme["hash"] = generate_json_hash(scheme)
+
+    scheme_id = scheme["id"]
+
+    existing = collection.find_one({"$or": [
+        {"uuid": scheme_id},
+        {"certificationScheme.id": scheme_id}
+    ]})
+
+    if existing:
+        updated_doc = {
+            "uuid": scheme_id,
+            "certificationScheme": scheme,
+            "certificationScheme_hash": scheme["hash"]
+        }
+
+        if "profile" in data:
+            updated_doc["profile"] = data["profile"]
+            updated_doc["profile_hash"] = generate_json_hash(data["profile"])
+
+        if "catalog" in data:
+            updated_doc["catalog"] = data["catalog"]
+            updated_doc["catalog_hash"] = generate_json_hash(data["catalog"])
+
+        collection.update_one(
+            {"uuid": scheme_id},
+            {"$set": updated_doc}
+        )
+        return jsonify({
+            "message": "Certification Scheme and related documents updated successfully.",
+            "uuid": scheme_id
+        }), 200
+
+    else:
+        new_doc = {
+            "uuid": scheme_id,
+            "certificationScheme": scheme,
+            "certificationScheme_hash": scheme["hash"]
+        }
+
+        if "profile" in data:
+            new_doc["profile"] = data["profile"]
+            new_doc["profile_hash"] = generate_json_hash(data["profile"])
+
+        if "catalog" in data:
+            new_doc["catalog"] = data["catalog"]
+            new_doc["catalog_hash"] = generate_json_hash(data["catalog"])
+
+        result = collection.insert_one(new_doc)
+        
+        return jsonify({
+            "message": "Certification Scheme saved successfully with related documents.",
+            "uuid": result.inserted_id
+        }), 200
+
+def generate_json_hash(data):
+    normalized = json.dumps(data, sort_keys=True)
+    return hashlib.sha256(normalized.encode('utf-8')).hexdigest()
+
+@app.route('/store-ledger', methods=['POST'])
+def store_ledger_entry():
+    oscal_json = request.get_json(force=True)
+    component_def = oscal_json.get("component-definition")
+    if not component_def:
+        return jsonify({"error": "Missing 'component-definition' section."}), 400
+
+    wrapper_uuid = str(uuid4())
+    content_hash = generate_json_hash(oscal_json)
+
+    wrapped_doc = {
+        "type": "ccm_ledger",
+        "headers": {
+            "uuid": wrapper_uuid,
+            "hash": content_hash,
+            "timestamp": datetime.utcnow().isoformat()
+        },
+        "oscal_component": {
+            "ref": wrapper_uuid,
+            "component-definition": component_def
+        }
+    }
+
+    collection.insert_one(wrapped_doc)
+    return jsonify({"message": "Stored", "uuid": wrapper_uuid, "hash": content_hash}), 201
+
+@app.route('/update-ledger/<uuid>', methods=['PUT'])
+def update_ledger_entry(uuid):
+    oscal_json = request.get_json(force=True)
+    new_hash = generate_json_hash(oscal_json)
+
+    result = collection.update_one(
+        {"headers.uuid": uuid, "type": "ccm_ledger"},
+        {"$set": {
+            "oscal_component.component-definition": oscal_json.get("component-definition"),
+            "headers.hash": new_hash,
+            "headers.timestamp": datetime.utcnow().isoformat()
+        }}
+    )
+
+    if result.matched_count == 0:
+        return jsonify({"error": "Entry not found"}), 404
+
+    return jsonify({"message": "Ledger updated", "uuid": uuid, "hash": new_hash}), 200
+
+@app.route("/send_std", methods=["POST"])
+def upload_cyclonedx_sbom():
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "No JSON payload provided"}), 400
+    if data.get("bomFormat") != "CycloneDX":
+        return jsonify({"error": "Invalid or missing 'bomFormat'. Expected 'CycloneDX'."}), 400
+
+    if not data.get("components"):
+        return jsonify({"error": "Missing 'components' in CycloneDX SBOM"}), 400
+
+    try:
+        response = requests.post(FORWARD_URL, json=data)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return jsonify({"error": "Failed to forward CycloneDX SBOM", "details": str(e)}), 502
+
+    return jsonify({
+        "status": "CycloneDX SBOM received and forwarded successfully",
+        "forward_status": response.status_code
+    }), 200
+
+ENDPOINTS = [
+    "http://10.160.101.109:3000/chain/json"
+]
+
+
+@app.route('/send_records', methods=['POST'])
+def receive_and_forward():
+    try:
+        incoming_data = request.get_json()
+        if not incoming_data:
+            return jsonify({'error': 'Invalid or missing JSON'}), 400
+
+        wrapped_doc = {
+            "channel": "artifact",
+            "smartContract": "artifactsc",
+            "key": "test",
+            "data": incoming_data
+        }
+
+        collection.insert_one(wrapped_doc.copy())
+
+        headers = {'Content-Type': 'application/json'}
+        for url in ENDPOINTS:
+            try:
+                requests.post(url, json=wrapped_doc, headers=headers, timeout=5)
+            except requests.RequestException as e:
+                print(f"Failed to forward to {url}: {e}")
+
+        return jsonify({'status': 'Success'}), 200
 
     except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
