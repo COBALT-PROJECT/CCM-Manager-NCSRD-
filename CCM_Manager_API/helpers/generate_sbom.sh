@@ -41,8 +41,8 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
-# Change file permissions to make it readable for everyone
-chmod 644 "$OUTPUT_FILE"  # Add this line to set read permissions for all
+# Change file permissions
+chmod 644 "$OUTPUT_FILE" 
 
 if [[ ! -f "$OUTPUT_FILE" ]]; then
     echo "SBOM file was not created: $OUTPUT_FILE"
