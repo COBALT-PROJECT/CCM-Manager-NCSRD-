@@ -1,4 +1,4 @@
-# CCM Ledger and SBOM Management API
+# CCM API
 
 This Flask-based API provides endpoints to manage Component Compliance and Certification Materials (CCM), Software Bill of Materials (SBOM), and related artifacts. It supports storing, updating, forwarding ledger entries, and integrating with external services for SDT and chain triggers.
 
@@ -39,8 +39,9 @@ This Flask-based API provides endpoints to manage Component Compliance and Certi
 1. Clone this repository:
 
    ```bash
-   git clone https://github.com/yourusername/ccm-ledger-api.git
-   cd ccm-ledger-api
+   git clone https://github.com/COBALT-PROJECT/CCM-Manager-NCSRD-.git
+   cd CCM-Manager-NCSRD-
+
 
 2. (Optional) Create and activate a virtual environment:
 	 ```bash
