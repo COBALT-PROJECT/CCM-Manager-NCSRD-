@@ -340,7 +340,7 @@ This Flask-based API provides endpoints to manage Component Compliance and Certi
 
 ---
 
-### 12. `POST /send_std`
+### 12. `POST /send_sdt`
 
 **Description:** Upload and forward a CycloneDX SBOM.
 
