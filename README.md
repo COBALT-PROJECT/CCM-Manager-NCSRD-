@@ -20,7 +20,7 @@ This Flask-based API provides endpoints to manage Component Compliance and Certi
 - Upload, store, and update CCM ledger entries with content hashing and timestamps  
 - Generate and upload SBOM, CBOM, SaaSBOM, and related certification scheme data  
 - Forward ledger records to multiple endpoints asynchronously  
-- Trigger chain processes and SDT (Software Delivery Token) sending  
+- Trigger chain processes and SDT (Security Digital Twin) sending  
 - Interact with external services for OSCAL profiles and delete triggers  
 - Basic error handling and validation with JSON responses  
 
