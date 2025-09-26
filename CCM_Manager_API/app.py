@@ -1124,5 +1124,32 @@ def stop_sdt():
     print("SDT manager has stopped")
     return "SDT manager stopped", 200
 
+@app.route('/evidence', methods=['POST'])
+def upload_evidence():
+    try:
+        evidence = request.get_json(force=True)
+        required_fields = ['timestamp', 'toolId', 'raw', 'resource', 'id']
+        if not all(field in evidence for field in required_fields):
+            return jsonify(error="Missing required fields in evidence"), 400
+
+        db.collection.insert_one({'type': 'evidence', 'data': evidence})
+        return jsonify(message="Evidence stored", id=evidence['id']), 201
+    except Exception as e:
+        return jsonify(error=str(e)), 500
+
+@app.route('/assessment-result', methods=['POST'])
+def upload_assessment_result():
+    try:
+        assessment_result = request.get_json(force=True)
+        required_fields = ['targetId', 'status', 'timestamp']
+        if not all(field in assessment_result for field in required_fields):
+            return jsonify(error="Missing required fields in assessment result"), 400
+
+        db.collection.insert_one({'type': 'assessment_result', 'data': assessment_result})
+        return jsonify(message="Assessment result stored", targetId=assessment_result['targetId']), 201
+    except Exception as e:
+        return jsonify(error=str(e)), 500
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
