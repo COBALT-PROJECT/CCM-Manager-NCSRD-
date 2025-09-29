@@ -10,9 +10,20 @@
   "schemes": ["http"],
   "tags": [
     {
-      "name": "Internal Endpoint",
-      "description": "Endpoints for internal system use"
-    }
+      "name": "Internal Endpoint"
+    },
+    {
+      "name": "Certification Scheme"
+    },
+    {
+      "name": "Toe Registration"
+    },
+    {
+      "name": "Oscal Catalog"
+    },
+    {
+      "name": "Oscal Catalog"
+    },
   ],
   "paths": {
     "/generate_sbom": {
@@ -305,7 +316,7 @@
   },
   "/upload_oscal": {
     "post": {
-      "tags": ["Internal Endpoint"],
+      "tags": ["Toe Registration"],
       "summary": "Upload OSCAL Document",
       "description": "Uploads an OSCAL document (component-definition, catalog, or profile). Accepts either raw JSON or a file upload.",
       "consumes": [
@@ -376,7 +387,7 @@
   },
   "/oscal_ids/{doc_uuid}": {
     "get": {
-      "tags": ["Internal Endpoint"],
+      "tags": ["Oscal Catalog"],
       "summary": "Get OSCAL Control IDs by Document UUID",
       "description": "Retrieves a list of unique control IDs from an OSCAL profile document by its UUID.",
       "produces": [
@@ -425,7 +436,7 @@
   },
   "/upload_saasbom": {
     "post": {
-      "tags": ["Internal Endpoint"],
+      "tags": ["Toe Registration"],
       "summary": "Upload a SaaSBOM document",
       "description": "Validates and uploads a CycloneDX-formatted SaaSBOM JSON document into the database.",
       "consumes": [
@@ -532,7 +543,7 @@
   },
   "/upload_toe_descriptor": {
     "post": {
-      "tags": ["Internal Endpoint"],
+      "tags": ["Toe Registration"],
       "summary": "Upload TOE descriptor",
       "description": "Receives a TOE descriptor, validates core fields, and forwards the payload to a remote URL.",
       "consumes": [
@@ -649,7 +660,7 @@
   },
   "/upload_certification_scheme": {
     "post": {
-      "tags": ["Internal Endpoint"],
+      "tags": ["Certification Scheme"],
       "summary": "Upload Certification Scheme",
       "description": "Uploads a certification scheme document along with optional profile and catalog data. Updates existing entry if UUID matches.",
       "consumes": [
