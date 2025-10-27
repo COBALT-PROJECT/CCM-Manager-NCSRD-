@@ -1,0 +1,117 @@
+{
+    "bomFormat": "CycloneDX",
+    "specVersion": "1.6",
+    "serialNumber": "urn:uuid:b2cecb73-214b-4ca0-bd94-d41c869cae03",
+    "version": 1,
+    "metadata": {
+        "timestamp": "2025-02-19T15:11:07Z",
+        "component": {
+            "type": "application",
+            "name": "my application",
+            "version": "1.0"
+        }
+    },
+    "components": [
+        {
+            "name": "AESGCM(256)",
+            "type": "cryptographic-asset",
+            "cryptoProperties": {
+                "assetType": "algorithm",
+                "algorithmProperties": {
+                    "primitive": "Block-cipher",
+                    "executionEnvironment": "software-plain-ram",
+                    "implementationPlatform": "x86_64",
+                    "certificationLevel": "fips140-2-l1",
+                    "cryptoFunctions": [
+                        "keygen",
+                        "encrypt",
+                        "decrypt"
+                    ],
+                    "classicalSecurityLevel": "128",
+                    "nistQuantumSecurityLevel": "2"
+                },
+                "oid": "unknown"
+            }
+        },
+        {
+            "name": "CHACHA20/POLY1305(256)",
+            "type": "cryptographic-asset",
+            "cryptoProperties": {
+                "assetType": "algorithm",
+                "algorithmProperties": {
+                    "primitive": "Unknown",
+                    "executionEnvironment": "software-plain-ram",
+                    "implementationPlatform": "x86_64",
+                    "certificationLevel": "Unknown",
+                    "cryptoFunctions": "Unknown",
+                    "classicalSecurityLevel": "0",
+                    "nistQuantumSecurityLevel": "0"
+                },
+                "oid": "unknown"
+            }
+        },
+        {
+            "name": "AESGCM(128)",
+            "type": "cryptographic-asset",
+            "cryptoProperties": {
+                "assetType": "algorithm",
+                "algorithmProperties": {
+                    "primitive": "Block-cipher",
+                    "executionEnvironment": "software-plain-ram",
+                    "implementationPlatform": "x86_64",
+                    "certificationLevel": "fips140-2-l1",
+                    "cryptoFunctions": [
+                        "keygen",
+                        "encrypt",
+                        "decrypt"
+                    ],
+                    "classicalSecurityLevel": "128",
+                    "nistQuantumSecurityLevel": "2"
+                },
+                "oid": "unknown"
+            }
+        },
+        {
+            "name": "AES(256)",
+            "type": "cryptographic-asset",
+            "cryptoProperties": {
+                "assetType": "algorithm",
+                "algorithmProperties": {
+                    "primitive": "Block-cipher",
+                    "executionEnvironment": "software-plain-ram",
+                    "implementationPlatform": "x86_64",
+                    "certificationLevel": "fips140-2-l1",
+                    "cryptoFunctions": [
+                        "keygen",
+                        "encrypt",
+                        "decrypt"
+                    ],
+                    "classicalSecurityLevel": "128",
+                    "nistQuantumSecurityLevel": "2"
+                },
+                "oid": "unknown"
+            }
+        },
+        {
+            "name": "AES(128)",
+            "type": "cryptographic-asset",
+            "cryptoProperties": {
+                "assetType": "algorithm",
+                "algorithmProperties": {
+                    "primitive": "Block-cipher",
+                    "executionEnvironment": "software-plain-ram",
+                    "implementationPlatform": "x86_64",
+                    "certificationLevel": "fips140-2-l1",
+                    "cryptoFunctions": [
+                        "keygen",
+                        "encrypt",
+                        "decrypt"
+                    ],
+                    "classicalSecurityLevel": "128",
+                    "nistQuantumSecurityLevel": "2"
+                },
+                "oid": "unknown"
+            }
+        }
+    ]
+}

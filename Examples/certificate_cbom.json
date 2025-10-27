@@ -1,0 +1,34 @@
+{
+    "bomFormat": "CycloneDX",
+    "specVersion": "1.6",
+    "serialNumber": "urn:uuid:23a3c6b3-038e-443e-b080-ddfd0a22f211",
+    "version": 1,
+    "metadata": {
+        "timestamp": "2025-02-19T15:11:07Z",
+        "component": {
+            "type": "application",
+            "name": "my application",
+            "version": "1.0"
+        }
+    },
+    "components": [
+        {
+            "name": "Sectigo Public Server Authentication Root E46",
+            "type": "cryptographic-asset",
+            "bom-ref": "crypto/certificate/Sectigo Public Server Authentication Root E46@384 bit",
+            "cryptoProperties": {
+                "assetType": "certificate",
+                "certificateProperties": {
+                    "subjectName": "Sectigo Public Server Authentication Root E46",
+                    "issuerName": "C = GB, O = Sectigo Limited, CN = Sectigo Public Server Authentication Root E46",
+                    "notValidBefore": "2021-03-22T00:00:00Z",
+                    "notValidAfter": "2046-03-21T23:59:59Z",
+                    "signatureAlgorithmRef": "crypto/algorithm/ecdsa-with-SHA384@unknown",
+                    "subjectPublicKeyRef": "crypto/key/384 bit@id-ecPublicKey",
+                    "certificateFormat": "X.509",
+                    "certificateExtension": "crt"
+                }
+            }
+        }
+    ]
+}

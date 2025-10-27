@@ -1,0 +1,48 @@
+[
+{
+   "bomFormat":"CycloneDX",
+   "specVersion":"1.5",
+   "serialNumber":"urn:uuid:f69799c0-b7a8-4a53-8b5f-3a6a9db006c4",
+   "version":1,
+   "metadata":{
+      "timestamp":"2025-02-26T14:26:26Z",
+      "tools":[
+         {
+            "vendor":"OWASP",
+            "name":"Dependency-Track",
+            "version":"4.12.1"
+         }
+      ],
+      "component":{
+         "type":"application",
+         "bom-ref":"8b28a58c-3633-4b7b-87fb-29dd296cdc77",
+         "name":"testsss",
+         "version":"1.0"
+      }
+   }},
+   {
+      "externalReferences":[
+         {
+            "type":"bom",
+            "url":"file:protocol_cbom.json",
+            "comment":"Cryptographic protocol BOM describing the supported TLS protocols and suite details"
+         },
+         {
+            "type":"bom",
+            "url":"file:algorithm_cbom.json",
+            "comment":"Algorithm CBOM detailing supported cryptographic algorithms and profiles"
+         },
+         {
+            "type":"bom",
+            "url":"file:certificate_cbom.json",
+            "comment":"CBOM for cryptographic certificates and trust anchors"
+         },
+         {
+            "type":"bom",
+            "url":"file:VEX.json",
+            "comment":"VEX BOM containing vulnerability and exploitability exchange data"
+         }
+      ]
+   }
+
+]

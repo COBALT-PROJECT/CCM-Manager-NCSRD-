@@ -1,0 +1,161 @@
+{
+    "bomFormat": "CycloneDX",
+    "specVersion": "1.6",
+    "serialNumber": "urn:uuid:ac8a1366-dc7f-4830-b4cf-ecd29e4b1228",
+    "version": 1,
+    "metadata": {
+        "timestamp": "2025-02-19T15:11:07Z",
+        "component": {
+            "type": "application",
+            "name": "my application",
+            "version": "1.0"
+        }
+    },
+    "components": [
+        {
+            "name": "TLS_AES_256_GCM_SHA384",
+            "type": "cryptographic-asset",
+            "bom-ref": "crypto/protocol/tls@TLSv1.3",
+            "cryptoProperties": {
+                "assetType": "protocol",
+                "protocolProperties": {
+                    "type": "tls",
+                    "version": "TLSv1.3",
+                    "cipherSuites": [
+                        {
+                            "name": "TLS_AES_256_GCM_SHA384",
+                            "algorithms": [
+                                "crypto/algorithm/aes-cbc@oid_placeholder",
+                                "crypto/algorithm/aes-128-gcm@oid_placeholder"
+                            ],
+                            "identifiers": [
+                                "0xC0",
+                                "0x30"
+                            ]
+                        }
+                    ],
+                    "cryptoRefArray": [
+                        "crypto/certificate/TLSv1.3@oid_placeholder"
+                    ]
+                },
+                "oid": "oid_placeholder"
+            }
+        },
+        {
+            "name": "TLS_CHACHA20_POLY1305_SHA256",
+            "type": "cryptographic-asset",
+            "bom-ref": "crypto/protocol/tls@TLSv1.3",
+            "cryptoProperties": {
+                "assetType": "protocol",
+                "protocolProperties": {
+                    "type": "tls",
+                    "version": "TLSv1.3",
+                    "cipherSuites": [
+                        {
+                            "name": "TLS_CHACHA20_POLY1305_SHA256",
+                            "algorithms": [
+                                "crypto/algorithm/chacha-cbc@oid_placeholder",
+                                "crypto/algorithm/aes-128-gcm@oid_placeholder"
+                            ],
+                            "identifiers": [
+                                "0xC0",
+                                "0x30"
+                            ]
+                        }
+                    ],
+                    "cryptoRefArray": [
+                        "crypto/certificate/TLSv1.3@oid_placeholder"
+                    ]
+                },
+                "oid": "oid_placeholder"
+            }
+        },
+        {
+            "name": "TLS_AES_128_GCM_SHA256",
+            "type": "cryptographic-asset",
+            "bom-ref": "crypto/protocol/tls@TLSv1.3",
+            "cryptoProperties": {
+                "assetType": "protocol",
+                "protocolProperties": {
+                    "type": "tls",
+                    "version": "TLSv1.3",
+                    "cipherSuites": [
+                        {
+                            "name": "TLS_AES_128_GCM_SHA256",
+                            "algorithms": [
+                                "crypto/algorithm/aes-cbc@oid_placeholder",
+                                "crypto/algorithm/aes-128-gcm@oid_placeholder"
+                            ],
+                            "identifiers": [
+                                "0xC0",
+                                "0x30"
+                            ]
+                        }
+                    ],
+                    "cryptoRefArray": [
+                        "crypto/certificate/TLSv1.3@oid_placeholder"
+                    ]
+                },
+                "oid": "oid_placeholder"
+            }
+        },
+        {
+            "name": "ECDHE-ECDSA-AES256-SHA384",
+            "type": "cryptographic-asset",
+            "bom-ref": "crypto/protocol/tls@TLSv1.2",
+            "cryptoProperties": {
+                "assetType": "protocol",
+                "protocolProperties": {
+                    "type": "tls",
+                    "version": "TLSv1.2",
+                    "cipherSuites": [
+                        {
+                            "name": "ECDHE-ECDSA-AES256-SHA384",
+                            "algorithms": [
+                                "crypto/algorithm/aes-cbc@oid_placeholder",
+                                "crypto/algorithm/aes-128-gcm@oid_placeholder"
+                            ],
+                            "identifiers": [
+                                "0xC0",
+                                "0x30"
+                            ]
+                        }
+                    ],
+                    "cryptoRefArray": [
+                        "crypto/certificate/TLSv1.2@oid_placeholder"
+                    ]
+                },
+                "oid": "oid_placeholder"
+            }
+        },
+        {
+            "name": "ECDHE-ECDSA-AES128-SHA256",
+            "type": "cryptographic-asset",
+            "bom-ref": "crypto/protocol/tls@TLSv1.2",
+            "cryptoProperties": {
+                "assetType": "protocol",
+                "protocolProperties": {
+                    "type": "tls",
+                    "version": "TLSv1.2",
+                    "cipherSuites": [
+                        {
+                            "name": "ECDHE-ECDSA-AES128-SHA256",
+                            "algorithms": [
+                                "crypto/algorithm/aes-cbc@oid_placeholder",
+                                "crypto/algorithm/aes-128-gcm@oid_placeholder"
+                            ],
+                            "identifiers": [
+                                "0xC0",
+                                "0x30"
+                            ]
+                        }
+                    ],
+                    "cryptoRefArray": [
+                        "crypto/certificate/TLSv1.2@oid_placeholder"
+                    ]
+                },
+                "oid": "oid_placeholder"
+            }
+        }
+    ]
+}
