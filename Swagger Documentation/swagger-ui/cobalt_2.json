@@ -20,10 +20,7 @@
     },
     {
       "name": "Oscal Catalog"
-    },
-    {
-      "name": "Oscal Catalog"
-    },
+    }
   ],
   "paths": {
     "/generate_sbom": {
@@ -893,7 +890,7 @@
       }
     }
   },
-  "/send_std": {
+  "/send_sdt": {
     "post": {
       "tags": ["Internal Endpoint"],
       "summary": "Upload CycloneDX SBOM",
@@ -1002,6 +999,361 @@
         }
       }
     }
+  },
+  "/": {
+    "get": {
+      "tags": ["Internal Endpoint"],
+      "summary": "Health Check",
+      "description": "Health check endpoint to verify the API is running and MongoDB is connected.",
+      "produces": ["application/json"],
+      "responses": {
+        "200": {
+          "description": "API is running successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Flask API with MongoDB is running"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/data": {
+      "post": {
+        "tags": ["Internal Endpoint"],
+        "summary": "Insert Data",
+        "description": "Insert arbitrary JSON data into MongoDB collection.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "JSON data to insert",
+            "schema": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Data inserted successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "success"
+                },
+                "id": {
+                  "type": "string",
+                  "example": "507f1f77bcf86cd799439011"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/evidence": {
+      "post": {
+        "tags": ["Internal Endpoint"],
+        "summary": "Upload Evidence",
+        "description": "Store audit evidence for compliance tracking.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "Evidence data",
+            "schema": {
+              "type": "object",
+              "required": ["timestamp", "toolId", "raw", "resource", "id"],
+              "properties": {
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time",
+                  "example": "2026-02-03T10:00:00Z"
+                },
+                "toolId": {
+                  "type": "string",
+                  "example": "scanner-001"
+                },
+                "raw": {
+                  "type": "object",
+                  "description": "Raw evidence data"
+                },
+                "resource": {
+                  "type": "string",
+                  "example": "web-server-01"
+                },
+                "id": {
+                  "type": "string",
+                  "example": "evidence-uuid-001"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Evidence stored successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Evidence stored"
+                },
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required fields"
+          }
+        }
+      }
+    },
+    "/assessment-result": {
+      "post": {
+        "tags": ["Internal Endpoint"],
+        "summary": "Upload Assessment Result",
+        "description": "Store compliance assessment result.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "Assessment result data",
+            "schema": {
+              "type": "object",
+              "required": ["targetId", "status", "timestamp"],
+              "properties": {
+                "targetId": {
+                  "type": "string",
+                  "example": "target-uuid-001"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["compliant", "non-compliant", "partial"],
+                  "example": "compliant"
+                },
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time",
+                  "example": "2026-02-03T10:00:00Z"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Assessment result stored successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Assessment result stored"
+                },
+                "targetId": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required fields"
+          }
+        }
+      }
+    },
+    "/send_records": {
+      "post": {
+        "tags": ["Internal Endpoint"],
+        "summary": "Send Records",
+        "description": "Store and forward records to blockchain ledger endpoints.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "Record data to forward",
+            "schema": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Records forwarded successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "Success"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or missing JSON"
+          }
+        }
+      }
+    },
+    "/stop-sdt": {
+      "get": {
+        "tags": ["Internal Endpoint"],
+        "summary": "Stop SDT Manager",
+        "description": "Stop the SDT manager process. Note: This endpoint has a 10 second internal delay.",
+        "produces": ["text/plain"],
+        "responses": {
+          "200": {
+            "description": "SDT manager stopped",
+            "schema": {
+              "type": "string",
+              "example": "SDT manager stopped"
+            }
+          }
+        }
+      }
+    },
+    "/trigger-chain": {
+      "post": {
+        "tags": ["Internal Endpoint"],
+        "summary": "Trigger Chain",
+        "description": "Full workflow chain: parse BOM file, POST to ledger, GET hash, and call send_sdt. Supports JSON and XML BOM files.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "Chain trigger parameters",
+            "schema": {
+              "type": "object",
+              "required": ["bom_path", "unique_key"],
+              "properties": {
+                "bom_path": {
+                  "type": "string",
+                  "description": "Full path to the BOM file (JSON or XML)",
+                  "example": "/app/sboms/bom.json"
+                },
+                "unique_key": {
+                  "type": "string",
+                  "description": "Unique key for the blockchain record",
+                  "example": "bom-key-001"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chain completed successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "success"
+                },
+                "hash": {
+                  "type": "string",
+                  "example": "abc123..."
+                },
+                "send_sdt_response": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required parameters or unsupported file format"
+          },
+          "404": {
+            "description": "BOM file not found"
+          },
+          "500": {
+            "description": "Failed to communicate with blockchain or SDT services"
+          }
+        }
+      }
+    },
+    "/trigger_delete": {
+      "post": {
+        "tags": ["Internal Endpoint"],
+        "summary": "Trigger Delete",
+        "description": "Trigger deletion of a resource in the external SDT system.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "Delete request parameters",
+            "schema": {
+              "type": "object",
+              "required": ["identifier"],
+              "properties": {
+                "identifier": {
+                  "type": "string",
+                  "description": "Unique identifier of the resource to delete",
+                  "example": "f5912dbc"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete triggered successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Triggered delete request"
+                },
+                "delete_response_status": {
+                  "type": "integer",
+                  "example": 200
+                },
+                "delete_response_body": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing 'identifier' in request body"
+          },
+          "500": {
+            "description": "DELETE_SDT not configured or external service error"
+          }
+        }
+      }
+    }
   }
- }
 }

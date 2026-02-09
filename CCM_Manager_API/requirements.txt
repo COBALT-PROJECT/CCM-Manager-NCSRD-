@@ -12,6 +12,7 @@ defusedxml==0.7.1
 dependency-track==0.0.5
 dnspython==2.7.0
 Flask==3.0.3
+Flask-Cors==4.0.0
 fqdn==1.5.1
 idna==3.10
 isoduration==20.11.0
@@ -23,9 +24,12 @@ jsonschema-specifications==2024.10.1
 license-expression==30.3.1
 lxml==5.3.0
 MarkupSafe==3.0.1
+matplotlib==3.8.2
+networkx==3.2.1
 packageurl-python==0.15.6
 packaging==24.1
 pip-requirements-parser==32.0.1
+pydot==2.0.0
 py-serializable==1.1.2
 pymongo==4.10.1
 pyparsing==3.1.4

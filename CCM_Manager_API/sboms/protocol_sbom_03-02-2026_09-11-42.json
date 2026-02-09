@@ -1,0 +1,74 @@
+{
+    "bomFormat": "CycloneDX",
+    "specVersion": "1.6",
+    "serialNumber": "urn:uuid:fb565ca3-9fd9-446e-9ce9-cc64f2f6f6da",
+    "version": 1,
+    "metadata": {
+        "timestamp": "2026-02-03T09:11:42Z",
+        "component": {
+            "type": "application",
+            "name": "my application",
+            "version": "1.0"
+        }
+    },
+    "components": [
+        {
+            "name": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+            "type": "cryptographic-asset",
+            "bom-ref": "crypto/protocol/tls@1.2",
+            "cryptoProperties": {
+                "assetType": "protocol",
+                "protocolProperties": {
+                    "type": "tls",
+                    "version": "1.2",
+                    "cipherSuites": [
+                        {
+                            "name": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+                            "algorithms": [
+                                "crypto/algorithm/aes-cbc@oid_placeholder",
+                                "crypto/algorithm/aes-128-gcm@oid_placeholder"
+                            ],
+                            "identifiers": [
+                                "0xC0",
+                                "0x30"
+                            ]
+                        }
+                    ],
+                    "cryptoRefArray": [
+                        "crypto/certificate/1.2@oid_placeholder"
+                    ]
+                },
+                "oid": "oid_placeholder"
+            }
+        },
+        {
+            "name": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+            "type": "cryptographic-asset",
+            "bom-ref": "crypto/protocol/tls@1.2",
+            "cryptoProperties": {
+                "assetType": "protocol",
+                "protocolProperties": {
+                    "type": "tls",
+                    "version": "1.2",
+                    "cipherSuites": [
+                        {
+                            "name": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+                            "algorithms": [
+                                "crypto/algorithm/aes-cbc@oid_placeholder",
+                                "crypto/algorithm/aes-128-gcm@oid_placeholder"
+                            ],
+                            "identifiers": [
+                                "0xC0",
+                                "0x30"
+                            ]
+                        }
+                    ],
+                    "cryptoRefArray": [
+                        "crypto/certificate/1.2@oid_placeholder"
+                    ]
+                },
+                "oid": "oid_placeholder"
+            }
+        }
+    ]
+}

@@ -29,7 +29,9 @@ app = Flask(__name__)
 CORS(app)
 # Configuration settings
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Limit to 16 MB
-client: MongoClient = MongoClient('mongodb://localhost:27017/')
+load_dotenv()  # Load environment variables early
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+client: MongoClient = MongoClient(MONGO_URI)
 db = client.mydatabase
 collection = db.mycollection
 counters = db.counters_ledger
@@ -452,8 +454,12 @@ def generate_cbom():
             "protocol_sbom": protocol_sbom
         }
         
-        # Insert the SBOM data into MongoDB
-        collection.insert_one(sbom_data)
+        # Upsert the SBOM data into MongoDB (update if exists, insert if not)
+        collection.update_one(
+            {"_id": hashed_ip},
+            {"$set": sbom_data},
+            upsert=True
+        )
 
         upload_folder = app.config['UPLOAD_FOLDER']
         algorithm_filename = f"algorithm_sbom_{datetime.now().strftime('%d-%m-%Y_%H-%M-%S')}.json"
@@ -799,7 +805,7 @@ def upload_certification_scheme():
         
         return jsonify({
             "message": "Certification Scheme saved successfully with related documents.",
-            "uuid": result.inserted_id
+            "uuid": str(result.inserted_id)
         }), 200
 
 def generate_json_hash(data):
@@ -950,9 +956,16 @@ def send_std():
 
 @app.route('/trigger_delete', methods=['POST'])
 def trigger_delete():
+    data = request.get_json()
+    if not data or "identifier" not in data:
+        return jsonify({"error": "Missing 'identifier' in request body"}), 400
+    
     url = os.getenv("DELETE_SDT")
+    if not url:
+        return jsonify({"error": "DELETE_SDT environment variable not configured"}), 500
+    
     headers = {"Content-Type": "application/json"}
-    payload = {"identifier": "f5912dbc"}
+    payload = {"identifier": data["identifier"]}
 
     try:
         response = requests.post(url, json=payload, headers=headers)

@@ -1,0 +1,15 @@
+DEPENDENCY_TRACK_URL=http://localhost:8081
+API_KEY=odt_fEpWLSb0wUu8CmIByDIVRboNeM8rdw7E
+IP_LIST=10.160.101.211,10.160.101.212,10.160.10.213,10.160.1.206
+#FORWARD_URL=http://10.160.101.143:8005/docs
+FORWARD_URL=http://10.160.101.119:8004/api/SDTM/create
+DEPLOY_SDT = http://10.160.101.119:8008/deploy
+DEPLOYMENTS_SDT = http://10.160.101.119:8008/deployments
+SBOM_JSON = mongodb://localhost:27017
+CREATE_SDT = http://10.160.101.119:8008/create
+DELETE_SDT = http://10.160.101.119:8008/delete
+ENDPOINTS = http://10.160.101.109:3000/chain/json
+LEDGER = http://10.160.101.94:3000/chain/json
+LEDGER_HASH = http://10.160.101.94:3000/chain/json/hash
+SEND_SDT = http://localhost:5001/send_sdt
+MONGO_URI=mongodb://mongo:27017/

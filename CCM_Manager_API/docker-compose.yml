@@ -1,5 +1,7 @@
-version: '3'
 services:
+  #####################################################
+  # CCM Manager Flask App
+  #####################################################
   flask-app:
     build: .
     ports:
@@ -10,18 +12,86 @@ services:
       - ./tmp:/app/tmp
     depends_on:
       - mongo
+      - apiserver
     environment:
       - MONGO_URI=mongodb://mongo:27017/
-      - API_SERVER_URL=http://dtrack-apiserver:8080  # Add this line to reference the API
+      - API_SERVER_URL=http://apiserver:8080
     env_file:
       - .env
+    restart: unless-stopped
 
+  #####################################################
+  # MongoDB for CCM Manager
+  #####################################################
   mongo:
     image: mongo:latest
     ports:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    restart: unless-stopped
+
+  #####################################################
+  # Dependency-Track API Server
+  #####################################################
+  apiserver:
+    image: dependencytrack/apiserver
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ALPINE_DATABASE_MODE: "external"
+      ALPINE_DATABASE_URL: "jdbc:postgresql://postgres:5432/dtrack"
+      ALPINE_DATABASE_DRIVER: "org.postgresql.Driver"
+      ALPINE_DATABASE_USERNAME: "dtrack"
+      ALPINE_DATABASE_PASSWORD: "dtrack"
+    deploy:
+      resources:
+        limits:
+          memory: 12288m
+        reservations:
+          memory: 8192m
+      restart_policy:
+        condition: on-failure
+    ports:
+      - '8081:8080'
+    volumes:
+      - 'dtrack-data:/data'
+    restart: unless-stopped
+
+  #####################################################
+  # Dependency-Track Frontend
+  #####################################################
+  frontend:
+    image: dependencytrack/frontend
+    depends_on:
+      apiserver:
+        condition: service_healthy
+    environment:
+      API_BASE_URL: "http://localhost:8081"
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  #####################################################
+  # PostgreSQL for Dependency-Track
+  #####################################################
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: "dtrack"
+      POSTGRES_USER: "dtrack"
+      POSTGRES_PASSWORD: "dtrack"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    volumes:
+      - "postgres-data:/var/lib/postgresql/data"
+    restart: unless-stopped
 
 volumes:
   mongo-data:
+  dtrack-data:
+  postgres-data:

@@ -16,4 +16,4 @@ RUN mkdir -p /app/sboms /app/tmp && \
     chmod -R 777 /app/sboms /app/tmp  
     # Set permissions to allow read/write for all
 
-#CMD ["python", "app.py"]
+CMD ["python", "app.py"]
