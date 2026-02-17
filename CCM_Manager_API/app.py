@@ -1,23 +1,23 @@
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
-#from werkzeug.utils import secure_filename
+from jsonschema import validate, ValidationError
 import os
+import json
 import logging
 import subprocess
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
-import json
 import uuid
 import time
-from algos_details import details
+from algos_details import details # Assuming these local files exist
 from generate_tree import handle_dynamic_path, Counter, build_tree
 import networkx as nx
 import re
 import hashlib
 from uuid import uuid4
 import requests
-from flask_cors import CORS
+from flask_cors import CORS 
 from pymongo import ReturnDocument
 import xml.etree.ElementTree as ET
 
@@ -27,26 +27,57 @@ class Config:
 
 app = Flask(__name__)
 CORS(app)
-# Configuration settings
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Limit to 16 MB
-load_dotenv()  # Load environment variables early
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
-client: MongoClient = MongoClient(MONGO_URI)
-db = client.mydatabase
-collection = db.mycollection
-counters = db.counters_ledger
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 load_dotenv()
 
-# UPLOAD_FOLDER = './sboms'
-# TMP_FOLDER = './tmp'
-os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(Config.TMP_FOLDER, exist_ok=True)
-app.config['UPLOAD_FOLDER'] = Config.UPLOAD_FOLDER
-ALLOWED_EXTENSIONS = {'txt'}
-FORWARD_URL = os.getenv("FORWARD_URL")
-# Set up detailed logging
-logging.basicConfig(level=logging.DEBUG)
+# --- CONFIGURATION ---
+# --- CONFIGURATION ---
+# Centralize all config here. 
+# NOTE: The default here is a fallback. Ideally, set these in your .env file.
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://mongo:27017/")
 
+# Use the hostname that works for your environment (e.g., the IP or the .local DNS)
+LEDGER_BASE_URL = os.getenv("LEDGER_BASE_URL", "http://10.163.1.211:3000")
+FORWARD_URL = os.getenv("FORWARD_URL", "http://orchestrator:3000/toe/register")
+
+# Define specific Ledger endpoints based on the Base URL
+LEDGER_SUBMIT_URL = f"{LEDGER_BASE_URL}/submit" # or whatever the specific endpoint is
+# --- DATABASE SETUP ---
+try:
+    client = MongoClient(MONGO_URI)
+    db = client.mydatabase
+    collection = db.mycollection
+    certificates_col = db.certificates
+    schemes_col = db.schemes
+    toes_col = db.toes
+    logging.info(f"Connected to MongoDB at {MONGO_URI}")
+except Exception as e:
+    logging.error(f"Failed to connect to MongoDB: {e}")
+
+# Load ASSESSMENT_SCHEMA
+with open(os.path.join(os.path.dirname(__file__), 'schemas', 'ASSESSMENT_SCHEMA.json')) as f:
+    ASSESSMENT_SCHEMA = json.load(f)
+
+# Helper: Generate Hash
+def generate_json_hash(data):
+    normalized = json.dumps(data, sort_keys=True)
+    return hashlib.sha256(normalized.encode('utf-8')).hexdigest()
+
+# Helper: Ledger Interaction
+def send_to_ledger(endpoint, data):
+    url = f"{LEDGER_BASE_URL}{endpoint}"
+    # Swagger typically requires content as a stringified JSON inside a wrapper
+    payload = {"content": json.dumps(data)}
+    try:
+        response = requests.post(url, json=payload, timeout=10)
+        response.raise_for_status()
+        return response.json().get("hash")
+    except requests.RequestException as e:
+        logging.error(f"Ledger Error ({url}): {e}")
+        # For development/testing, we might return a mock hash if ledger is down
+        # return f"mock-hash-{uuid4()}" 
+        raise e
+ALLOWED_EXTENSIONS = {'json', 'txt', 'xml'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -684,130 +715,108 @@ def upload_saasbom():
 @app.route("/upload_toe_descriptor", methods=["POST"])
 def upload_toe_descriptor():
     data = request.get_json()
+    
+    # Check for optional scheme linking parameter
+    # Can be passed in URL (?scheme_id=...) or body
+    scheme_id = request.args.get('scheme_id') or data.get('certification_scheme_id')
 
-    if not data:
-        return jsonify({"error": "No JSON payload provided"}), 400
-
-    oscal_component = data.get("component")
-    if not oscal_component:
+    if not data or "component" not in data:
         return jsonify({"error": "Missing 'component' in payload"}), 400
 
-    component_definition = oscal_component.get("component-definition")
-    if not component_definition:
-        return jsonify({"error": "Missing 'component-definition' in 'component'"}), 400
-
-    components = component_definition.get("components", [])
-    if not components:
-        return jsonify({"error": "No components found in 'component-definition'"}), 400
-
-    component = components[0]
-
-    toe_id = component.get("uuid")
-    name = component.get("title")
-
-    if not toe_id or not name:
-        return jsonify({"error": "Missing 'toeId' (uuid) or 'name' (title) in 'components'"}), 400
-
-    bills_of_material = data.get("bills-of-material", {})
-    if not bills_of_material:
-        print("Optional 'bills-of-material' section missing, proceeding without it.")
-
-    sbom = bills_of_material.get("sbom")
-    vex = bills_of_material.get("vex")
-    cbom = bills_of_material.get("cbom")
-    saasbo = bills_of_material.get("saasbo")
-
-    if not sbom or not vex or not cbom or not saasbo:
-        print("Some optional sub-sections in 'bills-of-material' are missing.")
-
-    mud = data.get("mud", {})
-    if not mud:
-        print("Optional 'mud' section missing, proceeding without it.")
-
-    threat_mud = data.get("threat-mud", {})
-    if not threat_mud:
-        print("Optional 'threat-mud' section missing, proceeding without it.")
-
     try:
-        response = requests.post(FORWARD_URL, json=data)
-        response.raise_for_status()
-    except requests.RequestException as e:
-        return jsonify({"error": "Failed to forward data", "details": str(e)}), 502
+        comp_def = data["component"].get("component-definition", {})
+        components = comp_def.get("components", [])
+        
+        if not components:
+            return jsonify({"error": "No components found"}), 400
 
-    return jsonify({
-        "status": "Descriptor received and forwarded successfully",
-        "forward_status": response.status_code
-    }), 200
+        toe_uuid = components[0].get("uuid")
+        toe_name = components[0].get("title")
+
+        if not toe_uuid:
+            return jsonify({"error": "Missing ToE UUID"}), 400
+
+        # 1. Validate Scheme Link if provided
+        linked_scheme = None
+        if scheme_id:
+            linked_scheme = schemes_col.find_one({"uuid": scheme_id})
+            if not linked_scheme:
+                return jsonify({"error": f"Scheme {scheme_id} not found. Cannot link ToE."}), 404
+
+        # 2. Store ToE with Link
+        toe_entry = {
+            "type": "target_of_evaluation",
+            "uuid": toe_uuid,
+            "name": toe_name,
+            "content": data,
+            "linked_scheme_id": scheme_id, # <--- CRITICAL LINK
+            "timestamp": datetime.utcnow().isoformat()
+        }
+
+        toes_col.update_one(
+            {"uuid": toe_uuid},
+            {"$set": toe_entry},
+            upsert=True
+        )
+
+        # 3. Forward to Orchestrator/SDT (as per original logic)
+        try:
+            if FORWARD_URL:
+                requests.post(FORWARD_URL, json=data, timeout=5)
+        except Exception as e:
+            logging.warning(f"Failed to forward ToE to Orchestrator: {e}")
+
+        return jsonify({
+            "message": "ToE registered and linked successfully",
+            "toe_uuid": toe_uuid,
+            "linked_scheme": scheme_id if scheme_id else "None (Warning: Scheme needed for certification)"
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/upload_certification_scheme", methods=["POST"])
 def upload_certification_scheme():
     data = request.get_json()
-
-    if "certificationScheme" not in data:
-        return jsonify({"error": "'certificationScheme' object is missing in the request"}), 400
+    if not data or "certificationScheme" not in data:
+        return jsonify({"error": "Missing 'certificationScheme' object"}), 400
 
     scheme = data["certificationScheme"]
-    required_fields = ["id", "complianceMetrics", "controls", "boundaryConditions", "productProfile"]
+    scheme_id = scheme.get("id")
+    
+    if not scheme_id:
+        return jsonify({"error": "Scheme ID is required"}), 400
 
-    if not all(field in scheme for field in required_fields):
-        return jsonify({"error": "Missing required fields in Certification Scheme"}), 400
-
-    scheme["type"] = "certification_scheme"
-    scheme["hash"] = generate_json_hash(scheme)
-
-    scheme_id = scheme["id"]
-
-    existing = collection.find_one({"$or": [
-        {"uuid": scheme_id},
-        {"certificationScheme.id": scheme_id}
-    ]})
-
-    if existing:
-        updated_doc = {
-            "uuid": scheme_id,
-            "certificationScheme": scheme,
-            "certificationScheme_hash": scheme["hash"]
-        }
-
-        if "profile" in data:
-            updated_doc["profile"] = data["profile"]
-            updated_doc["profile_hash"] = generate_json_hash(data["profile"])
-
-        if "catalog" in data:
-            updated_doc["catalog"] = data["catalog"]
-            updated_doc["catalog_hash"] = generate_json_hash(data["catalog"])
-
-        collection.update_one(
-            {"uuid": scheme_id},
-            {"$set": updated_doc}
-        )
-        return jsonify({
-            "message": "Certification Scheme and related documents updated successfully.",
-            "uuid": scheme_id
-        }), 200
-
-    else:
-        new_doc = {
-            "uuid": scheme_id,
-            "certificationScheme": scheme,
-            "certificationScheme_hash": scheme["hash"]
-        }
-
-        if "profile" in data:
-            new_doc["profile"] = data["profile"]
-            new_doc["profile_hash"] = generate_json_hash(data["profile"])
-
-        if "catalog" in data:
-            new_doc["catalog"] = data["catalog"]
-            new_doc["catalog_hash"] = generate_json_hash(data["catalog"])
-
-        result = collection.insert_one(new_doc)
+    try:
+        # 1. Send to Ledger
+        ledger_hash = send_to_ledger("/v1/certification-authority/certification-scheme", scheme)
         
+        # 2. Store in MongoDB with Hash
+        db_entry = {
+            "type": "certification_scheme",
+            "uuid": scheme_id,
+            "content": scheme,
+            "ledger_hash": ledger_hash,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+        
+        # Upsert
+        schemes_col.update_one(
+            {"uuid": scheme_id}, 
+            {"$set": db_entry}, 
+            upsert=True
+        )
+
         return jsonify({
-            "message": "Certification Scheme saved successfully with related documents.",
-            "uuid": str(result.inserted_id)
+            "message": "Certification Scheme uploaded and ledgerized successfully",
+            "uuid": scheme_id,
+            "ledger_hash": ledger_hash
         }), 200
 
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+    
 def generate_json_hash(data):
     normalized = json.dumps(data, sort_keys=True)
     return hashlib.sha256(normalized.encode('utf-8')).hexdigest()
@@ -1010,13 +1019,14 @@ def receive_and_forward():
         return jsonify({'error': str(e)}), 500
     
 
+## Counter for unique keys (MongoDB collection)
+counters = db.counters
 counter_doc = counters.find_one_and_update(
     {"_id": "unique_key_counter"},
     {"$inc": {"seq": 1}},
     return_document=ReturnDocument.AFTER,
     upsert=True
 )
-
 unique_key = str(counter_doc["seq"])
 
 @app.route('/trigger-chain', methods=['POST'])
@@ -1078,7 +1088,7 @@ def trigger_chain_post():
     if not unique_key:
         return jsonify({"error": "unique_key not provided"}), 400
 
-    post_url = os.getenv("LEDGER")
+    post_url = f"{LEDGER_BASE_URL}/api/ledger" # Or specific endpoint path
     post_headers = {
         'accept': '*/*',
         'Content-Type': 'application/json'
@@ -1150,19 +1160,240 @@ def upload_evidence():
     except Exception as e:
         return jsonify(error=str(e)), 500
 
+
 @app.route('/assessment-result', methods=['POST'])
-def upload_assessment_result():
+def post_assessment_result():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Bad Request"}), 400
+
     try:
-        assessment_result = request.get_json(force=True)
-        required_fields = ['targetId', 'status', 'timestamp']
-        if not all(field in assessment_result for field in required_fields):
-            return jsonify(error="Missing required fields in assessment result"), 400
+        # 1. Validate Schema
+        validate(instance=data, schema=ASSESSMENT_SCHEMA)
+        
+        # 2. Extract ToE ID
+        toe_id = data.get("target_of_evaluation_id")
+        if not toe_id:
+            return jsonify({"error": "target_of_evaluation_id missing in assessment"}), 400
 
-        db.collection.insert_one({'type': 'assessment_result', 'data': assessment_result})
-        return jsonify(message="Assessment result stored", targetId=assessment_result['targetId']), 201
+        # 3. CHECK LINK: Is ToE linked to a Scheme?
+        toe_record = toes_col.find_one({"uuid": toe_id})
+        if not toe_record:
+            return jsonify({"error": f"ToE {toe_id} is not registered in CCM Manager"}), 404
+        
+        scheme_id = toe_record.get("linked_scheme_id")
+        if not scheme_id:
+            return jsonify({
+                "error": "Configuration Error: This ToE is not linked to any Certification Scheme. Cannot issue certificate."
+            }), 409 # Conflict/Precondition failed
+
+        # Verify scheme exists
+        scheme_record = schemes_col.find_one({"uuid": scheme_id})
+        if not scheme_record:
+            return jsonify({"error": "Linked Certification Scheme not found in database"}), 404
+
+        # 4. Save Assessment to Ledger & DB (Standard monitoring)
+        assessment_hash = send_to_ledger("/v1/manufacturer/ass-results", data)
+        data['ledger_hash'] = assessment_hash
+        collection.insert_one({'type': 'assessment_result', 'data': data, 'timestamp': datetime.utcnow().isoformat()})
+
+        # 5. GENERATE CERTIFICATE (If Compliant)
+        # Note: Real logic might wait for ALL metrics. Here we assume 1 result triggers update/creation.
+        certificate_data = None
+        
+        if data.get("compliant") is True:
+            # Construct Certificate Object (Based on D2.2 Schema)
+            cert_uuid = str(uuid4())
+            now = datetime.utcnow()
+            valid_to = now + timedelta(days=365)
+            
+            certificate_data = {
+                "certification": {
+                    "certification_id": cert_uuid,
+                    "name": f"Certificate for {toe_record.get('name')}",
+                    "version": "1.0",
+                    "certification_scheme": scheme_id,
+                    "certifying_body": {
+                        "name": "COBALT Automated CA",
+                        "accreditation_id": "COBALT-ACC-001",
+                        "contact_info": {"email": "ca@cobalt.eu", "website": "https://cobalt.eu"}
+                    },
+                    "applicant": {
+                        "organization_name": "ToE Owner", # Could be fetched from ToE metadata
+                        "organization_id": "ORG-001",
+                        "contact_person": {"name": "Admin", "email": "admin@org.com"}
+                    },
+                    "target_of_evaluation": {
+                        "toe_name": toe_record.get("name"),
+                        "toe_uuid": toe_id,
+                        "description": "Automated Certification via CCM Manager"
+                    },
+                    "certification_scope": {
+                        "environment": "Cloud",
+                        "deployment_model": "SaaS",
+                        "services_included": ["Core Service"]
+                    },
+                    "assessment": {
+                        "assessment_id": data.get("id"),
+                        "assessment_date": now.strftime("%Y-%m-%d"),
+                        "assessment_result": "PASS",
+                        "evidence": [data.get("evidence_id")]
+                    },
+                    "certification_decision": {
+                        "decision_date": now.strftime("%Y-%m-%d"),
+                        "decision_status": "Granted",
+                        "certification_level": "Basic",
+                        "validity_period": {
+                            "start_date": now.strftime("%Y-%m-%d"),
+                            "end_date": valid_to.strftime("%Y-%m-%d")
+                        }
+                    },
+                    "certificate_issuance": {
+                        "certificate_serial": str(uuid4().hex),
+                        "issue_date": now.strftime("%Y-%m-%d"),
+                        "issued_by": "COBALT Automated CA"
+                    },
+                    "history": [
+                        {"event": "Certificate Automatically Generated", "date": now.strftime("%Y-%m-%d")}
+                    ]
+                }
+            }
+
+            # 6. Upload Certificate to Ledger
+            cert_hash = send_to_ledger("/v1/certification-authority/certificate", certificate_data)
+            certificate_data["ledger_hash"] = cert_hash
+            
+            # 7. Store Certificate in MongoDB
+            certificates_col.insert_one(certificate_data)
+            
+            if '_id' in certificate_data:
+                certificate_data['_id'] = str(certificate_data['_id'])
+                
+            return jsonify({
+                "status": "success",
+                "message": "Assessment processed and Certificate ISSUED.",
+                "assessment_hash": assessment_hash,
+                "certificate": certificate_data
+            }), 201
+
+        else:
+            return jsonify({
+                "status": "processed",
+                "message": "Assessment processed but Non-Compliant. No Certificate issued.",
+                "assessment_hash": assessment_hash
+            }), 200
+
     except Exception as e:
-        return jsonify(error=str(e)), 500
+        logging.error(f"Error: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+    
+
+# --- HELPER FUNCTION (WAS MISSING) ---
+def extract_linked_ids(document, root_toe_id):
+    """
+    Recursively searches a JSON document for UUIDs or links 
+    that might be referenced in the database.
+    """
+    linked_ids = set()
+    
+    def clean_id(val):
+        if isinstance(val, str):
+            if val.startswith("urn:uuid:"):
+                return val.replace("urn:uuid:", "")
+        return val
+
+    def traverse(node):
+        if isinstance(node, dict):
+            for key, value in node.items():
+                # Check for explicit UUID fields
+                if key in ['uuid', 'party-uuids', 'role-id', 'id']:
+                    if isinstance(value, list):
+                        for v in value:
+                            linked_ids.add(clean_id(v))
+                    else:
+                        linked_ids.add(clean_id(value))
+                
+                # Check for links/hrefs
+                if key == 'href' and isinstance(value, str):
+                    if "urn:uuid:" in value:
+                        linked_ids.add(clean_id(value))
+                
+                traverse(value)
+        elif isinstance(node, list):
+            for item in node:
+                traverse(item)
+
+    traverse(document)
+    
+    # Remove the ToE ID itself to avoid redundancy
+    if root_toe_id in linked_ids:
+        linked_ids.remove(root_toe_id)
+        
+    return list(linked_ids)
+# -------------------------------------
 
 
+
+@app.route('/retrieve_toe/<toe_id>', methods=['GET'])
+def retrieve_toe_data(toe_id):
+    try:
+        # 1. Search for the ToE document in the dedicated 'toes' collection
+        # This is where /upload_toe_descriptor now saves the data
+        root_doc = toes_col.find_one({"uuid": toe_id}, {'_id': 0})
+
+        # Fallback: check the generic collection (for backwards compatibility with OSCAL uploads)
+        if not root_doc:
+            primary_query = {
+                "$or": [
+                    {"content.component-definition.uuid": toe_id},            
+                    {"content.component-definition.components.uuid": toe_id}, 
+                    {"component-definition.uuid": toe_id},                    
+                    {"uuid": toe_id}                                          
+                ]
+            }
+            root_doc = collection.find_one(primary_query, {'_id': 0})
+
+        if not root_doc:
+            return jsonify({
+                "message": "No root document found for the provided ToE ID", 
+                "toe_id": toe_id
+            }), 404
+
+        # 2. Extract Linked IDs (SBOMs, VEX, etc.) from the ToE file
+        linked_uuids = extract_linked_ids(root_doc, toe_id)
+        
+        # 3. Retrieve All Linked Documents across ALL collections
+        # We search in 'collection' (artifacts), 'certificates_col', and 'schemes_col'
+        artifact_query = {
+            "$or": [
+                {"uuid": {"$in": linked_uuids}},
+                {"serialNumber": {"$in": [f"urn:uuid:{uid}" for uid in linked_uuids]}},
+                {"target_of_evaluation_id": toe_id}, # Find assessments linked to this ToE
+                {"certification.target_of_evaluation.toe_uuid": toe_id} # Find certificates
+            ]
+        }
+
+        linked_artifacts = list(collection.find(artifact_query, {'_id': 0}))
+        # Also grab the certificate specifically if it exists
+        certificates = list(certificates_col.find({"certification.target_of_evaluation.toe_uuid": toe_id}, {'_id': 0}))
+        
+        return jsonify({
+            "toe_id": toe_id,
+            "root_document": root_doc,
+            "linked_files_count": len(linked_artifacts) + len(certificates),
+            "linked_ids_detected": linked_uuids,
+            "linked_documents": linked_artifacts + certificates
+        }), 200
+
+    except Exception as e:
+        logging.error(f"Error retrieving ToE data: {e}")
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
+    
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
+
+
+
+
+# DEV CCM MANAGER FOR TESTING PURPOSES ONLY - NOT FOR PRODUCTION USE YET
+

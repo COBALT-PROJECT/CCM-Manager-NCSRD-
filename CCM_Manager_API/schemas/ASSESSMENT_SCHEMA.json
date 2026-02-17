@@ -1,0 +1,38 @@
+{
+    "type": "object",
+    "required": [
+        "id", "created_at", "metric_id", "metric_configuration",
+        "evidence_id", "resource_id", "resource_types",
+        "compliance_comment", "target_of_evaluation_id",
+        "history_updated_at", "history"
+    ],
+    "properties": {
+        "id": {"type": "string", "format": "uuid"},
+        "created_at": {"type": "string", "format": "date-time"},
+        "metric_id": {"type": "string", "minLength": 1},
+        "metric_configuration": {"type": "object"},
+        "compliant": {"type": "boolean"},
+        "evidence_id": {"type": "string", "format": "uuid"},
+        "resource_id": {"type": "string", "minLength": 1},
+        "resource_types": {
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 1
+        },
+        "compliance_comment": {"type": "string", "minLength": 1},
+        "target_of_evaluation_id": {"type": "string", "format": "uuid"},
+        "tool_id": {"type": "string", "minLength": 1},
+        "history_updated_at": {"type": "string", "format": "date-time"},
+        "history": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["evidence_id", "evidence_recorded_at"],
+                "properties": {
+                    "evidence_id": {"type": "string", "format": "uuid"},
+                    "evidence_recorded_at": {"type": "string", "format": "date-time"}
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,348 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Certification Record",
+  "type": "object",
+  "properties": {
+    "certification": {
+      "type": "object",
+      "properties": {
+        "certification_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "certification_scheme": {
+          "type": "string"
+        },
+        "certifying_body": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "accreditation_id": {
+              "type": "string"
+            },
+            "contact_info": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                },
+                "website": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              },
+              "required": [
+                "email",
+                "website"
+              ]
+            }
+          },
+          "required": [
+            "name",
+            "accreditation_id",
+            "contact_info"
+          ]
+        },
+        "applicant": {
+          "type": "object",
+          "properties": {
+            "organization_name": {
+              "type": "string"
+            },
+            "organization_id": {
+              "type": "string"
+            },
+            "contact_person": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                }
+              },
+              "required": [
+                "name",
+                "email"
+              ]
+            }
+          },
+          "required": [
+            "organization_name",
+            "organization_id",
+            "contact_person"
+          ]
+        },
+        "target_of_evaluation": {
+          "type": "object",
+          "properties": {
+            "toe_name": {
+              "type": "string"
+            },
+            "toe_uuid": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "toe_name",
+            "toe_uuid",
+            "description"
+          ]
+        },
+        "certification_scope": {
+          "type": "object",
+          "properties": {
+            "environment": {
+              "type": "string"
+            },
+            "deployment_model": {
+              "type": "string"
+            },
+            "services_included": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "environment",
+            "deployment_model",
+            "services_included"
+          ]
+        },
+        "assessment": {
+          "type": "object",
+          "properties": {
+            "assessment_id": {
+              "type": "string"
+            },
+            "assessment_body": {
+              "type": "string"
+            },
+            "assessment_date": {
+              "type": "string",
+              "format": "date"
+            },
+            "assessed_control_profile": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "profile_uuid": {
+                    "type": "string"
+                  },
+                  "control_list_uuid": {
+                    "type": "string"
+                  },
+                  "assessment_result": {
+                    "type": "string"
+                  },
+                  "evidence": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "profile_uuid",
+                  "control_list_uuid",
+                  "assessment_result",
+                  "evidence"
+                ]
+              }
+            },
+            "non_conformities": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "assessment_id",
+            "assessment_body",
+            "assessment_date",
+            "assessed_control_profile"
+          ]
+        },
+        "certification_decision": {
+          "type": "object",
+          "properties": {
+            "decision_date": {
+              "type": "string",
+              "format": "date"
+            },
+            "decision_status": {
+              "type": "string"
+            },
+            "certification_level": {
+              "type": "string"
+            },
+            "validity_period": {
+              "type": "object",
+              "properties": {
+                "start_date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "end_date": {
+                  "type": "string",
+                  "format": "date"
+                }
+              },
+              "required": [
+                "start_date",
+                "end_date"
+              ]
+            },
+            "conditions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "decision_date",
+            "decision_status",
+            "certification_level",
+            "validity_period"
+          ]
+        },
+        "certificate_issuance": {
+          "type": "object",
+          "properties": {
+            "certificate_serial": {
+              "type": "string"
+            },
+            "issue_date": {
+              "type": "string",
+              "format": "date"
+            },
+            "issued_by": {
+              "type": "string"
+            },
+            "surveillance_and_maintenance": {
+              "type": "object",
+              "properties": {
+                "last_surveillance_date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "next_due_date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "surveillance_findings": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "change_notifications": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "date": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "impact_assessed": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "date",
+                      "description",
+                      "impact_assessed"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "last_surveillance_date",
+                "next_due_date"
+              ]
+            },
+            "expiration_or_revocation": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "revocation": {
+                  "type": "string"
+                },
+                "expiration_reason": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "history": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "event": {
+                    "type": "string"
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date"
+                  }
+                },
+                "required": [
+                  "event",
+                  "date"
+                ]
+              }
+            }
+          },
+          "required": [
+            "certificate_serial",
+            "issue_date",
+            "issued_by"
+          ]
+        }
+      },
+      "required": [
+        "certification_id",
+        "name",
+        "version",
+        "certification_scheme",
+        "certifying_body",
+        "applicant",
+        "target_of_evaluation",
+        "certification_scope",
+        "assessment",
+        "certification_decision",
+        "certificate_issuance"
+      ]
+    }
+  },
+  "required": [
+    "certification"
+  ]
+}

@@ -1,0 +1,296 @@
+
+====================================================================================================
+                         COBALT CCM MANAGER INTEGRATION TEST - RUN 1fc0de4b                        
+====================================================================================================
+Timestamp: 2026-02-17T15:22:20.931192+00:00
+Target API: http://localhost:5001
+
+====================================================================================================
+                                 WORKFLOW 1: SETUP & SPECIFICATION                                 
+====================================================================================================
+
+[PHASE] WF1.1 - Register Certification Scheme on Ledger and Database
+[ACTION] POST http://localhost:5001/upload_certification_scheme
+[PAYLOAD SENT]:
+{
+  "certificationScheme": {
+    "id": "urn:cobalt:scheme:test:1fc0de4b",
+    "name": "COBALT Automated Audit Scheme 1fc0de4b",
+    "version": "1.0",
+    "description": "Standardized criteria for AI service evaluation.",
+    "complianceMetrics": [
+      {
+        "id": "Met-01",
+        "name": "Transport Layer Security",
+        "target_value": "TLS 1.3"
+      }
+    ],
+    "controls": [
+      {
+        "id": "ISO-27001-A.10.1"
+      }
+    ],
+    "boundaryConditions": {
+      "environment": "Production-Cloud"
+    },
+    "productProfile": {
+      "type": "SaaS",
+      "architecture": "Microservices"
+    }
+  }
+}
+[STATUS CODE]: 200
+[RESPONSE RECEIVED]:
+{
+  "ledger_hash": "6983E84BD42C86B2DA38E33E648D76A856D1D08EC324DB9285C90E3FD3BC2F43",
+  "message": "Certification Scheme uploaded and ledgerized successfully",
+  "uuid": "urn:cobalt:scheme:test:1fc0de4b"
+}
+
+[PHASE] WF1.2 - Register Target of Evaluation (ToE) and Link to Scheme
+[ACTION] POST http://localhost:5001/upload_toe_descriptor
+[PAYLOAD SENT]:
+{
+  "component": {
+    "component-definition": {
+      "uuid": "69885eaf-22ac-446e-b776-ba3161764243",
+      "metadata": {
+        "title": "System Audit Record"
+      },
+      "components": [
+        {
+          "uuid": "043dcbdd-80a0-4f5f-b611-fe2ab27e351c",
+          "type": "service",
+          "title": "SIM.AI Core Engine 1fc0de4b",
+          "description": "The AI processing unit being certified."
+        }
+      ]
+    }
+  },
+  "certification_scheme_id": "urn:cobalt:scheme:test:1fc0de4b"
+}
+[STATUS CODE]: 200
+[RESPONSE RECEIVED]:
+{
+  "linked_scheme": "urn:cobalt:scheme:test:1fc0de4b",
+  "message": "ToE registered and linked successfully",
+  "toe_uuid": "043dcbdd-80a0-4f5f-b611-fe2ab27e351c"
+}
+
+====================================================================================================
+                           WORKFLOW 3: CONTINUOUS CERTIFICATION LIFECYCLE                          
+====================================================================================================
+
+[PHASE] WF3.1 - Submit COMPLIANT Assessment (Automatic Issuance Trigger)
+[ACTION] POST http://localhost:5001/assessment-result
+[PAYLOAD SENT]:
+{
+  "id": "6e3fd721-453a-4219-b2dc-0ad7650d8198",
+  "created_at": "2026-02-17T15:22:28.159576Z",
+  "metric_id": "Met-01",
+  "metric_configuration": {
+    "operator": "==",
+    "target": "TLS 1.3"
+  },
+  "compliant": true,
+  "evidence_id": "444d2823-e7f2-4c5a-aea6-6d47a11c3481",
+  "resource_id": "sim-production-cluster-01",
+  "resource_types": [
+    "Service-Endpoint"
+  ],
+  "compliance_comment": "Automated scan confirms TLS 1.3 is enforced on all ingress points.",
+  "target_of_evaluation_id": "043dcbdd-80a0-4f5f-b611-fe2ab27e351c",
+  "tool_id": "Clouditor-Continuous-Scanner",
+  "history_updated_at": "2026-02-17T15:22:28.159587Z",
+  "history": [
+    {
+      "evidence_id": "444d2823-e7f2-4c5a-aea6-6d47a11c3481",
+      "evidence_recorded_at": "2026-02-17T15:22:28.159588Z"
+    }
+  ]
+}
+[STATUS CODE]: 201
+[RESPONSE RECEIVED]:
+{
+  "assessment_hash": "91385DB120EC53CABDDD233C5F0726BF8E1CDC3C333EECD69753345421744615",
+  "certificate": {
+    "_id": "699487b8e58a714df9d6f58d",
+    "certification": {
+      "applicant": {
+        "contact_person": {
+          "email": "admin@org.com",
+          "name": "Admin"
+        },
+        "organization_id": "ORG-001",
+        "organization_name": "ToE Owner"
+      },
+      "assessment": {
+        "assessment_date": "2026-02-17",
+        "assessment_id": "6e3fd721-453a-4219-b2dc-0ad7650d8198",
+        "assessment_result": "PASS",
+        "evidence": [
+          "444d2823-e7f2-4c5a-aea6-6d47a11c3481"
+        ]
+      },
+      "certificate_issuance": {
+        "certificate_serial": "e2048e1ef70b4b47b450b67f65199e6c",
+        "issue_date": "2026-02-17",
+        "issued_by": "COBALT Automated CA"
+      },
+      "certification_decision": {
+        "certification_level": "Basic",
+        "decision_date": "2026-02-17",
+        "decision_status": "Granted",
+        "validity_period": {
+          "end_date": "2027-02-17",
+          "start_date": "2026-02-17"
+        }
+      },
+      "certification_id": "ac50bdef-9671-4ccd-a053-4bb0c190a471",
+      "certification_scheme": "urn:cobalt:scheme:test:1fc0de4b",
+      "certification_scope": {
+        "deployment_model": "SaaS",
+        "environment": "Cloud",
+        "services_included": [
+          "Core Service"
+        ]
+      },
+      "certifying_body": {
+        "accreditation_id": "COBALT-ACC-001",
+        "contact_info": {
+          "email": "ca@cobalt.eu",
+          "website": "https://cobalt.eu"
+        },
+        "name": "COBALT Automated CA"
+      },
+      "history": [
+        {
+          "date": "2026-02-17",
+          "event": "Certificate Automatically Generated"
+        }
+      ],
+      "name": "Certificate for SIM.AI Core Engine 1fc0de4b",
+      "target_of_evaluation": {
+        "description": "Automated Certification via CCM Manager",
+        "toe_name": "SIM.AI Core Engine 1fc0de4b",
+        "toe_uuid": "043dcbdd-80a0-4f5f-b611-fe2ab27e351c"
+      },
+      "version": "1.0"
+    },
+    "ledger_hash": "0C5225DF842E4B701EBF3FAA63927450CD3107D8A6B66B7CA67EEF4FD3B179DE"
+  },
+  "message": "Assessment processed and Certificate ISSUED.",
+  "status": "success"
+}
+
+[RESULT] Certificate Generated successfully for ToE: 043dcbdd-80a0-4f5f-b611-fe2ab27e351c
+[CERTIFICATE ID]: ac50bdef-9671-4ccd-a053-4bb0c190a471
+
+[PHASE] WF3.2 - Data Retrieval (Verify ToE and Linked Artifacts)
+[ACTION] GET http://localhost:5001/retrieve_toe/043dcbdd-80a0-4f5f-b611-fe2ab27e351c
+[STATUS CODE]: 200
+[RESPONSE RECEIVED]:
+{
+  "linked_documents": [
+    {
+      "certification": {
+        "applicant": {
+          "contact_person": {
+            "email": "admin@org.com",
+            "name": "Admin"
+          },
+          "organization_id": "ORG-001",
+          "organization_name": "ToE Owner"
+        },
+        "assessment": {
+          "assessment_date": "2026-02-17",
+          "assessment_id": "6e3fd721-453a-4219-b2dc-0ad7650d8198",
+          "assessment_result": "PASS",
+          "evidence": [
+            "444d2823-e7f2-4c5a-aea6-6d47a11c3481"
+          ]
+        },
+        "certificate_issuance": {
+          "certificate_serial": "e2048e1ef70b4b47b450b67f65199e6c",
+          "issue_date": "2026-02-17",
+          "issued_by": "COBALT Automated CA"
+        },
+        "certification_decision": {
+          "certification_level": "Basic",
+          "decision_date": "2026-02-17",
+          "decision_status": "Granted",
+          "validity_period": {
+            "end_date": "2027-02-17",
+            "start_date": "2026-02-17"
+          }
+        },
+        "certification_id": "ac50bdef-9671-4ccd-a053-4bb0c190a471",
+        "certification_scheme": "urn:cobalt:scheme:test:1fc0de4b",
+        "certification_scope": {
+          "deployment_model": "SaaS",
+          "environment": "Cloud",
+          "services_included": [
+            "Core Service"
+          ]
+        },
+        "certifying_body": {
+          "accreditation_id": "COBALT-ACC-001",
+          "contact_info": {
+            "email": "ca@cobalt.eu",
+            "website": "https://cobalt.eu"
+          },
+          "name": "COBALT Automated CA"
+        },
+        "history": [
+          {
+            "date": "2026-02-17",
+            "event": "Certificate Automatically Generated"
+          }
+        ],
+        "name": "Certificate for SIM.AI Core Engine 1fc0de4b",
+        "target_of_evaluation": {
+          "description": "Automated Certification via CCM Manager",
+          "toe_name": "SIM.AI Core Engine 1fc0de4b",
+          "toe_uuid": "043dcbdd-80a0-4f5f-b611-fe2ab27e351c"
+        },
+        "version": "1.0"
+      },
+      "ledger_hash": "0C5225DF842E4B701EBF3FAA63927450CD3107D8A6B66B7CA67EEF4FD3B179DE"
+    }
+  ],
+  "linked_files_count": 1,
+  "linked_ids_detected": [
+    "69885eaf-22ac-446e-b776-ba3161764243"
+  ],
+  "root_document": {
+    "content": {
+      "certification_scheme_id": "urn:cobalt:scheme:test:1fc0de4b",
+      "component": {
+        "component-definition": {
+          "components": [
+            {
+              "description": "The AI processing unit being certified.",
+              "title": "SIM.AI Core Engine 1fc0de4b",
+              "type": "service",
+              "uuid": "043dcbdd-80a0-4f5f-b611-fe2ab27e351c"
+            }
+          ],
+          "metadata": {
+            "title": "System Audit Record"
+          },
+          "uuid": "69885eaf-22ac-446e-b776-ba3161764243"
+        }
+      }
+    },
+    "linked_scheme_id": "urn:cobalt:scheme:test:1fc0de4b",
+    "name": "SIM.AI Core Engine 1fc0de4b",
+    "timestamp": "2026-02-17T15:22:23.153153",
+    "type": "target_of_evaluation",
+    "uuid": "043dcbdd-80a0-4f5f-b611-fe2ab27e351c"
+  },
+  "toe_id": "043dcbdd-80a0-4f5f-b611-fe2ab27e351c"
+}
+
+**************************************************
+Step completion verified at 2026-02-17T15:22:32.620270+00:00
+**************************************************

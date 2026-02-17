@@ -1,0 +1,215 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Compliance Metrics Model",
+  "type": "object",
+  "properties": {
+    "compliance_metrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "version",
+          "information_need",
+          "implementation_evidence",
+          "frequency",
+          "data_source_type",
+          "reporting_format",
+          "target_values",
+          "associated_control"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "information_need": {
+            "type": "string"
+          },
+          "implementation_evidence": {
+            "type": "string"
+          },
+          "frequency": {
+            "type": "number"
+          },
+          "data_source_type": {
+            "type": "string"
+          },
+          "reporting_format": {
+            "type": "string"
+          },
+          "target_values": {
+            "type": "object",
+            "required": [
+              "target_value_scale",
+              "target_value"
+            ],
+            "properties": {
+              "target_value_scale": {
+                "type": "string"
+              },
+              "target_value": {
+                "type": "string"
+              }
+            }
+          },
+          "associated_control": {
+            "type": "object",
+            "required": [
+              "associated_control_framework",
+              "associated_control_category",
+              "associated_control_requirement"
+            ],
+            "properties": {
+              "associated_control_framework": {
+                "type": "string"
+              },
+              "associated_control_category": {
+                "type": "string"
+              },
+              "associated_control_requirement": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "certifiable_standards_mapping": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "metric_id",
+          "standard",
+          "control_id",
+          "description"
+        ],
+        "properties": {
+          "metric_id": {
+            "type": "string"
+          },
+          "standard": {
+            "type": "string"
+          },
+          "control_id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "boundary_conditions": {
+      "type": "object",
+      "required": [
+        "environment",
+        "scope",
+        "associated_component",
+        "dependencies"
+      ],
+      "properties": {
+        "environment": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "associated_component": {
+          "type": "string"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "risk_catalogue": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "risk_id",
+          "risk_name",
+          "risk_details",
+          "risk_category",
+          "associated_framework",
+          "mapped_threats",
+          "mapped_metrics"
+        ],
+        "properties": {
+          "risk_id": {
+            "type": "string"
+          },
+          "risk_name": {
+            "type": "string"
+          },
+          "risk_details": {
+            "type": "string"
+          },
+          "risk_category": {
+            "type": "string"
+          },
+          "associated_framework": {
+            "type": "string"
+          },
+          "mapped_threats": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "threat_id",
+                "name"
+              ],
+              "properties": {
+                "threat_id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "mapped_metrics": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "metric_id",
+                "impact"
+              ],
+              "properties": {
+                "metric_id": {
+                  "type": "string"
+                },
+                "impact": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "compliance_metrics",
+    "certifiable_standards_mapping",
+    "boundary_conditions",
+    "risk_catalogue"
+  ]
+}
