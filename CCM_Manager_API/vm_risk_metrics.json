@@ -1,0 +1,62 @@
+{
+    "compliance_metrics": [
+        {
+            "id": "MalwareProtectionEnabled_VirtualMachine_1.0",
+            "name": "Data Augmentation and Randomization",
+            "description": "This metric is used to assess if the antimalware solution is enabled on the respective resource",
+            "version": "1.0",
+            "comment": "This metric is used to assess if the antimalware solution is enabled on the respective resource",
+            "implementation_evidence": "Configuration, Security Policy",
+            "frequency": 1,
+            "data_source_type": "Virtual Machine",
+            "reporting_format": "Boolean",
+            "target_values": {
+                "target_value_scale": "Binary",
+                "target_value": "TRUE"
+            },
+            "associated_control": {
+                "associated_control_framework": "EUCS",
+                "associated_control_category": "",
+                "associated_control_requirement": "OPS-05.3H"
+            }
+        }
+    ],
+    "certifiable_standards_mapping": [
+        {
+            "metric_id": "MalwareProtectionEnabled_VirtualMachine_1.0",
+            "standard": "EUCS",
+            "control_id": "OPS-05.3H",
+            "description": "Antimalware protection must be active and monitored on all virtual machines"
+        }
+    ],
+    "boundary_conditions": {
+        "environment": "Cloud",
+        "scope": "Virtual Machines",
+        "associated_component": "Antimalware Agent",
+        "dependencies": [
+            "Security Configuration Management",
+            "Virtual Machine OS"
+        ]
+    },
+    "risk_catalogue": [
+        {
+            "risk_id": "RISK-001",
+            "risk_name": "Inadequate Malware Protection",
+            "risk_details": "Antimalware solution not properly enabled or configured on virtual machines may lead to malware infections",
+            "risk_category": "Operational",
+            "associated_framework": "EUCS",
+            "mapped_threats": [
+                {
+                    "threat_id": "THREAT-001",
+                    "name": "Malware Infection via Unprotected VM"
+                }
+            ],
+            "mapped_metrics": [
+                {
+                    "metric_id": "MalwareProtectionEnabled_VirtualMachine_1.0",
+                    "impact": "High"
+                }
+            ]
+        }
+    ]
+}

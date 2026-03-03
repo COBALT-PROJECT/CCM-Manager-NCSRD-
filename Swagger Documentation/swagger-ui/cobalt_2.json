@@ -7,7 +7,9 @@
   },
   "host": "localhost:5001",
   "basePath": "/",
-  "schemes": ["http"],
+  "schemes": [
+    "http"
+  ],
   "tags": [
     {
       "name": "Internal Endpoint"
@@ -25,11 +27,18 @@
   "paths": {
     "/generate_sbom": {
       "post": {
-        "tags": ["Internal Endpoint"],
+        "tags": [
+          "Internal Endpoint"
+        ],
         "summary": "Generate SBOM",
         "description": "Scans a provided folder for known dependency files and generates a corresponding SBOM. Saves SBOM and associated VEX data.",
-        "consumes": ["application/x-www-form-urlencoded"],
-        "produces": ["application/json"],
+        "consumes": [
+          "application/x-www-form-urlencoded",
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "name": "folder",
@@ -92,923 +101,1304 @@
       }
     },
     "/show_vulnerabilities": {
-    "get": {
-      "tags": ["Internal Endpoint"],
-      "summary": "Retrieve Vulnerabilities",
-      "description": "Fetches all stored vulnerabilities from the MongoDB collection.",
-      "produces": ["application/json"],
-      "responses": {
-        "200": {
-          "description": "List of vulnerabilities retrieved successfully.",
-          "schema": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          }
-        },
-        "404": {
-          "description": "No vulnerabilities found.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "message": {
-                "type": "string",
-                "example": "No vulnerabilities found"
-              }
-            }
-          }
-        },
-        "500": {
-          "description": "Internal server error.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "error": {
-                "type": "string",
-                "example": "Internal server error"
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "/generate_cbom": {
-    "post": {
-      "tags": ["Internal Endpoint"],
-      "summary": "Generate CBOM",
-      "description": "Generates three Cryptographic BOMs (Algorithms, Certificates, and Protocols) from a JSON file input containing cipher and/or certificate data. Optionally associates with a hashed IP address.",
-      "consumes": ["multipart/form-data"],
-      "produces": ["application/json"],
-      "parameters": [
-        {
-          "name": "hashed_ip",
-          "in": "formData",
-          "description": "Optional hashed IP address to associate the generated SBOM with a client.",
-          "required": false,
-          "type": "string"
-        },
-        {
-          "name": "file",
-          "in": "formData",
-          "description": "A JSON file containing cipher and/or certificate data.",
-          "required": true,
-          "type": "file"
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "CBOMs generated and saved successfully.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "message": {
-                "type": "string",
-                "example": "SBOMs generated successfully"
-              },
-              "algorithm_sbom": {
-                "type": "string",
-                "example": "algorithm_sbom_13-05-2025_15-23-11.json"
-              },
-              "certificate_sbom": {
-                "type": "string",
-                "example": "certificate_sbom_13-05-2025_15-23-11.json"
-              },
-              "protocol_sbom": {
-                "type": "string",
-                "example": "protocol_sbom_13-05-2025_15-23-11.json"
-              }
-            }
-          }
-        },
-        "400": {
-          "description": "Bad request (e.g. file missing, invalid JSON, or insufficient data).",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "error": {
-                "type": "string",
-                "example": "No file part in the request."
-              }
-            }
-          }
-        },
-        "500": {
-          "description": "Internal server error.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "error": {
-                "type": "string",
-                "example": "An unexpected error occurred: ..."
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "/receive_output": {
-    "post": {
-      "tags": ["Internal Endpoint"],
-      "summary": "Receive Output and Trigger CBOM Generation",
-      "description": "Receives either a JSON file upload or raw JSON data from a client, hashes the client IP, and forwards the input to the `/generate_cbom` endpoint to generate CBOMs.",
-      "consumes": [
-        "application/json",
-        "multipart/form-data"
-      ],
-      "produces": [
-        "application/json"
-      ],
-      "parameters": [
-        {
-          "name": "file",
-          "in": "formData",
-          "description": "Optional .json file to process and generate CBOM.",
-          "required": false,
-          "type": "file"
-        },
-        {
-          "name": "body",
-          "in": "body",
-          "description": "Optional JSON body to process if file is not provided.",
-          "required": false,
-          "schema": {
-            "type": "object",
-            "example": {
-              "ciphers": {
-                "TLS_RSA_WITH_AES_128_CBC_SHA": {
-                  "TLS_version": "1.2",
-                  "encryption_algorithm": "AES",
-                  "oid": "1.2.3.4.5"
-                }
-              },
-              "certificate": {
-                "subjectName": "CN=example.com",
-                "issuerName": "CN=ExampleCA",
-                "notValidBefore": "Jan 01 00:00:00 2024 GMT",
-                "notValidAfter": "Jan 01 00:00:00 2026 GMT",
-                "rsaPublicKey": "abcd1234",
-                "signatureAlgorithm": "sha256WithRSAEncryption",
-                "oid": "1.2.3.4",
-                "publicKeyAlgorithm": "rsaEncryption"
-              }
-            }
-          }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "CBOM generated and returned successfully.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "message": {
-                "type": "string",
-                "example": "SBOMs generated successfully"
-              },
-              "algorithm_sbom": {
-                "type": "string",
-                "example": "algorithm_sbom_13-05-2025_15-23-11.json"
-              },
-              "certificate_sbom": {
-                "type": "string",
-                "example": "certificate_sbom_13-05-2025_15-23-11.json"
-              },
-              "protocol_sbom": {
-                "type": "string",
-                "example": "protocol_sbom_13-05-2025_15-23-11.json"
-              }
-            }
-          }
-        },
-        "400": {
-          "description": "Invalid input provided (no file or invalid JSON).",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "error": {
-                "type": "string",
-                "example": "No valid input provided."
-              }
-            }
-          }
-        },
-        "500": {
-          "description": "Unexpected server error.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "error": {
-                "type": "string",
-                "example": "An unexpected error occurred: ..."
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "/upload_oscal": {
-    "post": {
-      "tags": ["Toe Registration"],
-      "summary": "Upload OSCAL Document",
-      "description": "Uploads an OSCAL document (component-definition, catalog, or profile). Accepts either raw JSON or a file upload.",
-      "consumes": [
-        "application/json",
-        "multipart/form-data"
-      ],
-      "produces": [
-        "application/json"
-      ],
-      "parameters": [
-        {
-          "name": "file",
-          "in": "formData",
-          "description": "Optional OSCAL JSON file to upload.",
-          "required": false,
-          "type": "file"
-        },
-        {
-          "name": "body",
-          "in": "body",
-          "description": "Optional raw JSON body if not using a file.",
-          "required": false,
-          "schema": {
-            "type": "object",
-            "example": {
-              "catalog": {
-                "uuid": "123e4567-e89b-12d3-a456-426614174000",
-                "metadata": {
-                  "title": "Example Catalog",
-                  "version": "1.0.0"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "OSCAL document successfully saved or already exists.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "message": {
-                "type": "string",
-                "example": "catalog document saved successfully."
-              },
-              "uuid": {
-                "type": "string",
-                "example": "123e4567-e89b-12d3-a456-426614174000"
-              }
-            }
-          }
-        },
-        "400": {
-          "description": "Invalid input or missing required fields.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "error": {
-                "type": "string",
-                "example": "No JSON data or file provided."
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "/oscal_ids/{doc_uuid}": {
-    "get": {
-      "tags": ["Oscal Catalog"],
-      "summary": "Get OSCAL Control IDs by Document UUID",
-      "description": "Retrieves a list of unique control IDs from an OSCAL profile document by its UUID.",
-      "produces": [
-        "application/json"
-      ],
-      "parameters": [
-        {
-          "name": "doc_uuid",
-          "in": "path",
-          "required": true,
-          "description": "UUID of the OSCAL document",
-          "type": "string",
-          "example": "123e4567-e89b-12d3-a456-426614174000"
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "List of control IDs retrieved successfully.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "control_ids": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "example": ["AC-1", "AC-2", "CM-2"]
-              }
-            }
-          }
-        },
-        "404": {
-          "description": "Profile not found for the provided UUID.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "error": {
-                "type": "string",
-                "example": "Profile not found"
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "/upload_saasbom": {
-    "post": {
-      "tags": ["Toe Registration"],
-      "summary": "Upload a SaaSBOM document",
-      "description": "Validates and uploads a CycloneDX-formatted SaaSBOM JSON document into the database.",
-      "consumes": [
-        "application/json"
-      ],
-      "produces": [
-        "application/json"
-      ],
-      "parameters": [
-        {
-          "name": "body",
-          "in": "body",
-          "required": true,
-          "description": "CycloneDX SaaSBOM JSON",
-          "schema": {
-            "type": "object",
-            "required": ["bomFormat", "specVersion", "version", "metadata", "services"],
-            "properties": {
-              "bomFormat": {
-                "type": "string",
-                "example": "CycloneDX"
-              },
-              "specVersion": {
-                "type": "string",
-                "example": "1.4"
-              },
-              "serialNumber": {
-                "type": "string",
-                "example": "urn:uuid:123e4567-e89b-12d3-a456-426614174000"
-              },
-              "version": {
-                "type": "integer",
-                "example": 1
-              },
-              "metadata": {
+      "get": {
+        "tags": [
+          "Internal Endpoint"
+        ],
+        "summary": "Retrieve Vulnerabilities",
+        "description": "Fetches all stored vulnerabilities from the MongoDB collection.",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of vulnerabilities retrieved successfully.",
+            "schema": {
+              "type": "array",
+              "items": {
                 "type": "object",
-                "properties": {
-                  "component": {
-                    "type": "object"
+                "additionalProperties": true
+              }
+            }
+          },
+          "404": {
+            "description": "No vulnerabilities found.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "No vulnerabilities found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Internal server error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/generate_cbom": {
+      "post": {
+        "tags": [
+          "Internal Endpoint"
+        ],
+        "summary": "Generate CBOM",
+        "description": "Generates three Cryptographic BOMs (Algorithms, Certificates, and Protocols) from a JSON file input containing cipher and/or certificate data. Optionally associates with a hashed IP address.",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "hashed_ip",
+            "in": "formData",
+            "description": "Optional hashed IP address to associate the generated SBOM with a client.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "file",
+            "in": "formData",
+            "description": "A JSON file containing cipher and/or certificate data.",
+            "required": true,
+            "type": "file"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CBOMs generated and saved successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "SBOMs generated successfully"
+                },
+                "algorithm_sbom": {
+                  "type": "string",
+                  "example": "algorithm_sbom_13-05-2025_15-23-11.json"
+                },
+                "certificate_sbom": {
+                  "type": "string",
+                  "example": "certificate_sbom_13-05-2025_15-23-11.json"
+                },
+                "protocol_sbom": {
+                  "type": "string",
+                  "example": "protocol_sbom_13-05-2025_15-23-11.json"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (e.g. file missing, invalid JSON, or insufficient data).",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "No file part in the request."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "An unexpected error occurred: ..."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/receive_output": {
+      "post": {
+        "tags": [
+          "Internal Endpoint"
+        ],
+        "summary": "Receive Output and Trigger CBOM Generation",
+        "description": "Receives either a JSON file upload or raw JSON data from a client, hashes the client IP, and forwards the input to the `/generate_cbom` endpoint to generate CBOMs.",
+        "consumes": [
+          "application/json",
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "file",
+            "in": "formData",
+            "description": "Optional .json file to process and generate CBOM.",
+            "required": false,
+            "type": "file"
+          },
+          {
+            "name": "body",
+            "in": "formData",
+            "description": "Optional JSON body string to process if file is not provided. Send as a stringified JSON.",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CBOM generated and returned successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "SBOMs generated successfully"
+                },
+                "algorithm_sbom": {
+                  "type": "string",
+                  "example": "algorithm_sbom_13-05-2025_15-23-11.json"
+                },
+                "certificate_sbom": {
+                  "type": "string",
+                  "example": "certificate_sbom_13-05-2025_15-23-11.json"
+                },
+                "protocol_sbom": {
+                  "type": "string",
+                  "example": "protocol_sbom_13-05-2025_15-23-11.json"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input provided (no file or invalid JSON).",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "No valid input provided."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "An unexpected error occurred: ..."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upload_oscal": {
+      "post": {
+        "tags": [
+          "Toe Registration"
+        ],
+        "summary": "Upload OSCAL Document",
+        "description": "Uploads an OSCAL document (component-definition, catalog, or profile). Accepts either raw JSON or a file upload.",
+        "consumes": [
+          "application/json",
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "file",
+            "in": "formData",
+            "description": "Optional OSCAL JSON file to upload.",
+            "required": false,
+            "type": "file"
+          },
+          {
+            "name": "body",
+            "in": "formData",
+            "description": "Optional raw JSON body string if not using a file.",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OSCAL document successfully saved or already exists.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "catalog document saved successfully."
+                },
+                "uuid": {
+                  "type": "string",
+                  "example": "123e4567-e89b-12d3-a456-426614174000"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or missing required fields.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "No JSON data or file provided."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/oscal_ids/{doc_uuid}": {
+      "get": {
+        "tags": [
+          "Oscal Catalog"
+        ],
+        "summary": "Get OSCAL Control IDs by Document UUID",
+        "description": "Retrieves a list of unique control IDs from an OSCAL profile document by its UUID.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "doc_uuid",
+            "in": "path",
+            "required": true,
+            "description": "UUID of the OSCAL document",
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of control IDs retrieved successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "control_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
                   }
                 }
-              },
-              "services": {
-                "type": "array",
-                "items": {
+              }
+            }
+          },
+          "404": {
+            "description": "Profile not found for the provided UUID.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Profile not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upload_saasbom": {
+      "post": {
+        "tags": [
+          "Toe Registration"
+        ],
+        "summary": "Upload a SaaSBOM document",
+        "description": "Validates and uploads a CycloneDX-formatted SaaSBOM JSON document into the database.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "CycloneDX SaaSBOM JSON",
+            "schema": {
+              "type": "object",
+              "required": [
+                "bomFormat",
+                "specVersion",
+                "version",
+                "metadata",
+                "services"
+              ],
+              "properties": {
+                "bomFormat": {
+                  "type": "string",
+                  "example": "CycloneDX"
+                },
+                "specVersion": {
+                  "type": "string",
+                  "example": "1.4"
+                },
+                "serialNumber": {
+                  "type": "string",
+                  "example": "urn:uuid:123e4567-e89b-12d3-a456-426614174000"
+                },
+                "version": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "metadata": {
                   "type": "object",
                   "properties": {
-                    "data": {
+                    "component": {
                       "type": "object"
-                    },
-                    "x-trust-boundary": {
-                      "type": "boolean"
+                    }
+                  }
+                },
+                "services": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object"
+                      },
+                      "x-trust-boundary": {
+                        "type": "boolean"
+                      }
                     }
                   }
                 }
               }
             }
           }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "SaaSBOM document uploaded successfully.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "message": {
-                "type": "string",
-                "example": "SaaSBOM saved successfully."
-              },
-              "serialNumber": {
-                "type": "string",
-                "example": "urn:uuid:123e4567-e89b-12d3-a456-426614174000"
+        ],
+        "responses": {
+          "200": {
+            "description": "SaaSBOM document uploaded successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "SaaSBOM saved successfully."
+                },
+                "serialNumber": {
+                  "type": "string",
+                  "example": "urn:uuid:123e4567-e89b-12d3-a456-426614174000"
+                }
               }
             }
-          }
-        },
-        "400": {
-          "description": "Validation error due to missing or invalid fields.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "error": {
-                "type": "string",
-                "example": "'specVersion' must be '1.4'."
+          },
+          "400": {
+            "description": "Validation error due to missing or invalid fields.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "'specVersion' must be '1.4'."
+                }
               }
             }
-          }
-        },
-        "500": {
-          "description": "Server error while inserting document.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "error": {
-                "type": "string",
-                "example": "Error inserting into database: <details>"
+          },
+          "500": {
+            "description": "Server error while inserting document.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Error inserting into database: <details>"
+                }
               }
             }
           }
         }
       }
-    }
-  },
-  "/upload_toe_descriptor": {
-    "post": {
-      "tags": ["Toe Registration"],
-      "summary": "Upload TOE descriptor",
-      "description": "Receives a TOE descriptor, validates core fields, and forwards the payload to a remote URL.",
-      "consumes": [
-        "application/json"
-      ],
-      "produces": [
-        "application/json"
-      ],
-      "parameters": [
-        {
-          "name": "body",
-          "in": "body",
-          "required": true,
-          "description": "TOE Descriptor JSON containing 'component', and optionally 'bills-of-material', 'mud', and 'threat-mud'",
-          "schema": {
-            "type": "object",
-            "required": ["component"],
-            "properties": {
-              "component": {
-                "type": "object",
-                "required": ["component-definition"],
-                "properties": {
-                  "component-definition": {
-                    "type": "object",
-                    "required": ["components"],
-                    "properties": {
-                      "components": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "required": ["uuid", "title"],
-                          "properties": {
-                            "uuid": {
-                              "type": "string",
-                              "example": "123e4567-e89b-12d3-a456-426614174000"
-                            },
-                            "title": {
-                              "type": "string",
-                              "example": "Example TOE Component"
+    },
+    "/upload_toe_descriptor": {
+      "post": {
+        "tags": [
+          "Toe Registration"
+        ],
+        "summary": "Upload TOE descriptor",
+        "description": "Receives a TOE descriptor, validates core fields, and forwards the payload to a remote URL.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "TOE Descriptor JSON containing 'component', and optionally 'bills-of-material', 'mud', and 'threat-mud'",
+            "schema": {
+              "type": "object",
+              "required": [
+                "component"
+              ],
+              "properties": {
+                "component": {
+                  "type": "object",
+                  "required": [
+                    "component-definition"
+                  ],
+                  "properties": {
+                    "component-definition": {
+                      "type": "object",
+                      "required": [
+                        "components"
+                      ],
+                      "properties": {
+                        "components": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "uuid",
+                              "title"
+                            ],
+                            "properties": {
+                              "uuid": {
+                                "type": "string",
+                                "example": "123e4567-e89b-12d3-a456-426614174000"
+                              },
+                              "title": {
+                                "type": "string",
+                                "example": "Example TOE Component"
+                              }
                             }
                           }
                         }
                       }
                     }
                   }
-                }
-              },
-              "bills-of-material": {
-                "type": "object",
-                "properties": {
-                  "sbom": { "type": "object" },
-                  "vex": { "type": "object" },
-                  "cbom": { "type": "object" },
-                  "saasbo": { "type": "object" }
-                }
-              },
-              "mud": {
-                "type": "object"
-              },
-              "threat-mud": {
-                "type": "object"
-              }
-            }
-          }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "Descriptor received and forwarded successfully.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "status": {
-                "type": "string",
-                "example": "Descriptor received and forwarded successfully"
-              },
-              "forward_status": {
-                "type": "integer",
-                "example": 200
-              }
-            }
-          }
-        },
-        "400": {
-          "description": "Invalid or missing input fields.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "error": {
-                "type": "string",
-                "example": "Missing 'component-definition' in 'component'"
-              }
-            }
-          }
-        },
-        "502": {
-          "description": "Error forwarding the request.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "error": {
-                "type": "string",
-                "example": "Failed to forward data"
-              },
-              "details": {
-                "type": "string",
-                "example": "Connection refused"
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "/upload_certification_scheme": {
-    "post": {
-      "tags": ["Certification Scheme"],
-      "summary": "Upload Certification Scheme",
-      "description": "Uploads a certification scheme document along with optional profile and catalog data. Updates existing entry if UUID matches.",
-      "consumes": [
-        "application/json"
-      ],
-      "produces": [
-        "application/json"
-      ],
-      "parameters": [
-        {
-          "name": "body",
-          "in": "body",
-          "required": true,
-          "description": "Certification Scheme data with optional catalog and profile",
-          "schema": {
-            "type": "object",
-            "required": ["certificationScheme"],
-            "properties": {
-              "certificationScheme": {
-                "type": "object",
-                "required": [
-                  "id",
-                  "complianceMetrics",
-                  "controls",
-                  "boundaryConditions",
-                  "productProfile"
-                ],
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "example": "scheme-123"
-                  },
-                  "complianceMetrics": {
-                    "type": "object"
-                  },
-                  "controls": {
-                    "type": "array",
-                    "items": {
-                      "type": "object"
-                    }
-                  },
-                  "boundaryConditions": {
-                    "type": "array",
-                    "items": {
-                      "type": "object"
-                    }
-                  },
-                  "productProfile": {
-                    "type": "object"
-                  }
-                }
-              },
-              "profile": {
-                "type": "object"
-              },
-              "catalog": {
-                "type": "object"
-              }
-            }
-          }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "Certification Scheme saved or updated successfully.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "message": {
-                "type": "string",
-                "example": "Certification Scheme and related documents updated successfully."
-              },
-              "uuid": {
-                "type": "string",
-                "example": "scheme-123"
-              }
-            }
-          }
-        },
-        "400": {
-          "description": "Missing or invalid certification scheme data.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "error": {
-                "type": "string",
-                "example": "Missing required fields in Certification Scheme"
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "/store-ledger": {
-    "post": {
-      "tags": ["Internal Endpoint"],
-      "summary": "Store Ledger Entry",
-      "description": "Stores a component-definition from an OSCAL JSON document as a CCM ledger entry. Wraps the entry with UUID, timestamp, and hash.",
-      "consumes": [
-        "application/json"
-      ],
-      "produces": [
-        "application/json"
-      ],
-      "parameters": [
-        {
-          "name": "body",
-          "in": "body",
-          "required": true,
-          "description": "OSCAL JSON document containing a component-definition",
-          "schema": {
-            "type": "object",
-            "required": ["component-definition"],
-            "properties": {
-              "component-definition": {
-                "type": "object",
-                "description": "OSCAL Component Definition"
-              }
-            }
-          }
-        }
-      ],
-      "responses": {
-        "201": {
-          "description": "Ledger entry stored successfully.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "message": {
-                "type": "string",
-                "example": "Stored"
-              },
-              "uuid": {
-                "type": "string",
-                "example": "123e4567-e89b-12d3-a456-426614174000"
-              },
-              "hash": {
-                "type": "string",
-                "example": "fa5c89f3...d4e829f1"
-              }
-            }
-          }
-        },
-        "400": {
-          "description": "Missing component-definition in request body.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "error": {
-                "type": "string",
-                "example": "Missing 'component-definition' section."
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "/update-ledger/{uuid}": {
-    "put": {
-      "tags": ["Internal Endpoint"],
-      "summary": "Update Ledger Entry",
-      "description": "Updates an existing ledger entry identified by UUID with new OSCAL component-definition data and updates the hash and timestamp.",
-      "consumes": [
-        "application/json"
-      ],
-      "produces": [
-        "application/json"
-      ],
-      "parameters": [
-        {
-          "name": "uuid",
-          "in": "path",
-          "required": true,
-          "description": "The UUID of the ledger entry to update",
-          "type": "string",
-          "example": "123e4567-e89b-12d3-a456-426614174000"
-        },
-        {
-          "name": "body",
-          "in": "body",
-          "required": true,
-          "description": "OSCAL JSON document containing the updated component-definition",
-          "schema": {
-            "type": "object",
-            "required": ["component-definition"],
-            "properties": {
-              "component-definition": {
-                "type": "object",
-                "description": "OSCAL Component Definition"
-              }
-            }
-          }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "Ledger entry updated successfully.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "message": {
-                "type": "string",
-                "example": "Ledger updated"
-              },
-              "uuid": {
-                "type": "string",
-                "example": "123e4567-e89b-12d3-a456-426614174000"
-              },
-              "hash": {
-                "type": "string",
-                "example": "fa5c89f3...d4e829f1"
-              }
-            }
-          }
-        },
-        "404": {
-          "description": "Ledger entry not found.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "error": {
-                "type": "string",
-                "example": "Entry not found"
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "/send_sdt": {
-    "post": {
-      "tags": ["Internal Endpoint"],
-      "summary": "Upload CycloneDX SBOM",
-      "description": "Receives a CycloneDX Software Bill of Materials (SBOM) in JSON format, validates it, and forwards it to another service.",
-      "consumes": [
-        "application/json"
-      ],
-      "produces": [
-        "application/json"
-      ],
-      "parameters": [
-        {
-          "name": "body",
-          "in": "body",
-          "required": true,
-          "description": "CycloneDX SBOM JSON document",
-          "schema": {
-            "type": "object",
-            "required": ["bomFormat", "components"],
-            "properties": {
-              "bomFormat": {
-                "type": "string",
-                "example": "CycloneDX",
-                "enum": ["CycloneDX"]
-              },
-              "specVersion": {
-                "type": "string",
-                "example": "1.4"
-              },
-              "version": {
-                "type": "integer",
-                "example": 1
-              },
-              "serialNumber": {
-                "type": "string",
-                "example": "urn:uuid:123e4567-e89b-12d3-a456-426614174000"
-              },
-              "components": {
-                "type": "array",
-                "items": {
+                },
+                "bills-of-material": {
                   "type": "object",
                   "properties": {
-                    "name": {
-                      "type": "string",
-                      "example": "component-name"
+                    "sbom": {
+                      "type": "object"
                     },
-                    "version": {
-                      "type": "string",
-                      "example": "1.0.0"
+                    "vex": {
+                      "type": "object"
                     },
-                    "type": {
+                    "cbom": {
+                      "type": "object"
+                    },
+                    "saasbo": {
+                      "type": "object"
+                    }
+                  }
+                },
+                "mud": {
+                  "type": "object"
+                },
+                "threat-mud": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Descriptor received and forwarded successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "Descriptor received and forwarded successfully"
+                },
+                "forward_status": {
+                  "type": "integer",
+                  "example": 200
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or missing input fields.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Missing 'component-definition' in 'component'"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Error forwarding the request.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Failed to forward data"
+                },
+                "details": {
+                  "type": "string",
+                  "example": "Connection refused"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upload_certification_scheme": {
+      "post": {
+        "tags": [
+          "Certification Scheme"
+        ],
+        "summary": "Upload Certification Scheme",
+        "description": "Uploads a certification scheme document along with optional profile and catalog data. Updates existing entry if UUID matches.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "Certification Scheme data with optional catalog and profile",
+            "schema": {
+              "type": "object",
+              "required": [
+                "certificationScheme"
+              ],
+              "properties": {
+                "certificationScheme": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "complianceMetrics",
+                    "controls",
+                    "boundaryConditions",
+                    "productProfile"
+                  ],
+                  "properties": {
+                    "id": {
                       "type": "string",
-                      "example": "library"
+                      "example": "scheme-123"
+                    },
+                    "complianceMetrics": {
+                      "type": "object"
+                    },
+                    "controls": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "boundaryConditions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "productProfile": {
+                      "type": "object"
+                    }
+                  }
+                },
+                "profile": {
+                  "type": "object"
+                },
+                "catalog": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Certification Scheme saved or updated successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Certification Scheme and related documents updated successfully."
+                },
+                "uuid": {
+                  "type": "string",
+                  "example": "scheme-123"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid certification scheme data.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Missing required fields in Certification Scheme"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/store-ledger": {
+      "post": {
+        "tags": [
+          "Internal Endpoint"
+        ],
+        "summary": "Store Ledger Entry",
+        "description": "Stores a component-definition from an OSCAL JSON document as a CCM ledger entry. Wraps the entry with UUID, timestamp, and hash.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "OSCAL JSON document containing a component-definition",
+            "schema": {
+              "type": "object",
+              "required": [
+                "component-definition"
+              ],
+              "properties": {
+                "component-definition": {
+                  "type": "object",
+                  "description": "OSCAL Component Definition"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Ledger entry stored successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Stored"
+                },
+                "uuid": {
+                  "type": "string",
+                  "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "hash": {
+                  "type": "string",
+                  "example": "fa5c89f3...d4e829f1"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing component-definition in request body.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Missing 'component-definition' section."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/update-ledger/{uuid}": {
+      "put": {
+        "tags": [
+          "Internal Endpoint"
+        ],
+        "summary": "Update Ledger Entry",
+        "description": "Updates an existing ledger entry identified by UUID with new OSCAL component-definition data and updates the hash and timestamp.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "description": "The UUID of the ledger entry to update",
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "OSCAL JSON document containing the updated component-definition",
+            "schema": {
+              "type": "object",
+              "required": [
+                "component-definition"
+              ],
+              "properties": {
+                "component-definition": {
+                  "type": "object",
+                  "description": "OSCAL Component Definition"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ledger entry updated successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Ledger updated"
+                },
+                "uuid": {
+                  "type": "string",
+                  "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "hash": {
+                  "type": "string",
+                  "example": "fa5c89f3...d4e829f1"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ledger entry not found.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Entry not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/send_sdt": {
+      "post": {
+        "tags": [
+          "Internal Endpoint"
+        ],
+        "summary": "Upload CycloneDX SBOM",
+        "description": "Receives a CycloneDX Software Bill of Materials (SBOM) in JSON format, validates it, and forwards it to another service.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "CycloneDX SBOM JSON document",
+            "schema": {
+              "type": "object",
+              "required": [
+                "bomFormat",
+                "components"
+              ],
+              "properties": {
+                "bomFormat": {
+                  "type": "string",
+                  "example": "CycloneDX",
+                  "enum": [
+                    "CycloneDX"
+                  ]
+                },
+                "specVersion": {
+                  "type": "string",
+                  "example": "1.4"
+                },
+                "version": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "serialNumber": {
+                  "type": "string",
+                  "example": "urn:uuid:123e4567-e89b-12d3-a456-426614174000"
+                },
+                "components": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "example": "component-name"
+                      },
+                      "version": {
+                        "type": "string",
+                        "example": "1.0.0"
+                      },
+                      "type": {
+                        "type": "string",
+                        "example": "library"
+                      }
                     }
                   }
                 }
               }
             }
           }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "CycloneDX SBOM received and forwarded successfully.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "status": {
-                "type": "string",
-                "example": "CycloneDX SBOM received and forwarded successfully"
-              },
-              "forward_status": {
-                "type": "integer",
-                "example": 200
+        ],
+        "responses": {
+          "200": {
+            "description": "CycloneDX SBOM received and forwarded successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "CycloneDX SBOM received and forwarded successfully"
+                },
+                "forward_status": {
+                  "type": "integer",
+                  "example": 200
+                }
               }
             }
-          }
-        },
-        "400": {
-          "description": "Bad request. Missing or invalid parameters.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "error": {
-                "type": "string",
-                "example": "Missing 'components' in CycloneDX SBOM"
+          },
+          "400": {
+            "description": "Bad request. Missing or invalid parameters.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Missing 'components' in CycloneDX SBOM"
+                }
               }
             }
-          }
-        },
-        "502": {
-          "description": "Failed to forward CycloneDX SBOM.",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "error": {
-                "type": "string",
-                "example": "Failed to forward CycloneDX SBOM"
-              },
-              "details": {
-                "type": "string",
-                "example": "Timeout or connection error"
+          },
+          "502": {
+            "description": "Failed to forward CycloneDX SBOM.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Failed to forward CycloneDX SBOM"
+                },
+                "details": {
+                  "type": "string",
+                  "example": "Timeout or connection error"
+                }
               }
             }
           }
         }
       }
-    }
-  },
-  "/": {
-    "get": {
-      "tags": ["Internal Endpoint"],
-      "summary": "Health Check",
-      "description": "Health check endpoint to verify the API is running and MongoDB is connected.",
-      "produces": ["application/json"],
-      "responses": {
-        "200": {
-          "description": "API is running successfully",
+    },
+    "/metrics": {
+      "get": {
+        "tags": [
+          "Risk Catalogue"
+        ],
+        "summary": "Retrieve all metrics",
+        "description": "Fetches all stored metrics from the metrics collection.",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of metrics retrieved successfully."
+          },
+          "500": {
+            "description": "Error connecting to backend."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Risk Catalogue"
+        ],
+        "summary": "Upload or update metrics",
+        "description": "Accepts a single metric object or an array of metric objects to upload or update.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "A single metric or a JSON array of metrics.",
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Metrics saved successfully."
+          },
+          "400": {
+            "description": "Invalid input format or empty data."
+          },
+          "500": {
+            "description": "Error processing the metrics."
+          }
+        }
+      }
+    },
+    "/metrics/{id}": {
+      "get": {
+        "tags": [
+          "Risk Catalogue"
+        ],
+        "summary": "Retrieve metric by ID",
+        "description": "Fetches a specific metric by its 'id' field.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the metric",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metric retrieved successfully."
+          },
+          "404": {
+            "description": "Metric not found."
+          },
+          "500": {
+            "description": "Error processing."
+          }
+        }
+      }
+    },
+    "/risks": {
+      "get": {
+        "tags": [
+          "Risk Catalogue"
+        ],
+        "summary": "Retrieve all risks",
+        "description": "Fetches all stored risks from the risks collection.",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of risks retrieved successfully."
+          },
+          "500": {
+            "description": "Error connecting to backend."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Risk Catalogue"
+        ],
+        "summary": "Upload or update risks",
+        "description": "Accepts a single risk object or an array of risk objects to upload or update. Uses 'risk_id' as key.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "A single risk or a JSON array of risks.",
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Risks saved successfully."
+          },
+          "400": {
+            "description": "Invalid input format or empty data."
+          },
+          "500": {
+            "description": "Error processing."
+          }
+        }
+      }
+    },
+    "/risks/{risk_id}": {
+      "get": {
+        "tags": [
+          "Risk Catalogue"
+        ],
+        "summary": "Retrieve risk by ID",
+        "description": "Fetches a specific risk by its 'risk_id' field.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "risk_id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the risk",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Risk retrieved successfully."
+          },
+          "404": {
+            "description": "Risk not found."
+          },
+          "500": {
+            "description": "Error processing."
+          }
+        }
+      }
+    },
+    "/threats": {
+      "get": {
+        "tags": [
+          "Risk Catalogue"
+        ],
+        "summary": "Retrieve all threats",
+        "description": "Fetches all stored threats from the threats collection.",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of threats retrieved successfully."
+          },
+          "500": {
+            "description": "Error connection."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Risk Catalogue"
+        ],
+        "summary": "Upload or update threats",
+        "description": "Accepts a single threat object or an array of threat objects to upload or update. Uses 'threat_id' as key.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "A single threat or a JSON array of threats.",
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Threats saved successfully."
+          },
+          "400": {
+            "description": "Invalid input format or empty data."
+          },
+          "500": {
+            "description": "Error processing."
+          }
+        }
+      }
+    },
+    "/threats/{threat_id}": {
+      "get": {
+        "tags": [
+          "Risk Catalogue"
+        ],
+        "summary": "Retrieve threat by ID",
+        "description": "Fetches a specific threat by its 'threat_id' field.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "threat_id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the threat",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Threat retrieved successfully."
+          },
+          "404": {
+            "description": "Threat not found."
+          },
+          "500": {
+            "description": "Error processing."
+          }
+        }
+      }
+    },
+    "/controls": {
+      "get": {
+        "tags": [
+          "Risk Catalogue"
+        ],
+        "summary": "Retrieve all controls",
+        "description": "Fetches all stored controls from the controls collection.",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of controls retrieved successfully."
+          },
+          "500": {
+            "description": "Error connection."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Risk Catalogue"
+        ],
+        "summary": "Upload or update controls",
+        "description": "Accepts a single control object or an array of control objects to upload or update. Uses 'control_id' as key.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "A single control or a JSON array of controls.",
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Controls saved successfully."
+          },
+          "400": {
+            "description": "Invalid input format or empty data."
+          },
+          "500": {
+            "description": "Error processing."
+          }
+        }
+      }
+    },
+    "/controls/{control_id}": {
+      "get": {
+        "tags": [
+          "Risk Catalogue"
+        ],
+        "summary": "Retrieve control by ID",
+        "description": "Fetches a specific control by its 'control_id' field.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "control_id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the control",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Control retrieved successfully."
+          },
+          "404": {
+            "description": "Control not found."
+          },
+          "500": {
+            "description": "Error processing."
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "Internal Endpoint"
+        ],
+        "summary": "Health Check",
+        "description": "Health check endpoint to verify the API is running and MongoDB is connected.",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "API is running successfully",
             "schema": {
               "type": "object",
               "properties": {
@@ -1024,11 +1414,17 @@
     },
     "/data": {
       "post": {
-        "tags": ["Internal Endpoint"],
+        "tags": [
+          "Internal Endpoint"
+        ],
         "summary": "Insert Data",
         "description": "Insert arbitrary JSON data into MongoDB collection.",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "name": "body",
@@ -1063,11 +1459,17 @@
     },
     "/evidence": {
       "post": {
-        "tags": ["Internal Endpoint"],
+        "tags": [
+          "Internal Endpoint"
+        ],
         "summary": "Upload Evidence",
         "description": "Store audit evidence for compliance tracking.",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "name": "body",
@@ -1076,7 +1478,13 @@
             "description": "Evidence data",
             "schema": {
               "type": "object",
-              "required": ["timestamp", "toolId", "raw", "resource", "id"],
+              "required": [
+                "timestamp",
+                "toolId",
+                "raw",
+                "resource",
+                "id"
+              ],
               "properties": {
                 "timestamp": {
                   "type": "string",
@@ -1127,11 +1535,17 @@
     },
     "/assessment-result": {
       "post": {
-        "tags": ["Internal Endpoint"],
+        "tags": [
+          "Internal Endpoint"
+        ],
         "summary": "Upload Assessment Result",
         "description": "Store compliance assessment result.",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "name": "body",
@@ -1140,7 +1554,11 @@
             "description": "Assessment result data",
             "schema": {
               "type": "object",
-              "required": ["targetId", "status", "timestamp"],
+              "required": [
+                "targetId",
+                "status",
+                "timestamp"
+              ],
               "properties": {
                 "targetId": {
                   "type": "string",
@@ -1148,7 +1566,11 @@
                 },
                 "status": {
                   "type": "string",
-                  "enum": ["compliant", "non-compliant", "partial"],
+                  "enum": [
+                    "compliant",
+                    "non-compliant",
+                    "partial"
+                  ],
                   "example": "compliant"
                 },
                 "timestamp": {
@@ -1184,11 +1606,17 @@
     },
     "/send_records": {
       "post": {
-        "tags": ["Internal Endpoint"],
+        "tags": [
+          "Internal Endpoint"
+        ],
         "summary": "Send Records",
         "description": "Store and forward records to blockchain ledger endpoints.",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "name": "body",
@@ -1222,10 +1650,14 @@
     },
     "/stop-sdt": {
       "get": {
-        "tags": ["Internal Endpoint"],
+        "tags": [
+          "Internal Endpoint"
+        ],
         "summary": "Stop SDT Manager",
         "description": "Stop the SDT manager process. Note: This endpoint has a 10 second internal delay.",
-        "produces": ["text/plain"],
+        "produces": [
+          "text/plain"
+        ],
         "responses": {
           "200": {
             "description": "SDT manager stopped",
@@ -1239,11 +1671,17 @@
     },
     "/trigger-chain": {
       "post": {
-        "tags": ["Internal Endpoint"],
+        "tags": [
+          "Internal Endpoint"
+        ],
         "summary": "Trigger Chain",
         "description": "Full workflow chain: parse BOM file, POST to ledger, GET hash, and call send_sdt. Supports JSON and XML BOM files.",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "name": "body",
@@ -1252,7 +1690,10 @@
             "description": "Chain trigger parameters",
             "schema": {
               "type": "object",
-              "required": ["bom_path", "unique_key"],
+              "required": [
+                "bom_path",
+                "unique_key"
+              ],
               "properties": {
                 "bom_path": {
                   "type": "string",
@@ -1302,11 +1743,17 @@
     },
     "/trigger_delete": {
       "post": {
-        "tags": ["Internal Endpoint"],
+        "tags": [
+          "Internal Endpoint"
+        ],
         "summary": "Trigger Delete",
         "description": "Trigger deletion of a resource in the external SDT system.",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "name": "body",
@@ -1315,7 +1762,9 @@
             "description": "Delete request parameters",
             "schema": {
               "type": "object",
-              "required": ["identifier"],
+              "required": [
+                "identifier"
+              ],
               "properties": {
                 "identifier": {
                   "type": "string",

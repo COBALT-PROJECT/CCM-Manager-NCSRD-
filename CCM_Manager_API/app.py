@@ -30,7 +30,7 @@ CORS(app)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 load_dotenv()
 
-# --- CONFIGURATION ---
+
 # --- CONFIGURATION ---
 # Centralize all config here. 
 # NOTE: The default here is a fallback. Ideally, set these in your .env file.
@@ -50,6 +50,10 @@ try:
     certificates_col = db.certificates
     schemes_col = db.schemes
     toes_col = db.toes
+    risks_col = db.risks
+    threats_col = db.threats
+    metrics_col = db.metrics
+    controls_col = db.controls
     logging.info(f"Connected to MongoDB at {MONGO_URI}")
 except Exception as e:
     logging.error(f"Failed to connect to MongoDB: {e}")
@@ -815,6 +819,185 @@ def upload_certification_scheme():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# --- CRUD Endpoints for Risk Catalogue Entities ---
+
+# Metrics
+@app.route('/metrics', methods=['GET'])
+def get_all_metrics():
+    try:
+        metrics = list(metrics_col.find({}, {'_id': 0}))
+        return jsonify(metrics), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/metrics/<id>', methods=['GET'])
+def get_metric(id):
+    try:
+        metric = metrics_col.find_one({"id": id}, {'_id': 0})
+        if metric:
+            return jsonify(metric), 200
+        return jsonify({"error": "Metric not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/metrics', methods=['POST', 'PUT'])
+def upload_or_update_metric():
+    if not request.is_json:
+        return jsonify({"error": "No JSON data provided."}), 400
+    data = request.get_json()
+    
+    # Handle both single object and list of objects
+    if isinstance(data, list):
+        inserted = 0
+        for item in data:
+            if "id" in item:
+                item["timestamp"] = datetime.utcnow().isoformat()
+                metrics_col.update_one({"id": item["id"]}, {"$set": item}, upsert=True)
+                inserted += 1
+        return jsonify({"message": f"{inserted} metrics saved successfully."}), 201
+    else:
+        if "id" not in data:
+            return jsonify({"error": "Metric must have an 'id'."}), 400
+        try:
+            data["timestamp"] = datetime.utcnow().isoformat()
+            metrics_col.update_one({"id": data["id"]}, {"$set": data}, upsert=True)
+            return jsonify({"message": "Metric saved successfully.", "id": data["id"]}), 201
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+# Risks
+@app.route('/risks', methods=['GET'])
+def get_all_risks():
+    try:
+        risks = list(risks_col.find({}, {'_id': 0}))
+        return jsonify(risks), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/risks/<risk_id>', methods=['GET'])
+def get_risk(risk_id):
+    try:
+        risk = risks_col.find_one({"risk_id": risk_id}, {'_id': 0})
+        if risk:
+            return jsonify(risk), 200
+        return jsonify({"error": "Risk not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/risks', methods=['POST', 'PUT'])
+def upload_or_update_risk():
+    if not request.is_json:
+        return jsonify({"error": "No JSON data provided."}), 400
+    data = request.get_json()
+    
+    if isinstance(data, list):
+        inserted = 0
+        for item in data:
+            if "risk_id" in item:
+                item["timestamp"] = datetime.utcnow().isoformat()
+                risks_col.update_one({"risk_id": item["risk_id"]}, {"$set": item}, upsert=True)
+                inserted += 1
+        return jsonify({"message": f"{inserted} risks saved successfully."}), 201
+    else:
+        if "risk_id" not in data:
+            return jsonify({"error": "Risk must have a 'risk_id'."}), 400
+        try:
+            data["timestamp"] = datetime.utcnow().isoformat()
+            risks_col.update_one({"risk_id": data["risk_id"]}, {"$set": data}, upsert=True)
+            return jsonify({"message": "Risk saved successfully.", "risk_id": data["risk_id"]}), 201
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+# Threats
+@app.route('/threats', methods=['GET'])
+def get_all_threats():
+    try:
+        threats = list(threats_col.find({}, {'_id': 0}))
+        return jsonify(threats), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/threats/<threat_id>', methods=['GET'])
+def get_threat(threat_id):
+    try:
+        threat = threats_col.find_one({"threat_id": threat_id}, {'_id': 0})
+        if threat:
+            return jsonify(threat), 200
+        return jsonify({"error": "Threat not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/threats', methods=['POST', 'PUT'])
+def upload_or_update_threat():
+    if not request.is_json:
+        return jsonify({"error": "No JSON data provided."}), 400
+    data = request.get_json()
+    
+    if isinstance(data, list):
+        inserted = 0
+        for item in data:
+            if "threat_id" in item:
+                item["timestamp"] = datetime.utcnow().isoformat()
+                threats_col.update_one({"threat_id": item["threat_id"]}, {"$set": item}, upsert=True)
+                inserted += 1
+        return jsonify({"message": f"{inserted} threats saved successfully."}), 201
+    else:
+        if "threat_id" not in data:
+            return jsonify({"error": "Threat must have a 'threat_id'."}), 400
+        try:
+            data["timestamp"] = datetime.utcnow().isoformat()
+            threats_col.update_one({"threat_id": data["threat_id"]}, {"$set": data}, upsert=True)
+            return jsonify({"message": "Threat saved successfully.", "threat_id": data["threat_id"]}), 201
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+# Controls
+@app.route('/controls', methods=['GET'])
+def get_all_controls():
+    try:
+        controls = list(controls_col.find({}, {'_id': 0}))
+        return jsonify(controls), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/controls/<control_id>', methods=['GET'])
+def get_control(control_id):
+    try:
+        control = controls_col.find_one({"control_id": control_id}, {'_id': 0})
+        if control:
+            return jsonify(control), 200
+        return jsonify({"error": "Control not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/controls', methods=['POST', 'PUT'])
+def upload_or_update_control():
+    if not request.is_json:
+        return jsonify({"error": "No JSON data provided."}), 400
+    data = request.get_json()
+    
+    if isinstance(data, list):
+        inserted = 0
+        for item in data:
+            control_key = item.get("control_id") or item.get("associated_control_requirement") or item.get("id")
+            if control_key:
+                item["timestamp"] = datetime.utcnow().isoformat()
+                controls_col.update_one({"control_id": control_key}, {"$set": item}, upsert=True)
+                inserted += 1
+        return jsonify({"message": f"{inserted} controls saved successfully."}), 201
+    else:
+        control_key = data.get("control_id") or data.get("associated_control_requirement") or data.get("id")
+        if not control_key:
+            return jsonify({"error": "Control must have a 'control_id' or equivalent."}), 400
+        try:
+            data["timestamp"] = datetime.utcnow().isoformat()
+            controls_col.update_one({"control_id": control_key}, {"$set": data}, upsert=True)
+            return jsonify({"message": "Control saved successfully.", "control_id": control_key}), 201
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+
     
     
 def generate_json_hash(data):
@@ -1390,10 +1573,49 @@ def retrieve_toe_data(toe_id):
         return jsonify({"error": "Internal server error", "details": str(e)}), 500
     
 if __name__ == '__main__':
+    # Auto-initialize the Risk Catalogue collections from JSON
+    catalogue_path = os.path.join(os.path.dirname(__file__), 'ai_catalogue.json')
+    if os.path.exists(catalogue_path):
+        try:
+            with open(catalogue_path, 'r') as f:
+                cat_data = json.load(f)
+                
+            # Populate Metrics if empty
+            if metrics_col.count_documents({}) == 0:
+                metrics_list = cat_data.get("compliance_metrics", [])
+                if metrics_list:
+                    metrics_col.insert_many(metrics_list)
+                    logging.info(f"Initialized {len(metrics_list)} AI compliance metrics into MongoDB.")
+                    
+            # Populate Controls if empty
+            if controls_col.count_documents({}) == 0:
+                controls_list = cat_data.get("certifiable_standards_mapping", [])
+                if controls_list:
+                    # Some controls are duplicated by multiple metrics pointing to them, let's unique them by control_id or just insert
+                    controls_col.insert_many(controls_list)
+                    logging.info(f"Initialized {len(controls_list)} AI controls into MongoDB.")
+                    
+            # Populate Risks and extract Threats if empty
+            if risks_col.count_documents({}) == 0 and threats_col.count_documents({}) == 0:
+                risks_list = cat_data.get("risk_catalogue", [])
+                threats_list = []
+                
+                for risk in risks_list:
+                    mapped_threats = risk.pop("mapped_threats", [])
+                    for threat in mapped_threats:
+                        threat["associated_risk_id"] = risk.get("risk_id")
+                        threats_list.append(threat)
+                
+                if risks_list:
+                    risks_col.insert_many(risks_list)
+                    logging.info(f"Initialized {len(risks_list)} AI risks into MongoDB.")
+                if threats_list:
+                    threats_col.insert_many(threats_list)
+                    logging.info(f"Initialized {len(threats_list)} AI threats into MongoDB.")
+                    
+        except Exception as e:
+            logging.error(f"Failed to auto-initialize AI catalogue from JSON: {e}")
+
     app.run(host='0.0.0.0', port=5001, debug=True)
-
-
-
-
-# DEV CCM MANAGER FOR TESTING PURPOSES ONLY - NOT FOR PRODUCTION USE YET
+    # DEV CCM MANAGER CODE BELOW THIS LINE IS FOR TESTING PURPOSES ONLY - NOT FOR PRODUCTION USE YET
 
