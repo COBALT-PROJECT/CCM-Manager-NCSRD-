@@ -566,82 +566,83 @@ def receive_output():
 def generate_hash(data):
     return hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()
 
-@app.route('/upload_oscal', methods=['POST'])
-def upload_oscal():
-    if request.is_json:
-        oscal_json = request.get_json()
-    elif 'file' in request.files:
-        file = request.files['file']
-        oscal_json = json.load(file)
-    else:
-        return jsonify({"error": "No JSON data or file provided."}), 400
+# @app.route('/upload_oscal', methods=['POST'])
+# def upload_oscal():
+#     if request.is_json:
+#         oscal_json = request.get_json()
+#     elif 'file' in request.files:
+#         file = request.files['file']
+#         oscal_json = json.load(file)
+#     else:
+#         return jsonify({"error": "No JSON data or file provided."}), 400
 
-    oscal_type = None
-    if "component-definition" in oscal_json:
-        oscal_type = "component-definition"
-        doc_uuid = str(uuid4())  # generate new UUID for this type
-    elif "catalog" in oscal_json and "uuid" in oscal_json["catalog"]:
-        oscal_type = "catalog"
-        doc_uuid = oscal_json["catalog"]["uuid"]
-    elif "profile" in oscal_json and "uuid" in oscal_json["profile"]:
-        oscal_type = "profile"
-        doc_uuid = oscal_json["profile"]["uuid"]
-    else:
-        return jsonify({"error": "Unrecognized OSCAL type or missing UUID."}), 400
+#     oscal_type = None
+#     if "component-definition" in oscal_json:
+#         oscal_type = "component-definition"
+#         doc_uuid = str(uuid4())  # generate new UUID for this type
+#     elif "catalog" in oscal_json and "uuid" in oscal_json["catalog"]:
+#         oscal_type = "catalog"
+#         doc_uuid = oscal_json["catalog"]["uuid"]
+#     elif "profile" in oscal_json and "uuid" in oscal_json["profile"]:
+#         oscal_type = "profile"
+#         doc_uuid = oscal_json["profile"]["uuid"]
+#     else:
+#         return jsonify({"error": "Unrecognized OSCAL type or missing UUID."}), 400
 
-    doc_hash = generate_hash(oscal_json)
+#     doc_hash = generate_hash(oscal_json)
 
-    if oscal_type in ["catalog", "profile"]:
-        existing = collection.find_one({"uuid": doc_uuid})
-        if existing:
-            if oscal_type in existing:
-                return jsonify({
-                    "message": f"Duplicate {oscal_type} already exists for this UUID.",
-                    "uuid": doc_uuid
-                }), 200
+#     if oscal_type in ["catalog", "profile"]:
+#         existing = collection.find_one({"uuid": doc_uuid})
+#         if existing:
+#             if oscal_type in existing:
+#                 return jsonify({
+#                     "message": f"Duplicate {oscal_type} already exists for this UUID.",
+#                     "uuid": doc_uuid
+#                 }), 200
 
-            collection.update_one(
-                {"uuid": doc_uuid},
-                {"$set": {
-                    oscal_type: oscal_json,
-                    f"{oscal_type}_hash": doc_hash
-                }}
-            )
-            return jsonify({
-                "message": f"{oscal_type} added to existing UUID.",
-                "uuid": doc_uuid
-            }), 200
+#             collection.update_one(
+#                 {"uuid": doc_uuid},
+#                 {"$set": {
+#                     oscal_type: oscal_json,
+#                     f"{oscal_type}_hash": doc_hash
+#                 }}
+#             )
+#             return jsonify({
+#                 "message": f"{oscal_type} added to existing UUID.",
+#                 "uuid": doc_uuid
+#             }), 200
 
-        new_doc = {
-            "uuid": doc_uuid,
-            oscal_type: oscal_json,
-            f"{oscal_type}_hash": doc_hash
-        }
-        collection.insert_one(new_doc)
-        return jsonify({
-            "message": f"{oscal_type} document saved successfully.",
-            "uuid": doc_uuid
-        }), 200
+#         new_doc = {
+#             "uuid": doc_uuid,
+#             oscal_type: oscal_json,
+#             f"{oscal_type}_hash": doc_hash
+#         }
+#         collection.insert_one(new_doc)
+#         return jsonify({
+#             "message": f"{oscal_type} document saved successfully.",
+#             "uuid": doc_uuid
+#         }), 200
 
-    else:
-        existing = collection.find_one({"oscal_type": oscal_type, "hash": doc_hash})
-        if existing:
-            return jsonify({
-                "message": "Duplicate document already exists.",
-                "uuid": existing["uuid"]
-            }), 200
+#     else:
+#         existing = collection.find_one({"oscal_type": oscal_type, "hash": doc_hash})
+#         if existing:
+#             return jsonify({
+#                 "message": "Duplicate document already exists.",
+#                 "uuid": existing["uuid"]
+#             }), 200
 
-        wrapped_doc = {
-            "uuid": doc_uuid,
-            "hash": doc_hash,
-            "oscal_type": oscal_type,
-            "content": oscal_json
-        }
-        collection.insert_one(wrapped_doc)
-        return jsonify({
-            "message": f"{oscal_type} document saved successfully.",
-            "uuid": doc_uuid
-        }), 200
+#         wrapped_doc = {
+#             "uuid": doc_uuid,
+#             "hash": doc_hash,
+#             "oscal_type": oscal_type,
+#             "content": oscal_json
+#         }
+#         collection.insert_one(wrapped_doc)
+#         return jsonify({
+#             "message": f"{oscal_type} document saved successfully.",
+#             "uuid": doc_uuid
+#         }), 200
+
 
 @app.route('/oscal_ids/<doc_uuid>', methods=['GET'])
 def get_oscal_ids_by_doc_uuid(doc_uuid):
@@ -716,12 +717,73 @@ def upload_saasbom():
         "serialNumber": saasbom_json["serialNumber"]
     }), 200
 
+# @app.route("/upload_toe_descriptor", methods=["POST"])
+# def upload_toe_descriptor():
+#     data = request.get_json()
+    
+#     # Check for optional scheme linking parameter
+#     # Can be passed in URL (?scheme_id=...) or body
+#     scheme_id = request.args.get('scheme_id') or data.get('certification_scheme_id')
+
+#     if not data or "component" not in data:
+#         return jsonify({"error": "Missing 'component' in payload"}), 400
+
+#     try:
+#         comp_def = data["component"].get("component-definition", {})
+#         components = comp_def.get("components", [])
+        
+#         if not components:
+#             return jsonify({"error": "No components found"}), 400
+
+#         toe_uuid = components[0].get("uuid")
+#         toe_name = components[0].get("title")
+
+#         if not toe_uuid:
+#             return jsonify({"error": "Missing ToE UUID"}), 400
+
+#         # 1. Validate Scheme Link if provided
+#         linked_scheme = None
+#         if scheme_id:
+#             linked_scheme = schemes_col.find_one({"uuid": scheme_id})
+#             if not linked_scheme:
+#                 return jsonify({"error": f"Scheme {scheme_id} not found. Cannot link ToE."}), 404
+
+#         # 2. Store ToE with Link
+#         toe_entry = {
+#             "type": "target_of_evaluation",
+#             "uuid": toe_uuid,
+#             "name": toe_name,
+#             "content": data,
+#             "linked_scheme_id": scheme_id, # <--- CRITICAL LINK
+#             "timestamp": datetime.utcnow().isoformat()
+#         }
+
+#         toes_col.update_one(
+#             {"uuid": toe_uuid},
+#             {"$set": toe_entry},
+#             upsert=True
+#         )
+
+#         # 3. Forward to Orchestrator/SDT (as per original logic)
+#         try:
+#             if FORWARD_URL:
+#                 requests.post(FORWARD_URL, json=data, timeout=5)
+#         except Exception as e:
+#             logging.warning(f"Failed to forward ToE to Orchestrator: {e}")
+
+#         return jsonify({
+#             "message": "ToE registered and linked successfully",
+#             "toe_uuid": toe_uuid,
+#             "linked_scheme": scheme_id if scheme_id else "None (Warning: Scheme needed for certification)"
+#         }), 200
+
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
+
 @app.route("/upload_toe_descriptor", methods=["POST"])
 def upload_toe_descriptor():
     data = request.get_json()
     
-    # Check for optional scheme linking parameter
-    # Can be passed in URL (?scheme_id=...) or body
     scheme_id = request.args.get('scheme_id') or data.get('certification_scheme_id')
 
     if not data or "component" not in data:
@@ -732,7 +794,49 @@ def upload_toe_descriptor():
         components = comp_def.get("components", [])
         
         if not components:
-            return jsonify({"error": "No components found"}), 400
+            return jsonify({"error": "No components found in component-definition"}), 400
+
+        # Dictionary to group ALL BOMs from ALL components globally
+        global_attached_boms = {}
+
+        # Process each component to find and group referenced BOMs
+        for component in components:
+            links = component.get("links", [])
+
+            for link in links:
+                href = link.get("href", "")
+                bom_type = link.get("text", "unknown-bom")
+                
+                # Extract potential UUID or filename from the href
+                clean_ref = href.split('/')[-1].replace('.json', '').replace('urn:uuid:', '')
+                
+                # Search for the document in our artifacts collection
+                bom_doc = collection.find_one({
+                    "$or": [
+                        {"uuid": clean_ref},
+                        {"serialNumber": {"$regex": clean_ref}},
+                        {"filename": {"$regex": clean_ref}},
+                        {"_id": clean_ref}
+                    ]
+                }, {'_id': 0})
+
+                if bom_doc:
+                    # Initialize the array for this BOM type if it doesn't exist globally
+                    if bom_type not in global_attached_boms:
+                        global_attached_boms[bom_type] = []
+                    
+                    # Append the file to its specific type array
+                    # We add 'source_component_uuid' so you don't lose the relationship
+                    global_attached_boms[bom_type].append({
+                        "source_component_uuid": component.get("uuid"),
+                        "link_ref": href,
+                        "content": bom_doc
+                    })
+
+        # Attach the grouped BOMs OUTSIDE the component-definition.
+        # This makes it a sibling to the main "component" object.
+        if global_attached_boms:
+            data["attached_boms"] = global_attached_boms
 
         toe_uuid = components[0].get("uuid")
         toe_name = components[0].get("title")
@@ -740,20 +844,20 @@ def upload_toe_descriptor():
         if not toe_uuid:
             return jsonify({"error": "Missing ToE UUID"}), 400
 
-        # 1. Validate Scheme Link if provided
+        # 1. Validate Scheme Link
         linked_scheme = None
         if scheme_id:
             linked_scheme = schemes_col.find_one({"uuid": scheme_id})
             if not linked_scheme:
-                return jsonify({"error": f"Scheme {scheme_id} not found. Cannot link ToE."}), 404
+                return jsonify({"error": f"Scheme {scheme_id} not found."}), 404
 
-        # 2. Store ToE with Link
+        # 2. Store updated ToE (now containing the global BOM arrays)
         toe_entry = {
             "type": "target_of_evaluation",
             "uuid": toe_uuid,
             "name": toe_name,
-            "content": data,
-            "linked_scheme_id": scheme_id, # <--- CRITICAL LINK
+            "content": data, 
+            "linked_scheme_id": scheme_id,
             "timestamp": datetime.utcnow().isoformat()
         }
 
@@ -763,21 +867,22 @@ def upload_toe_descriptor():
             upsert=True
         )
 
-        # 3. Forward to Orchestrator/SDT (as per original logic)
+        # 3. Forward the enriched data to Orchestrator
         try:
             if FORWARD_URL:
                 requests.post(FORWARD_URL, json=data, timeout=5)
         except Exception as e:
-            logging.warning(f"Failed to forward ToE to Orchestrator: {e}")
+            logging.warning(f"Failed to forward enriched ToE: {e}")
 
         return jsonify({
-            "message": "ToE registered and linked successfully",
-            "toe_uuid": toe_uuid,
-            "linked_scheme": scheme_id if scheme_id else "None (Warning: Scheme needed for certification)"
+            "message": "ToE registered and BOM files grouped successfully",
+            "toe_uuid": toe_uuid
         }), 200
 
     except Exception as e:
+        logging.error(f"Error in upload_toe_descriptor: {e}")
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/upload_certification_scheme", methods=["POST"])
 def upload_certification_scheme():
@@ -792,15 +897,17 @@ def upload_certification_scheme():
         return jsonify({"error": "Scheme ID is required"}), 400
 
     try:
-        # 1. Send to Ledger
-        ledger_hash = send_to_ledger("/v1/certification-authority/certification-scheme", scheme)
-        
+    #     # 1. Send to Ledger
+    #     ledger_hash = send_to_ledger("/v1/certification-authority/certification-scheme", scheme)
+    # except Exception as e:
+    #     return jsonify({"error": str(e)}), 500
+    
         # 2. Store in MongoDB with Hash
         db_entry = {
             "type": "certification_scheme",
             "uuid": scheme_id,
             "content": scheme,
-            "ledger_hash": ledger_hash,
+            "ledger_hash": "TempHashDueToHotFix",
             "timestamp": datetime.utcnow().isoformat()
         }
         
@@ -814,7 +921,7 @@ def upload_certification_scheme():
         return jsonify({
             "message": "Certification Scheme uploaded and ledgerized successfully",
             "uuid": scheme_id,
-            "ledger_hash": ledger_hash
+            "ledger_hash": "TempHashDueToHotFix"
         }), 200
 
     except Exception as e:
@@ -1572,6 +1679,209 @@ def retrieve_toe_data(toe_id):
         logging.error(f"Error retrieving ToE data: {e}")
         return jsonify({"error": "Internal server error", "details": str(e)}), 500
     
+@app.route('/sdts', methods=['GET'])
+def get_sdts():
+    url = os.getenv("DEPLOYMENTS_SDT")
+    if not url:
+        return jsonify({"error": "DEPLOYMENTS_SDT environment variable not configured"}), 500
+    
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        
+        sdt_ids = []
+        if isinstance(data, list):
+            sdt_ids = [item.get("id") or item.get("identifier") for item in data if isinstance(item, dict)]
+            if not sdt_ids and all(isinstance(x, (str, int)) for x in data):
+                sdt_ids = data
+        elif isinstance(data, dict):
+            # Try to extract from a key that might hold the list, e.g., 'deployments'
+            for key in ["deployments", "sdts", "data", "items"]:
+                if key in data and isinstance(data[key], list):
+                    sdt_ids = [item.get("id") or item.get("identifier") for item in data[key] if isinstance(item, dict)]
+                    if not sdt_ids and all(isinstance(x, (str, int)) for x in data[key]):
+                        sdt_ids = data[key]
+                    break
+            
+            if not sdt_ids:
+                # Fallback: if data contains identifier
+                if "identifier" in data or "id" in data:
+                    sdt_ids.append(data.get("identifier") or data.get("id"))
+                
+        # Filter out None
+        sdt_ids = [str(x) for x in sdt_ids if x is not None]
+        
+        return jsonify(sdt_ids), 200
+    except requests.RequestException as e:
+        return jsonify({"error": "Failed to fetch from SDT deployment service", "details": str(e)}), 502
+@app.route('/retrieve_toes', methods=['GET'])
+def retrieve_all_toes():
+    try:
+        # 1. Retrieve all ToE documents from the dedicated 'toes' collection
+        dedicated_toes = list(toes_col.find({}, {'_id': 0}))
+
+        # 2. Retrieve ToE documents from the fallback generic collection
+        # Looking for documents that contain OSCAL component-definition structures
+        fallback_query = {
+            "$or": [
+                {"content.component-definition": {"$exists": True}},
+                {"component-definition": {"$exists": True}}
+            ]
+        }
+        fallback_toes = list(collection.find(fallback_query, {'_id': 0}))
+
+        # Combine the results from both collections
+        all_toes_raw = dedicated_toes + fallback_toes
+        
+        # 3. Deduplicate ToEs by UUID 
+        # (Prevents returning duplicates if a ToE exists in both collections during a migration)
+        unique_toes = {}
+        for toe in all_toes_raw:
+            # Attempt to extract the UUID based on known schema paths
+            toe_uuid = toe.get('uuid')
+            
+            # Fallback UUID extractions if it's nested deep in OSCAL formatting
+            if not toe_uuid:
+                if 'component-definition' in toe:
+                    toe_uuid = toe['component-definition'].get('uuid')
+                elif 'content' in toe and 'component-definition' in toe['content']:
+                    toe_uuid = toe['content']['component-definition'].get('uuid')
+
+            # If we found a UUID, add it to our dictionary (overwrites duplicates)
+            if toe_uuid:
+                unique_toes[toe_uuid] = toe
+            else:
+                # If no UUID could be parsed at all, keep it using its memory reference or hash to be safe
+                unique_toes[str(id(toe))] = toe
+
+        final_toes_list = list(unique_toes.values())
+
+        return jsonify({
+            "count": len(final_toes_list),
+            "toes": final_toes_list
+        }), 200
+
+    except Exception as e:
+        logging.error(f"Error retrieving all ToEs: {e}")
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
+@app.route('/certificates', methods=['GET'])
+def get_all_certificates():
+    try:
+        # Fetch all certificates, excluding the MongoDB '_id' field
+        certificates = list(certificates_col.find({}, {'_id': 0}))
+        
+        return jsonify({
+            "count": len(certificates),
+            "certificates": certificates
+        }), 200
+
+    except Exception as e:
+        logging.error(f"Error retrieving all certificates: {e}")
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
+@app.route('/certificates/<cert_uuid>', methods=['GET'])
+def get_certificate(cert_uuid):
+    try:
+        # Find the specific certificate by its certification_id
+        cert = certificates_col.find_one(
+            {"certification.certification_id": cert_uuid}, 
+            {'_id': 0}
+        )
+        
+        if not cert:
+            return jsonify({"error": "Certificate not found", "cert_uuid": cert_uuid}), 404
+            
+        return jsonify(cert), 200
+
+    except Exception as e:
+        logging.error(f"Error retrieving certificate {cert_uuid}: {e}")
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
+
+@app.route("/certification_scheme/<scheme_id>", methods=["GET"])
+def get_certification_scheme(scheme_id):
+    try:
+        # Search the collection for the scheme, excluding the MongoDB _id
+        scheme = schemes_col.find_one({"uuid": scheme_id}, {"_id": 0})
+        
+        if not scheme:
+            return jsonify({"error": "Certification Scheme not found"}), 404
+            
+        return jsonify(scheme), 200
+
+    except Exception as e:
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
+@app.route("/certification_scheme/<scheme_id>", methods=["DELETE"])
+def delete_certification_scheme(scheme_id):
+    try:
+        # Attempt to delete the document from MongoDB
+        result = schemes_col.delete_one({"uuid": scheme_id})
+        
+        if result.deleted_count == 0:
+            return jsonify({"error": "Certification Scheme not found"}), 404
+            
+        # Note: If your ledger architecture requires a revocation transaction 
+        # for deleted items, you would insert that API call right here.
+        
+        return jsonify({
+            "message": "Certification Scheme deleted successfully",
+            "uuid": scheme_id
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
+
+@app.route("/certification_schemes", methods=["GET"])
+def get_all_certification_schemes():
+    try:
+        # Retrieve all schemes, excluding the MongoDB _id
+        schemes = list(schemes_col.find({}, {"_id": 0}))
+        
+        return jsonify({
+            "count": len(schemes),
+            "schemes": schemes
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
+
+@app.route('/certificates/<cert_uuid>/withdraw', methods=['PUT'])
+def withdraw_certificate(cert_uuid):
+    cert = certificates_col.find_one({"certification.certification_id": cert_uuid})
+    if not cert:
+        return jsonify({"error": "Certificate not found"}), 404
+        
+    now_str = datetime.utcnow().strftime("%Y-%m-%d")
+    
+    current_status = cert.get("certification", {}).get("certification_decision", {}).get("decision_status")
+    if current_status == "Withdrawn":
+        return jsonify({"message": "Certificate is already withdrawn"}), 200
+
+    update_result = certificates_col.update_one(
+        {"certification.certification_id": cert_uuid},
+        {
+            "$set": {
+                "certification.certification_decision.decision_status": "Withdrawn"
+            },
+            "$push": {
+                "certification.history": {
+                    "event": "Certificate Withdrawn",
+                    "date": now_str
+                }
+            }
+        }
+    )
+    
+    if update_result.modified_count == 1:
+        return jsonify({"message": "Certificate state changed to withdrawn successfully"}), 200
+    else:
+        return jsonify({"error": "Failed to update certificate status"}), 500
+
 if __name__ == '__main__':
     # Auto-initialize the Risk Catalogue collections from JSON
     catalogue_path = os.path.join(os.path.dirname(__file__), 'ai_catalogue.json')

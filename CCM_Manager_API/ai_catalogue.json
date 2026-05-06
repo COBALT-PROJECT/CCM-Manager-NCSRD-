@@ -336,7 +336,9 @@
                 "associated_control_framework": "ISO/IEC 27001",
                 "associated_control_category": "Data Integrity",
                 "associated_control_requirement": "Data Poisoning Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Processes and procedures should be defined and implemented to manage information security risks associated with the use of the AI platform."
         },
         {
             "id": "InformationSecurityForUseOfCloudServices_AIModelClassification_022",
@@ -354,7 +356,9 @@
                 "associated_control_framework": "ISO/IEC 27017",
                 "associated_control_category": "Data Integrity",
                 "associated_control_requirement": "Data Poisoning Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Processes for acquisition, use, management, and exit from cloud services including the AI platform should be established."
         },
         {
             "id": "ManagingInformationSecurityInTheICTSupplyChain_AIModelClassification_023",
@@ -372,7 +376,9 @@
                 "associated_control_framework": "ISO/IEC 27036",
                 "associated_control_category": "Data Integrity",
                 "associated_control_requirement": "Data Poisoning Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Processes and procedures should be defined and implemented to manage information security risks in the ICT supply chain to avoid vulnerabilities that could allow malicious access to poison the AI model."
         },
         {
             "id": "Screening_AIModelClassification_024",
@@ -390,7 +396,9 @@
                 "associated_control_framework": "ISO/IEC 27001",
                 "associated_control_category": "Data Integrity",
                 "associated_control_requirement": "Data Poisoning Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Background verification checks on all candidates should be carried out prior to joining and on an ongoing basis to avoid potential insider threats."
         },
         {
             "id": "InformationSecurityAwareness_AIModelClassification_025",
@@ -408,7 +416,9 @@
                 "associated_control_framework": "ISO/IEC 27002",
                 "associated_control_category": "Data Integrity / Data Confidentiality",
                 "associated_control_requirement": "Data Poisoning Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Educate data scientists and personnel about data poisoning risks and best practices for securing AI data."
         },
         {
             "id": "PhysicalControls_AIModelClassification_026",
@@ -426,7 +436,9 @@
                 "associated_control_framework": "ISO/IEC 27001",
                 "associated_control_category": "Data Integrity / Data Confidentiality",
                 "associated_control_requirement": "Data Poisoning Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Include controls for physical security perimeters, protecting against physical and environmental threats, securing premises, storage media, and preventing unauthorized physical access to training data or servers."
         },
         {
             "id": "SecureAuthentication_AIModelClassification_027",
@@ -444,7 +456,9 @@
                 "associated_control_framework": "ISO/IEC 27002",
                 "associated_control_category": "Data Integrity",
                 "associated_control_requirement": "Data Poisoning Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Ensure that only authorized users can modify training data."
         },
         {
             "id": "SecureDevelopmentLifecycle_AIModelClassification_028",
@@ -462,7 +476,9 @@
                 "associated_control_framework": "ISO/IEC 27034",
                 "associated_control_category": "Data Integrity / Data Confidentiality",
                 "associated_control_requirement": "Data Poisoning Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Rules for secure development of software and systems should be established and applied throughout the AI system lifecycle."
         },
         {
             "id": "SecureSystemArchitectureAndEngineeringPrinciples_AIModelClassification_029",
@@ -474,13 +490,15 @@
             "reporting_format": "Boolean",
             "target_values": {
                 "target_value_scale": "Boolean",
-                "target_value": true
+                "target_value": "true"
             },
             "associated_control": {
                 "associated_control_framework": "ISO/IEC 27001",
                 "associated_control_category": "Data Integrity / Data Confidentiality",
                 "associated_control_requirement": "Data Poisoning Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Principles for engineering secure systems should be established, documented, maintained, and applied to all information system development activities to minimize potential security threats."
         },
         {
             "id": "AdversarialTraining_AIModelClassification_003",
@@ -492,13 +510,15 @@
             "reporting_format": "Percentage",
             "target_values": {
                 "target_value_scale": "Percentage",
-                "target_value": 90
+                "target_value": "90"
             },
             "associated_control": {
                 "associated_control_framework": "NIST SP 800-53",
                 "associated_control_category": "Model Confidentiality",
                 "associated_control_requirement": "Model Evasion Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Train models with adversarial examples to strengthen their robustness against adversarial attacks."
         },
         {
             "id": "DataAugmentation_AIModelClassification_030",
@@ -510,13 +530,15 @@
             "reporting_format": "Boolean",
             "target_values": {
                 "target_value_scale": "Boolean",
-                "target_value": true
+                "target_value": "true"
             },
             "associated_control": {
                 "associated_control_framework": "NIST SP 800-53",
                 "associated_control_category": "Model Confidentiality / Data Integrity",
                 "associated_control_requirement": "Model Evasion Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Apply data augmentation techniques and randomization to input data to make it harder for attackers to craft effective adversarial examples."
         },
         {
             "id": "InputValidation_AIModelClassification_004",
@@ -528,13 +550,15 @@
             "reporting_format": "Percentage",
             "target_values": {
                 "target_value_scale": "Percentage",
-                "target_value": 100
+                "target_value": "100"
             },
             "associated_control": {
                 "associated_control_framework": "OWASP",
                 "associated_control_category": "Data Integrity / Model Confidentiality",
                 "associated_control_requirement": "Model Evasion Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Implement mechanisms to filter invalid data or sanitize to remove or neutralize characters or patterns that could be exploited."
         },
         {
             "id": "InputDistortion_AIModelClassification_031",
@@ -546,13 +570,15 @@
             "reporting_format": "Boolean",
             "target_values": {
                 "target_value_scale": "Boolean",
-                "target_value": true
+                "target_value": "true"
             },
             "associated_control": {
                 "associated_control_framework": "NIST SP 800-53",
                 "associated_control_category": "Model Confidentiality",
                 "associated_control_requirement": "Model Evasion Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Slight modification of the input data to distort adversarial attacks causing them to fail."
         },
         {
             "id": "AdversarialDetection_AIModelClassification_032",
@@ -564,13 +590,15 @@
             "reporting_format": "Percentage",
             "target_values": {
                 "target_value_scale": "Percentage",
-                "target_value": 95
+                "target_value": "95"
             },
             "associated_control": {
                 "associated_control_framework": "NIST SP 800-53",
                 "associated_control_category": "Model Confidentiality / Data Confidentiality",
                 "associated_control_requirement": "Model Evasion Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Deploy adversarial detection mechanisms that can identify and flag potential adversarial examples for further inspection."
         },
         {
             "id": "TransferKnowledge_AIModelClassification_033",
@@ -582,13 +610,15 @@
             "reporting_format": "Boolean",
             "target_values": {
                 "target_value_scale": "Boolean",
-                "target_value": true
+                "target_value": "true"
             },
             "associated_control": {
                 "associated_control_framework": "NIST SP 800-53",
                 "associated_control_category": "Model Confidentiality",
                 "associated_control_requirement": "Model Evasion Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Transfer knowledge from robust teacher models to student models to make the student model resilient to adversarial attacks."
         },
         {
             "id": "AccessControl_AIModelClassification_034",
@@ -600,13 +630,15 @@
             "reporting_format": "Percentage",
             "target_values": {
                 "target_value_scale": "Percentage",
-                "target_value": 100
+                "target_value": "100"
             },
             "associated_control": {
                 "associated_control_framework": "ISO/IEC 27001",
                 "associated_control_category": "Data Integrity",
                 "associated_control_requirement": "Model Evasion Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Rules to control physical and logical access to the software and the API should be established and implemented."
         },
         {
             "id": "AccessRights_AIModelClassification_035",
@@ -618,13 +650,15 @@
             "reporting_format": "Percentage",
             "target_values": {
                 "target_value_scale": "Percentage",
-                "target_value": 100
+                "target_value": "100"
             },
             "associated_control": {
                 "associated_control_framework": "ISO/IEC 27001",
                 "associated_control_category": "Data Integrity",
                 "associated_control_requirement": "Model Evasion Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Access rights to the software should be provisioned, reviewed, modified, and removed in accordance with access control rules."
         },
         {
             "id": "InformationSecurityInSupplierRelationship_AIModelClassification_036",
@@ -636,13 +670,15 @@
             "reporting_format": "Boolean",
             "target_values": {
                 "target_value_scale": "Boolean",
-                "target_value": true
+                "target_value": "true"
             },
             "associated_control": {
                 "associated_control_framework": "ISO/IEC 27001",
                 "associated_control_category": "Data Integrity",
                 "associated_control_requirement": "Model Evasion Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Processes and procedures should be defined and implemented to manage information security risks associated with the use of AI platforms."
         },
         {
             "id": "InformationSecurityForUseOfCloudServices_AIModelClassification_037",
@@ -654,13 +690,15 @@
             "reporting_format": "Boolean",
             "target_values": {
                 "target_value_scale": "Boolean",
-                "target_value": true
+                "target_value": "true"
             },
             "associated_control": {
                 "associated_control_framework": "ISO/IEC 27017",
                 "associated_control_category": "Data Integrity",
                 "associated_control_requirement": "Model Evasion Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Processes for acquisition, use, management, and exit from cloud services including the AI platform should be established."
         },
         {
             "id": "ManagingInformationSecurityInTheICTSupplyChain_AIModelClassification_038",
@@ -672,13 +710,15 @@
             "reporting_format": "Boolean",
             "target_values": {
                 "target_value_scale": "Boolean",
-                "target_value": true
+                "target_value": "true"
             },
             "associated_control": {
                 "associated_control_framework": "ISO/IEC 27001",
                 "associated_control_category": "Data Integrity",
                 "associated_control_requirement": "Model Evasion Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Processes and procedures should be defined and implemented to manage information security risks associated with the ICT products and services supply chain in order to avoid potential vulnerabilities that could allow malicious attackers to poison the AI model."
         },
         {
             "id": "Controls_AIModelClassification_039",
@@ -690,13 +730,15 @@
             "reporting_format": "Boolean",
             "target_values": {
                 "target_value_scale": "Boolean",
-                "target_value": true
+                "target_value": "true"
             },
             "associated_control": {
                 "associated_control_framework": "ISO/IEC 27001",
                 "associated_control_category": "Data Integrity / Data Confidentiality",
                 "associated_control_requirement": "Model Evasion Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Processes and procedures to prevent malicious attackers from gaining access to software and relevant devices."
         },
         {
             "id": "SecureAuthentication_AIModelClassification_040",
@@ -708,13 +750,15 @@
             "reporting_format": "Percentage",
             "target_values": {
                 "target_value_scale": "Percentage",
-                "target_value": 100
+                "target_value": "100"
             },
             "associated_control": {
                 "associated_control_framework": "ISO/IEC 27001",
                 "associated_control_category": "Data Integrity",
                 "associated_control_requirement": "Model Evasion Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Apply authentication methods to ensure that only authorized users can access the software and APIs that require it."
         },
         {
             "id": "SecureSystemArchitectureAndEngineeringPrinciples_AIModelClassification_041",
@@ -726,13 +770,15 @@
             "reporting_format": "Boolean",
             "target_values": {
                 "target_value_scale": "Boolean",
-                "target_value": true
+                "target_value": "true"
             },
             "associated_control": {
                 "associated_control_framework": "ISO/IEC 27001",
                 "associated_control_category": "Data Integrity / Data Confidentiality",
                 "associated_control_requirement": "Model Evasion Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Principles for engineering secure systems should be established, documented, maintained, and applied to all information system development activities to minimize potential security threats."
         },
         {
             "id": "ModelValidation_AIModelClassification_042",
@@ -750,7 +796,9 @@
                 "associated_control_framework": "NIST SP 800-53",
                 "associated_control_category": "Model Confidentiality / Model Integrity",
                 "associated_control_requirement": "Supply Chain Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Vulnerability scanning to detect invalid AI models that could include malicious layers."
         },
         {
             "id": "RestrictLibraryLoading_AIModelClassification_43",
@@ -762,43 +810,45 @@
             "reporting_format": "Percentage",
             "target_values": {
                 "target_value_scale": "Percentage",
-                "target_value": 100
+                "target_value": "100"
             },
             "associated_control": {
                 "associated_control_framework": "NIST SP 800-53",
                 "associated_control_category": "Model Confidentiality",
                 "associated_control_requirement": "Supply Chain Protection"
-            }
+            },
+            "version": "V1.0",
+            "information_need": "Configure appropriate library loading mechanisms and investigate potential vulnerable software to avoid using vulnerable libraries."
         }
     ],
     "certifiable_standards_mapping": [
         {
             "metric_id": "SecureDevelopmentLifecycle_AIModelClassification_009",
-            "standard": null,
+            "standard": "",
             "control_id": "Model Theft Protection\n",
             "description": "Rules for secure development of software and systems should be established and applied."
         },
         {
             "metric_id": "SecureCoding_AIModelClassification_010",
-            "standard": null,
+            "standard": "",
             "control_id": "Model Theft Protection\n",
             "description": "Ensure that APIs are secured with strong authentication, encryption, and proper access controls"
         },
         {
             "metric_id": "AccessControl_AIModelClassification_011",
-            "standard": null,
+            "standard": "",
             "control_id": "Model Theft Protection\n",
             "description": "Rules to control physical and logical access to \nthe AI sytem should be established and implemented"
         },
         {
             "metric_id": "AccessRights_AIModelClassification_012",
-            "standard": null,
+            "standard": "",
             "control_id": "Model Theft Protection\n",
             "description": "Acces rights to the AI system should be provisioned, reviewed, modified and removed in accordance with the rules of access control"
         },
         {
             "metric_id": "SecureAuthentication_AIModelClassification_013",
-            "standard": null,
+            "standard": "",
             "control_id": "Model Theft Protection\n",
             "description": "Ensure that only authorized users can access to the software and the API"
         },
@@ -816,205 +866,205 @@
         },
         {
             "metric_id": "DataValidationAndSanitization_AIModelClassification_005",
-            "standard": null,
+            "standard": "",
             "control_id": "Data Poisoning Protection",
             "description": "Implement data validation routines to identify and filter out anomalous or suspicious data"
         },
         {
             "metric_id": "DataAnomalyIdentification_AIModelClassification_013",
-            "standard": null,
+            "standard": "",
             "control_id": "Data Poisoning Protection",
             "description": "Use defence techniques to identify unusal or adversarial data patterns"
         },
         {
             "metric_id": "ModelValidation_AIModelClassification_014",
-            "standard": null,
+            "standard": "",
             "control_id": "Data Poisoning Protection",
             "description": "Continously monitor and validate model performance to detect unexpected deviations from normal behaviour that may be caused by poisoned data"
         },
         {
             "metric_id": "ModelEnsemble_AIModelClassification_015",
-            "standard": null,
+            "standard": "",
             "control_id": "Data Poisoning Protection",
             "description": "Model ensemble methods in the context of AI security refer to use of multiple machine learning models, trained on different subsets of the initial dataset, in combination to improve robustness and accuracy of threat detection"
         },
         {
             "metric_id": "DataAugmentation_AIModelClassification_016",
-            "standard": null,
+            "standard": "",
             "control_id": "Data Poisoning Protection",
             "description": "Apply data augmentation techniques to diversify the training dataset and make the model more resilient to smallscale poisoning attacks"
         },
         {
             "metric_id": "DataQualityMonitoring_AIModelClassification_017",
-            "standard": null,
+            "standard": "",
             "control_id": "Data Poisoning Protection",
             "description": "Continously monitor data quality, setting thresholds for acceptable quality metrcis.\nAutomatically flag or quarantine data that falls below these standards"
         },
         {
             "metric_id": "ActiveLearning_AIModelClassification_018",
-            "standard": null,
+            "standard": "",
             "control_id": "Data Poisoning Protection",
             "description": "Employ active learning strategies to prioritize the labeling of the most informative data points"
         },
         {
             "metric_id": "AccessControl_AIModelClassification_019",
-            "standard": null,
+            "standard": "",
             "control_id": "Data Poisoning Protection",
             "description": "Rules to control physical and logical access to the training data as well as model or model server should be established and implemented"
         },
         {
             "metric_id": "AccessRights_AIModelClassification_020",
-            "standard": null,
+            "standard": "",
             "control_id": "Data Poisoning Protection",
             "description": "Access rights to training or production data, model or relevant assets should be provisioned, reviewed, modified and removed in accordance with the rules of access control"
         },
         {
             "metric_id": "InfromationSecurityInSupplierRelationship_AIModelClassification_021",
-            "standard": null,
+            "standard": "",
             "control_id": "Data Poisoning Protection",
             "description": "Processes and procedures should be defined and implemented to manage information security risks associated with the use of the AI platform"
         },
         {
             "metric_id": "InformationSecurityForUseOfCloudServices_AIModelClassification_022",
-            "standard": null,
+            "standard": "",
             "control_id": "Data Poisoning Protection",
             "description": "Processes for acquisition, use, management and exit from cloud services including the AI platform should be established"
         },
         {
             "metric_id": "ManagingInformationSecurityInTheICTSupplyChain_AIModelClassification_023",
-            "standard": null,
+            "standard": "",
             "control_id": "Data Poisoning Protection",
             "description": "Processes and procedures should be defined and implemented to manage the information security risks associated with the ICT products and services supply chain in order to avoid potential vulnerabilities providing access to a malicious attacked to posion the AI model"
         },
         {
             "metric_id": "Screening_AIModelClassification_024",
-            "standard": null,
+            "standard": "",
             "control_id": "Data Poisoning Protection",
             "description": "Background verification checks on all candidates to become personnel should be carried out prior to joining the organization and on an ongoing basis in order to avoid potential insider threats"
         },
         {
             "metric_id": "InformationSecurityAwareness_AIModelClassification_025",
-            "standard": null,
+            "standard": "",
             "control_id": "Data Poisoning Protection",
             "description": "Educate data scientists, and other personnel about the risks of data poisoning and best practices for securing AI data"
         },
         {
             "metric_id": "PhysicalControls_AIModelClassification_026",
-            "standard": null,
+            "standard": "",
             "control_id": "Data Poisoning Protection",
             "description": "Including controls for physical security perimeters, protecting against physical and environmental threats, security of assets of premises, storage media and so on to protect against physical access to training data or servers storing security relevant datasets"
         },
         {
             "metric_id": "SecureAuthentication_AIModelClassification_027",
-            "standard": null,
+            "standard": "",
             "control_id": "Data Poisoning Protection",
             "description": "Ensure that only authorized users can modify training data"
         },
         {
             "metric_id": "SecureDevelopmentLifecycle_AIModelClassification_028",
-            "standard": null,
+            "standard": "",
             "control_id": "Data Poisoning Protection",
             "description": "Rules for secure development of software and systems \nshould be established and applied"
         },
         {
             "metric_id": "SecureSystemArchitectureAndEngineeringPrinciples_AIModelClassification_029",
-            "standard": null,
+            "standard": "",
             "control_id": "Data Poisoning Protection",
             "description": "Principles for engineering secure systems should be establied, documented, maintained and applied to any information system development acitivites in order to minimize the potential security threats"
         },
         {
             "metric_id": "AdversarialTraining_AIModelClassification_003",
-            "standard": null,
+            "standard": "",
             "control_id": "Model Evasion Protection",
             "description": "Train models with adversarial examples to strengthen their robustness against adversarial attacks"
         },
         {
             "metric_id": "DataAugmentation_AIModelClassification_030",
-            "standard": null,
+            "standard": "",
             "control_id": "Model Evasion Protection",
             "description": "Apply data \naugmentation techniques and randomization to input data to make it harder for attackers to craft effective adversarial examples"
         },
         {
             "metric_id": "InputValidation_AIModelClassification_004",
-            "standard": null,
+            "standard": "",
             "control_id": "Model Evasion Protection",
             "description": "Implement mechanisms to filter invalid data or sanitizing to remove or neutralize characters or pattern that could be exploited"
         },
         {
             "metric_id": "InputDistortion_AIModelClassification_031",
-            "standard": null,
+            "standard": "",
             "control_id": "Model Evasion Protection",
             "description": "Slight modification of the input data can be performed in order to distort the adversarial attack causing it to fail"
         },
         {
             "metric_id": "AdversarialDetection_AIModelClassification_032",
-            "standard": null,
+            "standard": "",
             "control_id": "Model Evasion Protection",
             "description": "Deploy adversarial detection mechanisms that can identify and flag potential adversarial examples for further inspection"
         },
         {
             "metric_id": "TransferKnowledge_AIModelClassification_033",
-            "standard": null,
+            "standard": "",
             "control_id": "Model Evasion Protection",
             "description": "Transfer knowledge  from robust teacher models to student models, making the student model resilient to adversarial attacks.\n"
         },
         {
             "metric_id": "AccessControl_AIModelClassification_034",
-            "standard": null,
+            "standard": "",
             "control_id": "Model Evasion Protection",
             "description": "Rules to control physical and logical access to the software and the API should be established and implemented"
         },
         {
             "metric_id": "AccessRights_AIModelClassification_035",
-            "standard": null,
+            "standard": "",
             "control_id": "Model Evasion Protection",
             "description": "Access rights to the software should be provisioned, reviewed, modified and removed in accordance with the rules of access control"
         },
         {
             "metric_id": "InformationSecurityInSupplierRelationship_AIModelClassification_036",
-            "standard": null,
+            "standard": "",
             "control_id": "Model Evasion Protection",
             "description": "Processes \nand procedures should be defined and implemented to manage the information security risks associated with the use of the AI platforms"
         },
         {
             "metric_id": "InformationSecurityForUseOfCloudServices_AIModelClassification_037",
-            "standard": null,
+            "standard": "",
             "control_id": "Model Evasion Protection",
             "description": "Processes for acquisition, use, management and exit from cloud services including the AI platform should be established"
         },
         {
             "metric_id": "ManagingInformationSecurityInTheICTSupplyChain_AIModelClassification_038",
-            "standard": null,
+            "standard": "",
             "control_id": "Model Evasion Protection",
             "description": "Processes and procedures should be defined and implemented to manage the information \nsecurity risk associated with the ICT products and services supply chain in order to avoid potential vulnerabilities providing access to a malicious attacked to poison the AI model"
         },
         {
             "metric_id": "Controls_AIModelClassification_039",
-            "standard": null,
+            "standard": "",
             "control_id": "Model Evasion Protection",
             "description": "Processes and procedures to prevent malicious attackers having access to software and relevant devices"
         },
         {
             "metric_id": "SecureAuthentication_AIModelClassification_040",
-            "standard": null,
+            "standard": "",
             "control_id": "Model Evasion Protection",
             "description": "Apply authentication methods in order to ensure that just authorised users can access to the software and API which require it"
         },
         {
             "metric_id": "SecureSystemArchitectureAndEngineeringPrinciples_AIModelClassification_041",
-            "standard": null,
+            "standard": "",
             "control_id": "Model Evasion Protection",
             "description": "Principles for engineering secure systems should be establied, documented, maintained and applied to any information system development acitivites in order to minimize the potential security threats"
         },
         {
             "metric_id": "ModelValidation_AIModelClassification_042",
-            "standard": null,
+            "standard": "",
             "control_id": "Supply Chain Protection",
             "description": "Vulnerability Scanning to detect invalid AI Models that could have included malicious layers"
         },
         {
             "metric_id": "RestrictLibraryLoading_AIModelClassification_43",
-            "standard": null,
+            "standard": "",
             "control_id": "Supply Chain Protection",
             "description": "Configuration of appropriate library loading mechanisms and investigating potential vulnerable software to avoid usage of vulnerable libraries"
         }

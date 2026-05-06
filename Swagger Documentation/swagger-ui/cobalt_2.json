@@ -1,11 +1,11 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "SBOM Generator API",
-    "description": "API to generate Software Bill of Materials (SBOM) from a given folder containing a dependency file.",
+    "title": "CCM Manager API",
+    "description": "This API is used to manage the CCM Manager, which is a tool that comunicates between the UI STD DLT and the Orchestrator",
     "version": "1.0.0"
   },
-  "host": "localhost:5001",
+  "host": "10.160.201.229:5001",
   "basePath": "/",
   "schemes": [
     "http"
@@ -22,9 +22,147 @@
     },
     {
       "name": "Oscal Catalog"
+    },
+    {
+      "name": "Risk Catalogue"
     }
   ],
   "paths": {
+    "/sdts": {
+      "get": {
+        "tags": [
+          "Internal Endpoint"
+        ],
+        "summary": "Retrieve SDT Deployment IDs",
+        "description": "Fetches and returns active deployment identifiers directly from the remote SDT orchestrator.",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of SDT UUIDs successfully fetched.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "502": {
+            "description": "Failed to fetch from SDT deployment service proxy due to unreachable host.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                },
+                "details": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/certificates": {
+      "get": {
+        "tags": [
+          "Internal Endpoint"
+        ],
+        "summary": "Retrieve all Certificates",
+        "description": "Fetches all stored certificates from the collection.",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of certificates retrieved successfully."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/certificates/{cert_uuid}": {
+      "get": {
+        "tags": [
+          "Internal Endpoint"
+        ],
+        "summary": "Retrieve a specific Certificate",
+        "description": "Fetches a specific certificate by its certification_id.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cert_uuid",
+            "in": "path",
+            "required": true,
+            "description": "The exact UUID of the target certificate.",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Certificate retrieved successfully."
+          },
+          "404": {
+            "description": "Certificate not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/certificates/{cert_uuid}/withdraw": {
+      "put": {
+        "tags": [
+          "Internal Endpoint"
+        ],
+        "summary": "Withdraw a target Certificate",
+        "description": "Locates a certificate, explicitly enforces its decision_status to 'Withdrawn', and logs the state change transaction permanently within its history array.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cert_uuid",
+            "in": "path",
+            "required": true,
+            "description": "The exact UUID of the target certificate to withdraw.",
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Certificate state changed to withdrawn successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Configured Certificate not properly mapped or invalid.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/generate_sbom": {
       "post": {
         "tags": [
@@ -423,6 +561,26 @@
         }
       }
     },
+    "/retrieve_toes": {
+      "get": {
+        "tags": [
+          "Toe Registration"
+        ],
+        "summary": "Retrieve all ToE documents",
+        "description": "Retrieves all Target of Evaluation (ToE) documents from the database across dedicated and fallback collections.",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all ToEs retrieved successfully."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
     "/upload_saasbom": {
       "post": {
         "tags": [
@@ -674,13 +832,95 @@
         }
       }
     },
+    "/certification_schemes": {
+      "get": {
+        "tags": [
+          "Certification Scheme"
+        ],
+        "summary": "Retrieve all Certification Schemes",
+        "description": "Fetches all stored certification schemes from the collection.",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of schemes retrieved successfully."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/certification_scheme/{scheme_id}": {
+      "get": {
+        "tags": [
+          "Certification Scheme"
+        ],
+        "summary": "Retrieve a specific Certification Scheme",
+        "description": "Fetches a specific scheme by its ID.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "scheme_id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the target certification scheme.",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scheme retrieved successfully."
+          },
+          "404": {
+            "description": "Scheme not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Certification Scheme"
+        ],
+        "summary": "Delete a specific Certification Scheme",
+        "description": "Deletes a specific scheme by its ID from the database.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "scheme_id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the target certification scheme to delete.",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scheme deleted successfully."
+          },
+          "404": {
+            "description": "Scheme not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
     "/upload_certification_scheme": {
       "post": {
         "tags": [
           "Certification Scheme"
         ],
         "summary": "Upload Certification Scheme",
-        "description": "Uploads a certification scheme document along with optional profile and catalog data. Updates existing entry if UUID matches.",
+        "description": "Uploads a certification scheme document along with optional profile and catalog data. Updates existing entry if UUID matches. Fully compliant with the Compliance Metrics Model.",
         "consumes": [
           "application/json"
         ],
@@ -703,9 +943,10 @@
                   "type": "object",
                   "required": [
                     "id",
-                    "complianceMetrics",
-                    "controls",
-                    "boundaryConditions",
+                    "compliance_metrics",
+                    "certifiable_standards_mapping",
+                    "boundary_conditions",
+                    "risk_catalogue",
                     "productProfile"
                   ],
                   "properties": {
@@ -713,23 +954,211 @@
                       "type": "string",
                       "example": "scheme-123"
                     },
-                    "complianceMetrics": {
-                      "type": "object"
-                    },
-                    "controls": {
+                    "compliance_metrics": {
                       "type": "array",
                       "items": {
-                        "type": "object"
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "name",
+                          "description",
+                          "version",
+                          "information_need",
+                          "implementation_evidence",
+                          "frequency",
+                          "data_source_type",
+                          "reporting_format",
+                          "target_values",
+                          "associated_control"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "version": {
+                            "type": "string"
+                          },
+                          "information_need": {
+                            "type": "string"
+                          },
+                          "implementation_evidence": {
+                            "type": "string"
+                          },
+                          "frequency": {
+                            "type": "number"
+                          },
+                          "data_source_type": {
+                            "type": "string"
+                          },
+                          "reporting_format": {
+                            "type": "string"
+                          },
+                          "target_values": {
+                            "type": "object",
+                            "required": [
+                              "target_value_scale",
+                              "target_value"
+                            ],
+                            "properties": {
+                              "target_value_scale": {
+                                "type": "string"
+                              },
+                              "target_value": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "associated_control": {
+                            "type": "object",
+                            "required": [
+                              "associated_control_framework",
+                              "associated_control_category",
+                              "associated_control_requirement"
+                            ],
+                            "properties": {
+                              "associated_control_framework": {
+                                "type": "string"
+                              },
+                              "associated_control_category": {
+                                "type": "string"
+                              },
+                              "associated_control_requirement": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
                       }
                     },
-                    "boundaryConditions": {
+                    "certifiable_standards_mapping": {
                       "type": "array",
                       "items": {
-                        "type": "object"
+                        "type": "object",
+                        "required": [
+                          "metric_id",
+                          "standard",
+                          "control_id",
+                          "description"
+                        ],
+                        "properties": {
+                          "metric_id": {
+                            "type": "string"
+                          },
+                          "standard": {
+                            "type": "string"
+                          },
+                          "control_id": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "boundary_conditions": {
+                      "type": "object",
+                      "required": [
+                        "environment",
+                        "scope",
+                        "associated_component",
+                        "dependencies"
+                      ],
+                      "properties": {
+                        "environment": {
+                          "type": "string"
+                        },
+                        "scope": {
+                          "type": "string"
+                        },
+                        "associated_component": {
+                          "type": "string"
+                        },
+                        "dependencies": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "risk_catalogue": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "risk_id",
+                          "risk_name",
+                          "risk_details",
+                          "risk_category",
+                          "associated_framework",
+                          "mapped_threats",
+                          "mapped_metrics"
+                        ],
+                        "properties": {
+                          "risk_id": {
+                            "type": "string"
+                          },
+                          "risk_name": {
+                            "type": "string"
+                          },
+                          "risk_details": {
+                            "type": "string"
+                          },
+                          "risk_category": {
+                            "type": "string"
+                          },
+                          "associated_framework": {
+                            "type": "string"
+                          },
+                          "mapped_threats": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "threat_id",
+                                "name"
+                              ],
+                              "properties": {
+                                "threat_id": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "mapped_metrics": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "metric_id",
+                                "impact"
+                              ],
+                              "properties": {
+                                "metric_id": {
+                                  "type": "string"
+                                },
+                                "impact": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
                       }
                     },
                     "productProfile": {
-                      "type": "object"
+                      "type": "object",
+                      "description": "Retained from original scheme for compatibility"
                     }
                   }
                 },
