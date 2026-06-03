@@ -20,6 +20,12 @@ import requests
 from flask_cors import CORS 
 from pymongo import ReturnDocument
 import xml.etree.ElementTree as ET
+try:
+    from IdentityManagement import ComponentAuthClient, AuthError
+except ImportError:
+    ComponentAuthClient = None
+    AuthError = Exception
+    logging.warning("IdentityManagement not available (missing PyJWT?); auth disabled")
 
 class Config:
     UPLOAD_FOLDER = './sboms'
@@ -54,9 +60,64 @@ try:
     threats_col = db.threats
     metrics_col = db.metrics
     controls_col = db.controls
+    rtc_col = db.risk_threat_control       # R↔T↔C triplets
+    cm_col = db.control_metric             # C↔M mappings
     logging.info(f"Connected to MongoDB at {MONGO_URI}")
 except Exception as e:
     logging.error(f"Failed to connect to MongoDB: {e}")
+
+# --- COMPONENT AUTH CLIENT ---
+_am_base = os.getenv("AM_BASE_URL", "")
+_am_cid  = os.getenv("AM_CLIENT_ID", "")
+_am_sec  = os.getenv("AM_CLIENT_SECRET", "")
+_am_scope = os.getenv("AM_SCOPE", "digital_twins profile")
+_am_verify = os.getenv("AM_VERIFY_TLS", "true").lower() in ("1", "true", "yes")
+
+auth_client = None
+if ComponentAuthClient is not None and _am_base and _am_cid and _am_sec:
+    try:
+        auth_client = ComponentAuthClient(
+            base_url=_am_base,
+            client_id=_am_cid,
+            client_secret=_am_sec,
+            default_scope=_am_scope,
+            verify_tls=_am_verify,
+        )
+        logging.info(f"ComponentAuthClient initialized for {_am_cid} @ {_am_base}")
+    except Exception as e:
+        logging.warning(f"ComponentAuthClient init failed ({e}); running unauthenticated")
+else:
+    logging.warning("AM_BASE_URL / AM_CLIENT_ID / AM_CLIENT_SECRET not set; running unauthenticated")
+
+
+def authed_request(method, url, **kwargs):
+    """Route through ComponentAuthClient when available, raw requests otherwise."""
+    if auth_client is not None:
+        return auth_client.authenticated_request(method, url, **kwargs)
+    return requests.request(method, url, **kwargs)
+
+
+@app.route('/auth/status', methods=['GET'])
+def auth_status():
+    """Diagnostic endpoint — reports whether component auth is enabled, functional, and returns the token."""
+    result = {
+        "auth_enabled": auth_client is not None,
+    }
+
+    if auth_client is None:
+        result["status"] = "disabled"
+        return jsonify(result), 200
+
+    try:
+        # Retrieve the current active token (uses cached if valid, or fetches a new one)
+        token = auth_client.get_token()
+        result["status"] = "ok"
+        result["active_token"] = token  # <-- Add this line to expose the token string
+    except Exception as e:
+        result["status"] = "token_error"
+        result["details"] = str(e)
+
+    return jsonify(result), 200
 
 # Load ASSESSMENT_SCHEMA
 with open(os.path.join(os.path.dirname(__file__), 'schemas', 'ASSESSMENT_SCHEMA.json')) as f:
@@ -73,7 +134,7 @@ def send_to_ledger(endpoint, data):
     # Swagger typically requires content as a stringified JSON inside a wrapper
     payload = {"content": json.dumps(data)}
     try:
-        response = requests.post(url, json=payload, timeout=10)
+        response = authed_request("POST", url, json=payload, timeout=10)
         response.raise_for_status()
         return response.json().get("hash")
     except requests.RequestException as e:
@@ -870,7 +931,7 @@ def upload_toe_descriptor():
         # 3. Forward the enriched data to Orchestrator
         try:
             if FORWARD_URL:
-                requests.post(FORWARD_URL, json=data, timeout=5)
+                authed_request("POST", FORWARD_URL, json=data, timeout=5)
         except Exception as e:
             logging.warning(f"Failed to forward enriched ToE: {e}")
 
@@ -887,45 +948,340 @@ def upload_toe_descriptor():
 @app.route("/upload_certification_scheme", methods=["POST"])
 def upload_certification_scheme():
     data = request.get_json()
-    if not data or "certificationScheme" not in data:
-        return jsonify({"error": "Missing 'certificationScheme' object"}), 400
+    if not data:
+        return jsonify({"error": "No JSON data provided"}), 400
 
-    scheme = data["certificationScheme"]
-    scheme_id = scheme.get("id")
-    
-    if not scheme_id:
-        return jsonify({"error": "Scheme ID is required"}), 400
+    # ── Support two payload formats ──────────────────────────────────
+    # 1. Wrapped:  { "certificationScheme": { "id": "…" }, "controls": […], … }
+    # 2. Flat:     { "compliance_metrics": […], "risk_catalogue": […], … }
+    if "certificationScheme" in data:
+        scheme_meta = data["certificationScheme"]
+        scheme_id = scheme_meta.get("id") or str(uuid4())
+    else:
+        scheme_meta = {}
+        scheme_id = data.get("id") or str(uuid4())
 
+    # ── Collect every section (top-level first, then inside wrapper) ──
+    compliance_metrics = data.get("compliance_metrics", []) or scheme_meta.get("compliance_metrics", [])
+    certifiable_standards = data.get("certifiable_standards_mapping", []) or scheme_meta.get("certifiable_standards_mapping", [])
+    boundary_conditions = data.get("boundary_conditions", {}) or scheme_meta.get("boundary_conditions", {})
+    risk_catalogue = data.get("risk_catalogue", []) or scheme_meta.get("risk_catalogue", [])
+    product_profile = data.get("productProfile", {}) or scheme_meta.get("productProfile", {})
+    controls_list = data.get("controls", []) or scheme_meta.get("controls", [])
+    profile = data.get("profile", {}) or scheme_meta.get("profile", {})
+    catalog = data.get("catalog", {}) or scheme_meta.get("catalog", {})
+
+    # ── Build the full scheme content document ───────────────────────
+    scheme_content = {**scheme_meta}
+    scheme_content["id"] = scheme_id
+    scheme_content["compliance_metrics"] = compliance_metrics
+    scheme_content["certifiable_standards_mapping"] = certifiable_standards
+    scheme_content["boundary_conditions"] = boundary_conditions
+    scheme_content["risk_catalogue"] = risk_catalogue
+    scheme_content["productProfile"] = product_profile
+    scheme_content["controls"] = controls_list
+    scheme_content["profile"] = profile
+    scheme_content["catalog"] = catalog
+
+    # ── 1. Send to Ledger (best-effort) ──────────────────────────────
     try:
-    #     # 1. Send to Ledger
-    #     ledger_hash = send_to_ledger("/v1/certification-authority/certification-scheme", scheme)
-    # except Exception as e:
-    #     return jsonify({"error": str(e)}), 500
-    
-        # 2. Store in MongoDB with Hash
+        ledger_hash = send_to_ledger("/v1/certification-authority/certification-scheme", scheme_content)
+    except Exception as e:
+        logging.warning(f"Ledger unavailable, using placeholder hash: {e}")
+        ledger_hash = "TempHashDueToHotFix"
+
+    # ── 2. Populate individual entity collections (upserts = no duplicates) ──
+    try:
+        ts = datetime.utcnow().isoformat()
+        counts = {"metrics": 0, "risks": 0, "threats": 0, "controls": 0,
+                  "control_metric_mappings": 0, "risk_threat_control_mappings": 0}
+
+        # --- Metrics (keyed by unique metric id) ---
+        for m in compliance_metrics:
+            mid = m.get("id")
+            if mid:
+                m_doc = {**m, "scheme_id": scheme_id, "timestamp": ts}
+                metrics_col.update_one({"id": mid}, {"$set": m_doc}, upsert=True)
+                counts["metrics"] += 1
+
+        # --- Risks + extract Threats ---
+        seen_threats = set()
+        for r in risk_catalogue:
+            rid = r.get("risk_id")
+            if rid:
+                r_doc = {**r, "scheme_id": scheme_id, "timestamp": ts}
+                risks_col.update_one({"risk_id": rid}, {"$set": r_doc}, upsert=True)
+                counts["risks"] += 1
+
+                # Extract and deduplicate threats across all risks
+                for t in r.get("mapped_threats", []):
+                    tid = t.get("threat_id")
+                    if tid and tid not in seen_threats:
+                        seen_threats.add(tid)
+                        t_doc = {
+                            "threat_id": tid,
+                            "name": t.get("name", ""),
+                            "associated_risk_id": t.get("associated_risk_id", rid),
+                            "scheme_id": scheme_id,
+                            "timestamp": ts,
+                        }
+                        threats_col.update_one({"threat_id": tid}, {"$set": t_doc}, upsert=True)
+                        counts["threats"] += 1
+
+        # --- Controls (keyed by oscal_id + metric_id to avoid overwrites) ---
+        for c in controls_list:
+            oscal_id = c.get("oscal_id")
+            metric_id = c.get("metric_id")
+            if oscal_id and metric_id:
+                c_doc = {**c, "scheme_id": scheme_id, "timestamp": ts}
+                controls_col.update_one(
+                    {"oscal_id": oscal_id, "metric_id": metric_id},
+                    {"$set": c_doc},
+                    upsert=True,
+                )
+                counts["controls"] += 1
+
+        # ── 3. Derive and store C↔M mappings ─────────────────────────
+        # Build a lookup: metric_id → control_requirement
+        metric_to_control = {}
+        for m in compliance_metrics:
+            mid = m.get("id")
+            ac = m.get("associated_control", {})
+            ctrl_req = ac.get("associated_control_requirement")
+            if mid and ctrl_req:
+                metric_to_control[mid] = ctrl_req
+
+        # Accept explicit C↔M mappings from payload, otherwise auto-derive
+        explicit_cm = data.get("control_metric_mappings", []) or scheme_meta.get("control_metric_mappings", [])
+        if explicit_cm:
+            cm_mappings = explicit_cm
+        else:
+            cm_mappings = [
+                {"control_id": ctrl, "metric_id": mid}
+                for mid, ctrl in metric_to_control.items()
+            ]
+
+        # Replace all C↔M mappings for this scheme (delete-then-insert = no dups)
+        cm_col.delete_many({"scheme_id": scheme_id})
+        if cm_mappings:
+            for cm in cm_mappings:
+                cm["scheme_id"] = scheme_id
+                cm["timestamp"] = ts
+            cm_col.insert_many(cm_mappings)
+            counts["control_metric_mappings"] = len(cm_mappings)
+
+        # ── 4. Derive and store R↔T↔C triplets ───────────────────────
+        # Build a lookup: risk_id → set of control_ids (via mapped_metrics → metric → control)
+        risk_to_controls = {}
+        for r in risk_catalogue:
+            rid = r.get("risk_id")
+            if not rid:
+                continue
+            ctrls = set()
+            for mm in r.get("mapped_metrics", []):
+                mid = mm.get("metric_id")
+                if mid and mid in metric_to_control:
+                    ctrls.add(metric_to_control[mid])
+            # Also check the new mapped_risks on metrics (reverse direction)
+            for m in compliance_metrics:
+                if rid in (m.get("mapped_risks") or []):
+                    ctrl = metric_to_control.get(m.get("id"))
+                    if ctrl:
+                        ctrls.add(ctrl)
+            risk_to_controls[rid] = ctrls
+
+        # Accept explicit R↔T↔C mappings from payload, otherwise auto-derive
+        explicit_rtc = data.get("risk_threat_control_mappings", []) or scheme_meta.get("risk_threat_control_mappings", [])
+        if explicit_rtc:
+            rtc_mappings = explicit_rtc
+        else:
+            rtc_mappings = []
+            for r in risk_catalogue:
+                rid = r.get("risk_id")
+                if not rid:
+                    continue
+                threats = r.get("mapped_threats", [])
+                ctrls = risk_to_controls.get(rid, set())
+                for t in threats:
+                    tid = t.get("threat_id")
+                    if not tid:
+                        continue
+                    for ctrl in ctrls:
+                        rtc_mappings.append({
+                            "risk_id": rid,
+                            "threat_id": tid,
+                            "control_id": ctrl,
+                        })
+
+        # Replace all R↔T↔C mappings for this scheme
+        rtc_col.delete_many({"scheme_id": scheme_id})
+        if rtc_mappings:
+            for rtc in rtc_mappings:
+                rtc["scheme_id"] = scheme_id
+                rtc["timestamp"] = ts
+            rtc_col.insert_many(rtc_mappings)
+            counts["risk_threat_control_mappings"] = len(rtc_mappings)
+
+        # ── 5. Store the full scheme document ────────────────────────
         db_entry = {
             "type": "certification_scheme",
             "uuid": scheme_id,
-            "content": scheme,
-            "ledger_hash": "TempHashDueToHotFix",
-            "timestamp": datetime.utcnow().isoformat()
+            "content": scheme_content,
+            "ledger_hash": ledger_hash,
+            "timestamp": ts,
         }
-        
-        # Upsert
-        schemes_col.update_one(
-            {"uuid": scheme_id}, 
-            {"$set": db_entry}, 
-            upsert=True
+        schemes_col.update_one({"uuid": scheme_id}, {"$set": db_entry}, upsert=True)
+
+        logging.info(
+            f"Scheme {scheme_id} uploaded: {counts['metrics']} metrics, "
+            f"{counts['risks']} risks, {counts['threats']} threats, "
+            f"{counts['controls']} controls, "
+            f"{counts['control_metric_mappings']} C↔M, "
+            f"{counts['risk_threat_control_mappings']} R↔T↔C"
         )
 
         return jsonify({
-            "message": "Certification Scheme uploaded and ledgerized successfully",
+            "message": "Certification Scheme uploaded and all entities populated",
             "uuid": scheme_id,
-            "ledger_hash": "TempHashDueToHotFix"
+            "ledger_hash": ledger_hash,
+            "populated": counts,
         }), 200
 
     except Exception as e:
+        logging.error(f"Error in upload_certification_scheme: {e}")
         return jsonify({"error": str(e)}), 500
+
+# --- Scheme Mapping & Export Endpoints ---
+
+@app.route('/schemes/<scheme_id>/mappings/rtc', methods=['GET'])
+def get_rtc_mappings(scheme_id):
+    """Get all Risk↔Threat↔Control triplets for a scheme."""
+    try:
+        mappings = list(rtc_col.find({"scheme_id": scheme_id}, {'_id': 0}))
+        return jsonify({"scheme_id": scheme_id, "count": len(mappings), "mappings": mappings}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/schemes/<scheme_id>/mappings/rtc', methods=['POST'])
+def set_rtc_mappings(scheme_id):
+    """Bulk create/replace R↔T↔C triplets for a scheme. Replaces all existing."""
+    data = request.get_json()
+    if not data or not isinstance(data, list):
+        return jsonify({"error": "Payload must be a JSON array of {risk_id, threat_id, control_id} objects."}), 400
+    try:
+        ts = datetime.utcnow().isoformat()
+        rtc_col.delete_many({"scheme_id": scheme_id})
+        for item in data:
+            item["scheme_id"] = scheme_id
+            item["timestamp"] = ts
+        if data:
+            rtc_col.insert_many(data)
+        return jsonify({"message": f"{len(data)} R↔T↔C mappings saved for scheme {scheme_id}."}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/schemes/<scheme_id>/mappings/cm', methods=['GET'])
+def get_cm_mappings(scheme_id):
+    """Get all Control↔Metric mappings for a scheme."""
+    try:
+        mappings = list(cm_col.find({"scheme_id": scheme_id}, {'_id': 0}))
+        return jsonify({"scheme_id": scheme_id, "count": len(mappings), "mappings": mappings}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/schemes/<scheme_id>/mappings/cm', methods=['POST'])
+def set_cm_mappings(scheme_id):
+    """Bulk create/replace C↔M mappings for a scheme. Replaces all existing."""
+    data = request.get_json()
+    if not data or not isinstance(data, list):
+        return jsonify({"error": "Payload must be a JSON array of {control_id, metric_id} objects."}), 400
+    try:
+        ts = datetime.utcnow().isoformat()
+        cm_col.delete_many({"scheme_id": scheme_id})
+        for item in data:
+            item["scheme_id"] = scheme_id
+            item["timestamp"] = ts
+        if data:
+            cm_col.insert_many(data)
+        return jsonify({"message": f"{len(data)} C↔M mappings saved for scheme {scheme_id}."}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/schemes/<scheme_id>/export', methods=['GET'])
+def export_scheme(scheme_id):
+    """Full scheme export for DRM consumption — includes all entities and mappings."""
+    try:
+        # Fetch the scheme document
+        scheme_doc = schemes_col.find_one({"uuid": scheme_id}, {'_id': 0})
+        if not scheme_doc:
+            return jsonify({"error": f"Scheme '{scheme_id}' not found."}), 404
+
+        # Fetch all related entities for this scheme
+        risks = list(risks_col.find({"scheme_id": scheme_id}, {'_id': 0}))
+        threats = list(threats_col.find({"scheme_id": scheme_id}, {'_id': 0}))
+        metrics = list(metrics_col.find({"scheme_id": scheme_id}, {'_id': 0}))
+        controls = list(controls_col.find({"scheme_id": scheme_id}, {'_id': 0}))
+
+        # Fetch relationship mappings
+        rtc_mappings = list(rtc_col.find({"scheme_id": scheme_id}, {'_id': 0}))
+        cm_mappings = list(cm_col.find({"scheme_id": scheme_id}, {'_id': 0}))
+
+        export = {
+            "scheme": scheme_doc.get("content", {}),
+            "risks": risks,
+            "threats": threats,
+            "metrics": metrics,
+            "controls": controls,
+            "risk_threat_control_mappings": rtc_mappings,
+            "control_metric_mappings": cm_mappings,
+            "counts": {
+                "risks": len(risks),
+                "threats": len(threats),
+                "metrics": len(metrics),
+                "controls": len(controls),
+                "rtc_mappings": len(rtc_mappings),
+                "cm_mappings": len(cm_mappings),
+            },
+        }
+
+        return jsonify(export), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/schemes/<scheme_id>/sync-drm', methods=['POST'])
+def sync_drm(scheme_id):
+    """Forward the full scheme export to the DRM for ingestion."""
+    drm_base = os.getenv("DRM_BASE_URL", "")
+    if not drm_base:
+        return jsonify({"error": "DRM_BASE_URL is not configured in .env"}), 503
+
+    try:
+        # Build the export payload internally
+        scheme_doc = schemes_col.find_one({"uuid": scheme_id}, {'_id': 0})
+        if not scheme_doc:
+            return jsonify({"error": f"Scheme '{scheme_id}' not found."}), 404
+
+        export_payload = {
+            "scheme": scheme_doc.get("content", {}),
+            "risks": list(risks_col.find({"scheme_id": scheme_id}, {'_id': 0})),
+            "threats": list(threats_col.find({"scheme_id": scheme_id}, {'_id': 0})),
+            "metrics": list(metrics_col.find({"scheme_id": scheme_id}, {'_id': 0})),
+            "controls": list(controls_col.find({"scheme_id": scheme_id}, {'_id': 0})),
+            "risk_threat_control_mappings": list(rtc_col.find({"scheme_id": scheme_id}, {'_id': 0})),
+            "control_metric_mappings": list(cm_col.find({"scheme_id": scheme_id}, {'_id': 0})),
+        }
+
+        drm_endpoint = f"{drm_base.rstrip('/')}/api/v1/scheme/import"
+        resp = authed_request("POST", drm_endpoint, json=export_payload, timeout=30)
+        return jsonify({
+            "message": "Scheme forwarded to DRM",
+            "drm_status": resp.status_code,
+            "drm_response": resp.json() if resp.headers.get("content-type", "").startswith("application/json") else resp.text,
+        }), resp.status_code
+
+    except Exception as e:
+        logging.error(f"DRM sync failed for scheme {scheme_id}: {e}")
+        return jsonify({"error": f"DRM sync failed: {str(e)}"}), 502
 
 # --- CRUD Endpoints for Risk Catalogue Entities ---
 
@@ -1172,13 +1528,13 @@ def send_std():
 
         # Step 1: POST /deploy
         print("Step 1: Deploying environment...")
-        deploy_resp = requests.post(os.getenv("DEPLOY_SDT"))
+        deploy_resp = authed_request("POST", os.getenv("DEPLOY_SDT"))
         print(f"Deploy step completed (status {deploy_resp.status_code})")
         deploy_resp.raise_for_status()
 
         # Step 2: GET /deployments
         print("Step 2: Checking current deployments...")
-        deployments_resp = requests.get(os.getenv("DEPLOYMENTS_SDT"))
+        deployments_resp = authed_request("GET", os.getenv("DEPLOYMENTS_SDT"))
         print(f"Deployments fetched (status {deployments_resp.status_code})")
         deployments_resp.raise_for_status()
 
@@ -1215,7 +1571,7 @@ def send_std():
             )
 
             try:
-                resp = requests.post(create_url, json=content)
+                resp = authed_request("POST", create_url, json=content)
                 print(f"Sent to /create (status {resp.status_code})")
                 resp.raise_for_status()
             except requests.RequestException as e:
@@ -1267,7 +1623,7 @@ def trigger_delete():
     payload = {"identifier": data["identifier"]}
 
     try:
-        response = requests.post(url, json=payload, headers=headers)
+        response = authed_request("POST", url, json=payload, headers=headers)
         return jsonify({
             "message": "Triggered delete request",
             "delete_response_status": response.status_code,
@@ -1299,7 +1655,7 @@ def receive_and_forward():
         headers = {'Content-Type': 'application/json'}
         for url in ENDPOINTS:
             try:
-                requests.post(url, json=wrapped_doc, headers=headers, timeout=5)
+                authed_request("POST", url, json=wrapped_doc, headers=headers, timeout=5)
             except requests.RequestException as e:
                 print(f"Failed to forward to {url}: {e}")
 
@@ -1392,7 +1748,7 @@ def trigger_chain_post():
     }
 
     try:
-        post_response = requests.post(post_url, headers=post_headers, json=payload)
+        post_response = authed_request("POST", post_url, headers=post_headers, json=payload)
         post_response.raise_for_status()
     except requests.RequestException as e:
         return jsonify({"error": "POST to blockchain failed", "details": str(e)}), 500
@@ -1408,7 +1764,7 @@ def trigger_chain_post():
     }
 
     try:
-        get_response = requests.get(get_url, headers=get_headers, params=get_params)
+        get_response = authed_request("GET", get_url, headers=get_headers, params=get_params)
         get_response.raise_for_status()
         hash_value = get_response.json().get("hash")
     except requests.RequestException as e:
@@ -1418,7 +1774,7 @@ def trigger_chain_post():
     send_sdt_payload = {"hash": hash_value}
 
     try:
-        send_sdt_resp = requests.post(send_sdt_url, json=send_sdt_payload)
+        send_sdt_resp = authed_request("POST", send_sdt_url, json=send_sdt_payload)
         send_sdt_resp.raise_for_status()
         send_sdt_result = send_sdt_resp.json()
     except requests.RequestException as e:
@@ -1686,7 +2042,7 @@ def get_sdts():
         return jsonify({"error": "DEPLOYMENTS_SDT environment variable not configured"}), 500
     
     try:
-        response = requests.get(url, timeout=10)
+        response = authed_request("GET", url, timeout=10)
         response.raise_for_status()
         data = response.json()
         
@@ -1928,4 +2284,3 @@ if __name__ == '__main__':
 
     app.run(host='0.0.0.0', port=5001, debug=True)
     # DEV CCM MANAGER CODE BELOW THIS LINE IS FOR TESTING PURPOSES ONLY - NOT FOR PRODUCTION USE YET
-
