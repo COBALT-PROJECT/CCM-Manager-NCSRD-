@@ -3,7 +3,9 @@ import os
 import requests
 
 def upload_catalogue():
-    filename = "vm_risk_metrics.json"
+    filename = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "data", "vm_risk_metrics.json")
+    )
     url = "http://localhost:5001/upload_parsed_catalogue"
     
     if os.path.exists(filename):

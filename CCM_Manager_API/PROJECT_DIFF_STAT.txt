@@ -1,0 +1,25 @@
+ .../AI_Certification_Scheme 1.json                 | 8036 +++++++++++++++++---
+ CCM_Manager_API/Dockerfile                         |   11 +-
+ CCM_Manager_API/README.md                          |    4 +
+ CCM_Manager_API/WorkFlowTest.py                    |  153 -
+ CCM_Manager_API/ai_catalogue.json                  | 1312 ----
+ CCM_Manager_API/app.py                             | 1727 +----
+ CCM_Manager_API/docker-compose.yml                 |   17 +-
+ CCM_Manager_API/init_ai_catalogue.py               |   65 -
+ CCM_Manager_API/requirements.txt                   |    1 +
+ .../__pycache__/cbom_generator.cpython-310.pyc     |  Bin 4275 -> 4260 bytes
+ .../cbom_request_handler.cpython-310.pyc           |  Bin 2044 -> 2029 bytes
+ .../__pycache__/chain_trigger.cpython-310.pyc      |  Bin 3039 -> 6277 bytes
+ .../__pycache__/oscal_handler.cpython-310.pyc      |  Bin 2903 -> 2888 bytes
+ .../__pycache__/saasbom_handler.cpython-310.pyc    |  Bin 2341 -> 2326 bytes
+ .../__pycache__/sbom_generator.cpython-310.pyc     |  Bin 3396 -> 3381 bytes
+ .../__pycache__/sdt_sender.cpython-310.pyc         |  Bin 1801 -> 5711 bytes
+ CCM_Manager_API/services/chain_trigger.py          |  150 +
+ CCM_Manager_API/services/sdt_sender.py             |  153 +-
+ CCM_Manager_API/test_api.py                        | 1114 ---
+ CCM_Manager_API/test_catalogues_crud.py            |  110 -
+ CCM_Manager_API/test_endpoints.py                  |   44 -
+ CCM_Manager_API/test_get_catalogues.py             |   30 -
+ CCM_Manager_API/test_upload_parsed_catalogue.py    |   22 -
+ CCM_Manager_API/vm_risk_metrics.json               |   62 -
+ 24 files changed, 7530 insertions(+), 5481 deletions(-)

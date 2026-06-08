@@ -3,7 +3,9 @@ import os
 import requests
 
 def init_catalogue():
-    filename = "ai_catalogue.json"
+    filename = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "data", "ai_catalogue.json")
+    )
     headers = {'Content-Type': 'application/json'}
     
     # Define our endpoints

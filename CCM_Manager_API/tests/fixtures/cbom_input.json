@@ -1,0 +1,21 @@
+{
+  "ciphers": {
+    "tls": {
+      "TLS_AES_128_GCM_SHA256": {
+        "encryption_algorithm": "AES(128)",
+        "TLS_version": "1.3",
+        "oid": "1.2.3.4"
+      }
+    }
+  },
+  "certificate": {
+    "notValidBefore": "Jan 01 00:00:00 2024 GMT",
+    "notValidAfter": "Jan 01 00:00:00 2026 GMT",
+    "subjectName": "CN=Test Cert",
+    "issuerName": "CN=Test CA",
+    "rsaPublicKey": "rsa-key",
+    "signatureAlgorithm": "SHA256withRSA",
+    "oid": "1.2.840.113549.1.1.11",
+    "publicKeyAlgorithm": "RSA"
+  }
+}

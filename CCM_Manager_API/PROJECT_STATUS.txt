@@ -1,0 +1,62 @@
+On branch test
+Your branch is up to date with 'origin/test'.
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   ../AI Use Case/Certification Scheme/AI_Certification_Scheme 1.json
+	modified:   Dockerfile
+	modified:   README.md
+	deleted:    WorkFlowTest.py
+	deleted:    ai_catalogue.json
+	modified:   app.py
+	modified:   docker-compose.yml
+	deleted:    init_ai_catalogue.py
+	modified:   requirements.txt
+	modified:   services/__pycache__/cbom_generator.cpython-310.pyc
+	modified:   services/__pycache__/cbom_request_handler.cpython-310.pyc
+	modified:   services/__pycache__/chain_trigger.cpython-310.pyc
+	modified:   services/__pycache__/oscal_handler.cpython-310.pyc
+	modified:   services/__pycache__/saasbom_handler.cpython-310.pyc
+	modified:   services/__pycache__/sbom_generator.cpython-310.pyc
+	modified:   services/__pycache__/sdt_sender.cpython-310.pyc
+	modified:   services/chain_trigger.py
+	modified:   services/sdt_sender.py
+	deleted:    test_api.py
+	deleted:    test_catalogues_crud.py
+	deleted:    test_endpoints.py
+	deleted:    test_get_catalogues.py
+	deleted:    test_upload_parsed_catalogue.py
+	deleted:    vm_risk_metrics.json
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	IdentityManagement.py
+	PROJECT_DIFF.patch
+	PROJECT_DIFF_STAT.txt
+	PROJECT_FILES.txt
+	PROJECT_LOG.txt
+	PROJECT_STATUS.txt
+	archive/
+	auth.py
+	build/
+	config.py
+	data/
+	db.py
+	docs/
+	pytest.ini
+	scripts/
+	services/artifact_service.py
+	services/assessment_service.py
+	services/catalogue_service.py
+	services/cbom_workflow.py
+	services/certificate_service.py
+	services/certification_scheme_service.py
+	services/ledger.py
+	services/sbom_workflow.py
+	services/toe_service.py
+	tests/
+	utils.py
+	../REFACTOR_PLAN.md
+
+no changes added to commit (use "git add" and/or "git commit -a")

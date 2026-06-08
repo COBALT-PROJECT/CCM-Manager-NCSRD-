@@ -1,0 +1,27 @@
+* 027b258 (HEAD -> test, origin/test) Initial commit for test branch
+* 098a734 (origin/dev, dev) Added metris/threats/risks/controls endpoints and mongoDB catalogues
+* d05c2ae Update CCM Manager: Implement automated WF1/WF3 certification logic
+* d747645 Add .gitignore, remove secrets and cache from tracking
+* 9e5b327 Add .env.example, update app.py, requirements, swagger docs
+* 52e9840 (origin/main, origin/HEAD, main) Add BOM examples
+* 47fdcfb Update Swagger Documentation
+* ddae313 Add endpoints for Evidence and Assessment
+* 8150a66 Update API and Add Swagger Documentation
+* a42f24a Update README.md
+* 664fbe8 Update README.md
+* 9ed5baa Update ReadMe
+* 8730562 Refactor: clean up code and improve structure
+* 016f0cb Update app.py
+* a16e267 Add certification scheme and sbom
+* a6cc8e6 Quantum Scheme
+* 178268f Add folders for cobalt use cases
+* e14be87 Support for SaaS generation
+* 15cbe1b replaced send_json_to_api() with send_files_to_api()
+* 126fd70 Update "receive_output" endpoint and add "trigger" endpoint
+* dba4cdf no longer needed
+* c300ccd Initial Push
+* 777a254 Update and clean app.py
+* b7f6eff Update algorithm_sbom
+* 14d2412 Update algorithm_sbom
+* 5e48c47 Initial Push
+* 762a474 Initial commit

@@ -4,12 +4,17 @@ WORKDIR /app
 
 COPY requirements.txt .
 
-# Install dependencies, including CycloneDX
-RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install cyclonedx-bom
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Install dependencies and helper tools
 RUN apt-get update && apt-get install -y jq curl && rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
+
+# Ensure helper scripts are executable inside the container
+RUN chmod +x /app/helpers/*.sh
 
 # Change permissions for the sboms and tmp directories
 RUN mkdir -p /app/sboms /app/tmp && \
