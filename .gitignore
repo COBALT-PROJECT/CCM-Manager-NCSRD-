@@ -1,3 +1,11 @@
 CCM_Manager_API/mongo-data/
 CCM_Manager_API/mongo_keyfile
 CCM_Manager_API/mongo_corrupt_backup.tar
+.env
+*.env
+__pycache__/
+*.py[cod]
+.pytest_cache/
+tmp/
+CCM_Manager_API/tmp/
+CCM_Manager_API/sboms/

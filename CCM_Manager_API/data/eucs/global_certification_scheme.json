@@ -1,0 +1,2951 @@
+{
+  "certificationScheme": {
+    "id": "urn:uuid:7ad9f46f-45bf-4bc1-b78d-e5976d89467d",
+    "name": "Global Certification Scheme",
+    "short_name": "N/A",
+    "description": "N/A",
+    "version": "N/A",
+    "status": "N/A",
+    "validity_period_months": -1,
+    "assurance_levels": [
+      "N/A"
+    ],
+    "authority": {
+      "name": "N/A",
+      "region": "N/A"
+    },
+    "compliance_metrics": [
+      {
+        "id": "MalwareProtectionEnabled_VirtualMachine_1.0",
+        "name": "Protection against malware – implementation",
+        "description": "This metric is used to assess if the antimalware solution is enabled on the respective resource",
+        "version": "1.0",
+        "information_need": "This metric is used to assess if the antimalware solution is enabled on the respective resource",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 1,
+        "data_source_type": "VirtualMachine",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "True"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-05.3H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "NumberOfThreatsFound_VirtualMachine_1.0",
+        "name": "PROTECTION AGAINST MALWARE – IMPLEMENTATION",
+        "description": "This metric is used to assess if the antimalware solution reports no irregularities",
+        "version": "1.0",
+        "information_need": "This metric is used to assess if the antimalware solution reports no irregularities",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 1,
+        "data_source_type": "VirtualMachine",
+        "reporting_format": "Integer",
+        "target_values": {
+          "target_value_scale": "[0, …]",
+          "target_value": "0"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-05.3H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "BackupEnabled_Storage_1.0",
+        "name": "DATA BACKUP AND RECOVERY – MONITORING",
+        "description": "This metric is used to assess if backups are enabled for a cloud service/asset",
+        "version": "1.0",
+        "information_need": "This metric is used to assess if backups are enabled for a cloud service/asset",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 1,
+        "data_source_type": "Storage",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "True"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-07.2H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "BackupRetentionSet_Storage_1.0",
+        "name": "DATA BACKUP AND RECOVERY – MONITORING",
+        "description": "This metric is used to assess the configured backup retention (days) on a cloud service/asset",
+        "version": "1.0",
+        "information_need": "This metric is used to assess the configured backup retention (days) on a cloud service/asset",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 24,
+        "data_source_type": "Storage",
+        "reporting_format": "Integer",
+        "target_values": {
+          "target_value_scale": "[0, …]",
+          "target_value": "35"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-07.2H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "AnomalyDetectionEnabled_NetworkService_1.0",
+        "name": "LOGGING AND MONITORING – IDENTIFICATION OF EVENTS",
+        "description": "This metric is used to assess if Anomaly Detection is enabled for the cloud service/asset",
+        "version": "1.0",
+        "information_need": "This metric is used to assess if Anomaly Detection is enabled for the cloud service/asset",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 1,
+        "data_source_type": "NetworkService",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "True"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-13.1H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "ActivityLoggingEnabled_VirtualMachine_1.0",
+        "name": "LOGGING AND MONITORING – IDENTIFICATION OF EVENTS",
+        "description": "This metric is used to assess if activity logs are enabled for the cloud service/asset.",
+        "version": "1.0",
+        "information_need": "This metric is used to assess if activity logs are enabled for the cloud service/asset.",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 1,
+        "data_source_type": "VirtualMachine",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "True"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-13.1H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "ApplicationLoggingEnabled_VirtualMachine_1.0",
+        "name": "LOGGING AND MONITORING – IDENTIFICATION OF EVENTS",
+        "description": "This metric is used to assess if Application logs are enabled for the cloud service/asset.",
+        "version": "1.0",
+        "information_need": "This metric is used to assess if Application logs are enabled for the cloud service/asset.",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 1,
+        "data_source_type": "VirtualMachine",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "True"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-13.1H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "BootLoggingEnabled_VirtualMachine_1.0",
+        "name": "LOGGING AND MONITORING – IDENTIFICATION OF EVENTS",
+        "description": "This metric is used to assess if Boot logs are enabled for the cloud service/asset.",
+        "version": "1.0",
+        "information_need": "This metric is used to assess if Boot logs are enabled for the cloud service/asset.",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 1,
+        "data_source_type": "VirtualMachine",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "True"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-13.1H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "OSLoggingEnabled_VirtualMachine_1.0",
+        "name": "LOGGING AND MONITORING – IDENTIFICATION OF EVENTS",
+        "description": "This metric is used to assess if OS logs are enabled for the cloud service/asset.",
+        "version": "1.0",
+        "information_need": "This metric is used to assess if OS logs are enabled for the cloud service/asset.",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 1,
+        "data_source_type": "VirtualMachine",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "True"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-13.1H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "BootLoggingRetention_VirtualMachine_1.0",
+        "name": "LOGGING AND MONITORING – IDENTIFICATION OF EVENTS",
+        "description": "This metric is used to assess the configured log retention (days) on a cloud service/asset",
+        "version": "1.0",
+        "information_need": "This metric is used to assess the configured log retention (days) on a cloud service/asset",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 1,
+        "data_source_type": "VirtualMachine",
+        "reporting_format": "Integer",
+        "target_values": {
+          "target_value_scale": "[0, …, 99]",
+          "target_value": "7"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-13.1H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "OSLoggingRetention_VirtualMachine_1.0",
+        "name": "LOGGING AND MONITORING – IDENTIFICATION OF EVENTS",
+        "description": "This metric is used to assess the configured log retention (days) on a cloud service/asset",
+        "version": "1.0",
+        "information_need": "This metric is used to assess the configured log retention (days) on a cloud service/asset",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 1,
+        "data_source_type": "VirtualMachine",
+        "reporting_format": "Integer",
+        "target_values": {
+          "target_value_scale": "[0, …, 99]",
+          "target_value": "7"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-13.1H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "AutomaticUpdatesEnabled_VirtualMachine_1.0",
+        "name": "MANAGING VULNERABILITIES, MALFUNCTIONS AND ERRORS – ONLINE REGISTERS",
+        "description": "This metric is used to assess if automatic updates are enabled for the cloud service/asset",
+        "version": "1.0",
+        "information_need": "This metric is used to assess if automatic updates are enabled for the cloud service/asset",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 24,
+        "data_source_type": "VirtualMachine",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "True"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-18.6H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "AutomaticUpdatesInterval_VirtualMachine_1.0",
+        "name": "MANAGING VULNERABILITIES, MALFUNCTIONS AND ERRORS – ONLINE REGISTERS",
+        "description": "This metric is used to assess the update interval of automatic updates for the cloud service/asset",
+        "version": "1.0",
+        "information_need": "This metric is used to assess the update interval of automatic updates for the cloud service/asset",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 24,
+        "data_source_type": "VirtualMachine",
+        "reporting_format": "Integer",
+        "target_values": {
+          "target_value_scale": "[1, …, 365]",
+          "target_value": "7"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-18.6H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "TLSVersion_NetworkService_1.0",
+        "name": "MANAGING VULNERABILITIES, MALFUNCTIONS AND ERRORS – SYSTEM HARDENING",
+        "description": "This metric is used to assess if state-of-the-art encryption protocols are used for traffic served from public networks",
+        "version": "1.0",
+        "information_need": "This metric is used to assess if state-of-the-art encryption protocols are used for traffic served from public networks",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 1,
+        "data_source_type": "NetworkService",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "1.2"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-21.1H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "WebApplicationFirewallEnabled_LoadBalancer_1.0",
+        "name": "MANAGING VULNERABILITIES, MALFUNCTIONS AND ERRORS – SYSTEM HARDENING",
+        "description": "This metric is used to assess if a cloud service/asset has enabled WAF functionalities",
+        "version": "1.0",
+        "information_need": "This metric is used to assess if a cloud service/asset has enabled WAF functionalities",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 1,
+        "data_source_type": "LoadBalancer",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "True"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-21.1H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "TransportEncryptionEnabled_StorageService_1.0",
+        "name": "ENCYPTION OF DATA IN TRANSIT",
+        "description": "This metric is used to assess if the cloud service/asset accepts encrypted connections",
+        "version": "1.0",
+        "information_need": "This metric is used to assess if the cloud service/asset accepts encrypted connections",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 1,
+        "data_source_type": "StorageService",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "True"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS CKM-02.1B (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "TransportEncryptionEnforced_StorageService_1.0",
+        "name": "ENCYPTION OF DATA IN TRANSIT",
+        "description": "This metric is used to assess if the cloud service/asset enforces encrypted connections",
+        "version": "1.0",
+        "information_need": "This metric is used to assess if the cloud service/asset enforces encrypted connections",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 1,
+        "data_source_type": "StorageService",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "True"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS CKM-02.1S (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "L3FirewallEnabled_StorageService_1.0",
+        "name": "MANAGING VULNERABILITIES, MALFUNCTIONS AND ERRORS – SYSTEM HARDENING",
+        "description": "This metric is used to assess if a service-level ACL has been enabled on a cloud service/asset",
+        "version": "1.0",
+        "information_need": "This metric is used to assess if a service-level ACL has been enabled on a cloud service/asset",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 1,
+        "data_source_type": "StorageService",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "True"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-21.1H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "MalwareProtectionOutput_VirtualMachine_1.0",
+        "name": "PROTECTION AGAINST MALWARE – IMPLEMENTATION",
+        "description": "This metric states whether automatic notifications are enabled (e.g. e-mail) about malware threats. This relates to EUCS’ definition of “continuous monitoring”",
+        "version": "1.0",
+        "information_need": "This metric states whether automatic notifications are enabled (e.g. e-mail) about malware threats. This relates to EUCS’ definition of “continuous monitoring”",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 1,
+        "data_source_type": "VirtualMachine",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "True"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-05.3H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "AtRestEncryptionEnabled_Storage_1.0",
+        "name": "MANAGING VULNERABILITIES, MALFUNCTIONS AND ERRORS – SYSTEM HARDENING",
+        "description": "This metric is used to assess if encryption at rest has been enabled on a cloud service / asset",
+        "version": "1.0",
+        "information_need": "This metric is used to assess if encryption at rest has been enabled on a cloud service / asset",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 1,
+        "data_source_type": "Storage",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "True"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-21.1H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "BackupEncryptionEnabled_Storage_1.0",
+        "name": "DATA BACKUP AND RECOVERY – POLICIES",
+        "description": "Check if data is backed up in encrypted, state-of-the-art form",
+        "version": "1.0",
+        "information_need": "Check if data is backed up in encrypted, state-of-the-art form",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 1,
+        "data_source_type": "Storage",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "True"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-21.1H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "BootLoggingImmutability_StorageService_1.0",
+        "name": "LOGGING AND MONITORING – ACCESS, STORAGE AND DELETION",
+        "description": "This metric is used to assess if the boot logs are immutable (integrity protection)",
+        "version": "1.0",
+        "information_need": "This metric is used to assess if the boot logs are immutable (integrity protection)",
+        "implementation_evidence": "Configuration, Security Policy",
+        "frequency": 1,
+        "data_source_type": "StorageService",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "True"
+        },
+        "associated_control": {
+          "associated_control_framework": "EUCS",
+          "associated_control_category": "N/A",
+          "associated_control_requirement": "N/A",
+          "control_description": "EUCS OPS-13.1H (control not present in OSCAL catalog)"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "SecureDevelopmentLifecycle_AIModelClassification_009",
+        "name": "Secure development lifecycle",
+        "description": "Rules for secure development of software and systems should be established and applied.",
+        "version": "V1.0",
+        "information_need": "Rules for secure development of software and systems should be established and applied.",
+        "implementation_evidence": "Secure development guideline",
+        "frequency": -1,
+        "data_source_type": "Repository",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "N/A",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Model Confidentiality",
+          "associated_control_requirement": "eucs-7.AI-01_req.1",
+          "control_description": "Secure development lifecycle"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "MODEL_THEFT",
+            "name": "Model Theft",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Extraction",
+          "#AIRisk_Attack_ModelTheft"
+        ]
+      },
+      {
+        "id": "SecureCoding_AIModelClassification_010",
+        "name": "Secure coding (Secure APIs)",
+        "description": "Ensure that APIs are secured with strong authentication, encryption, and proper access controls",
+        "version": "V1.0",
+        "information_need": "Ensure that APIs are secured with strong authentication, encryption, and proper access controls",
+        "implementation_evidence": "Secure coding guideline",
+        "frequency": -1,
+        "data_source_type": "API",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "N/A",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Model Confidentiality",
+          "associated_control_requirement": "eucs-7.AI-01_req.2",
+          "control_description": "Secure coding (Secure APIs)"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "MODEL_THEFT",
+            "name": "Model Theft",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Extraction",
+          "#AIRisk_Attack_ModelTheft"
+        ]
+      },
+      {
+        "id": "AccessControl_AIModelClassification_011",
+        "name": "Access control",
+        "description": "Rules to control physical and logical access to the AI sytem should be established and implemented",
+        "version": "V1.0",
+        "information_need": "Rules to control physical and logical access to the AI sytem should be established and implemented",
+        "implementation_evidence": "Access control configuration file",
+        "frequency": -1,
+        "data_source_type": "Repository",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "Percentage",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Model Confidentiality",
+          "associated_control_requirement": "eucs-7.AI-01_req.3",
+          "control_description": "Access control"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "MODEL_THEFT",
+            "name": "Model Theft",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Extraction",
+          "#AIRisk_Attack_ModelTheft"
+        ]
+      },
+      {
+        "id": "AccessRights_AIModelClassification_012",
+        "name": "Access rights",
+        "description": "Acces rights to the AI system should be provisioned, reviewed, modified and removed in accordance with the rules of access control",
+        "version": "V1.0",
+        "information_need": "Acces rights to the AI system should be provisioned, reviewed, modified and removed in accordance with the rules of access control",
+        "implementation_evidence": "Access rights configuration file",
+        "frequency": -1,
+        "data_source_type": "Repository",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "Percentage",
+          "target_value": "1"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Model Confidentiality",
+          "associated_control_requirement": "eucs-7.AI-01_req.4",
+          "control_description": "Access rights"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "MODEL_THEFT",
+            "name": "Model Theft",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Extraction",
+          "#AIRisk_Attack_ModelTheft"
+        ]
+      },
+      {
+        "id": "SecureAuthentication_AIModelClassification_013",
+        "name": "Secure authentication",
+        "description": "Ensure that only authorized users can access to the software and the API",
+        "version": "V1.0",
+        "information_need": "Ensure that only authorized users can access to the software and the API",
+        "implementation_evidence": "Authentication configuration file",
+        "frequency": -1,
+        "data_source_type": "Repository/API",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "Percentage",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Model Confidentiality",
+          "associated_control_requirement": "eucs-7.AI-01_req.5",
+          "control_description": "Secure authentication"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "MODEL_THEFT",
+            "name": "Model Theft",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Extraction",
+          "#AIRisk_Attack_ModelTheft"
+        ]
+      },
+      {
+        "id": "WebFiltering_AIModelClassification_001",
+        "name": "Web filtering (Rate limiting and throttling)",
+        "description": "Implement rate limiting and throttling to restrict the number of requests a user or system can make to the model, preventing data harvesting",
+        "version": "V1.0",
+        "information_need": "Implement rate limiting and throttling to restrict the number of requests a user or system can make to the model, preventing data harvesting",
+        "implementation_evidence": "Web filtering Rate Configuration file",
+        "frequency": -1,
+        "data_source_type": "API Gateway",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "Integer",
+          "target_value": "Application field specific"
+        },
+        "associated_control": {
+          "associated_control_framework": "ISO/IEC 27002, ISO/IEC 27701 Consider adding AIA-specific",
+          "associated_control_category": "Model Confidentiality",
+          "associated_control_requirement": "eucs-7.AI-01_req.6",
+          "control_description": "Web filtering (Rate limiting and throttling)"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "MODEL_THEFT",
+            "name": "Model Theft",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Extraction",
+          "#AIRisk_Attack_ModelTheft"
+        ]
+      },
+      {
+        "id": "ModelEncryption_AIModelClassification_002",
+        "name": "Use of Cryptography (Model Encryption)",
+        "description": "Encrypt the model weights and parameters to protect them from being accessed by unauthorized parties",
+        "version": "V1.0",
+        "information_need": "Encrypt the model weights and parameters to protect them from being accessed by unauthorized parties",
+        "implementation_evidence": "Model encryption active",
+        "frequency": -1,
+        "data_source_type": "Repository?",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "Percentage",
+          "target_value": "1"
+        },
+        "associated_control": {
+          "associated_control_framework": "ISO/IEC 27002, ISO/IEC 27701",
+          "associated_control_category": "Model Confidentiality",
+          "associated_control_requirement": "eucs-7.AI-01_req.7",
+          "control_description": "Use of Cryptography (Model Encryption)"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "MODEL_THEFT",
+            "name": "Model Theft",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Extraction",
+          "#AIRisk_Attack_ModelTheft"
+        ]
+      },
+      {
+        "id": "DataAnomalyIdentification_AIModelClassification_013",
+        "name": "Data Anomaly Identification",
+        "description": "Use defence techniques to identify unusal or adversarial data patterns",
+        "version": "V1.0",
+        "information_need": "Use defence techniques to identify unusal or adversarial data patterns",
+        "implementation_evidence": "Defence techniques configuration",
+        "frequency": -1,
+        "data_source_type": "Repository",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "Percentage",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity",
+          "associated_control_requirement": "eucs-7.AI-02_req.2",
+          "control_description": "Data Anomaly Identification"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Training Data_Poisoning",
+          "#AIRisk_TrainingData_ConfInfo",
+          "#AIRisk_TrainingData_PersInfo"
+        ]
+      },
+      {
+        "id": "ModelValidation_AIModelClassification_014",
+        "name": "Model validation",
+        "description": "Continously monitor and validate model performance to detect unexpected deviations from normal behaviour that may be caused by poisoned data",
+        "version": "V1.0",
+        "information_need": "Continously monitor and validate model performance to detect unexpected deviations from normal behaviour that may be caused by poisoned data",
+        "implementation_evidence": "Model validation configuration file",
+        "frequency": -1,
+        "data_source_type": "Repository",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "Percentage",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity",
+          "associated_control_requirement": "eucs-7.AI-02_req.3",
+          "control_description": "Model validation"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Training Data_Poisoning"
+        ]
+      },
+      {
+        "id": "ModelEnsemble_AIModelClassification_015",
+        "name": "Model ensemble",
+        "description": "Model ensemble methods in the context of AI security refer to use of multiple machine learning models, trained on different subsets of the initial dataset, in combination to improve robustness and accuracy of threat detection",
+        "version": "V1.0",
+        "information_need": "Model ensemble methods in the context of AI security refer to use of multiple machine learning models, trained on different subsets of the initial dataset, in combination to improve robustness and accuracy of threat detection",
+        "implementation_evidence": "Models?",
+        "frequency": -1,
+        "data_source_type": "?",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "N/A",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Model Confidentiality/Data integrity",
+          "associated_control_requirement": "eucs-7.AI-02_req.4",
+          "control_description": "Model ensemble"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Training Data_Poisoning"
+        ]
+      },
+      {
+        "id": "DataAugmentation_AIModelClassification_016",
+        "name": "Data augmentation",
+        "description": "Apply data augmentation techniques to diversify the training dataset and make the model more resilient to smallscale poisoning attacks",
+        "version": "V1.0",
+        "information_need": "Apply data augmentation techniques to diversify the training dataset and make the model more resilient to smallscale poisoning attacks",
+        "implementation_evidence": "N/A",
+        "frequency": -1,
+        "data_source_type": "Repository",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "N/A",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Model Confidentiality",
+          "associated_control_requirement": "eucs-7.AI-02_req.5",
+          "control_description": "Data augmentation"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Training Data_Poisoning"
+        ]
+      },
+      {
+        "id": "DataQualityMonitoring_AIModelClassification_017",
+        "name": "Data qualitiy monitoring - In operation (Data in Motion)",
+        "description": "Continously monitor data quality, setting thresholds for acceptable quality metrcis. Automatically flag or quarantine data that falls below these standards",
+        "version": "V1.0",
+        "information_need": "Continously monitor data quality, setting thresholds for acceptable quality metrcis. Automatically flag or quarantine data that falls below these standards",
+        "implementation_evidence": "Monitoring configuration",
+        "frequency": -1,
+        "data_source_type": "API/Repository",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "Percentage",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity",
+          "associated_control_requirement": "eucs-7.AI-02_req.6",
+          "control_description": "Data qualitiy monitoring - In operation (Data in Motion)"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Training Data_Poisoning",
+          "#AIRisk_TrainingData_ConfInfo",
+          "#AIRisk_TrainingData_PersInfo"
+        ]
+      },
+      {
+        "id": "ActiveLearning_AIModelClassification_018",
+        "name": "Active Learning",
+        "description": "Employ active learning strategies to prioritize the labeling of the most informative data points",
+        "version": "V1.0",
+        "information_need": "Employ active learning strategies to prioritize the labeling of the most informative data points",
+        "implementation_evidence": "Active learning configuration",
+        "frequency": -1,
+        "data_source_type": "?",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "N/A",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity",
+          "associated_control_requirement": "eucs-7.AI-02_req.7",
+          "control_description": "Active Learning"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Training Data_Poisoning"
+        ]
+      },
+      {
+        "id": "AccessControl_AIModelClassification_019",
+        "name": "Access control",
+        "description": "Rules to control physical and logical access to the training data as well as model or model server should be established and implemented",
+        "version": "V1.0",
+        "information_need": "Rules to control physical and logical access to the training data as well as model or model server should be established and implemented",
+        "implementation_evidence": "Access control configuration file",
+        "frequency": -1,
+        "data_source_type": "Repository",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "Percentage",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity",
+          "associated_control_requirement": "eucs-7.AI-02_req.8",
+          "control_description": "Access control"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Training Data_Poisoning"
+        ]
+      },
+      {
+        "id": "AccessRights_AIModelClassification_020",
+        "name": "Access rights",
+        "description": "Access rights to training or production data, model or relevant assets should be provisioned, reviewed, modified and removed in accordance with the rules of access control",
+        "version": "V1.0",
+        "information_need": "Access rights to training or production data, model or relevant assets should be provisioned, reviewed, modified and removed in accordance with the rules of access control",
+        "implementation_evidence": "Access rights configuration file",
+        "frequency": -1,
+        "data_source_type": "Repository",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "Percentage",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity",
+          "associated_control_requirement": "eucs-7.AI-02_req.9",
+          "control_description": "Access rights"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Training Data_Poisoning"
+        ]
+      },
+      {
+        "id": "InfromationSecurityInSupplierRelationship_AIModelClassification_021",
+        "name": "Information security in supplier relationship",
+        "description": "Processes and procedures should be defined and implemented to manage information security risks associated with the use of the AI platform",
+        "version": "V1.0",
+        "information_need": "Processes and procedures should be defined and implemented to manage information security risks associated with the use of the AI platform",
+        "implementation_evidence": "Process and procedure configuration file",
+        "frequency": -1,
+        "data_source_type": "Supplier",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "N/A",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity",
+          "associated_control_requirement": "eucs-7.AI-02_req.10",
+          "control_description": "Information security in supplier relationship"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Training Data_Poisoning"
+        ]
+      },
+      {
+        "id": "InformationSecurityForUseOfCloudServices_AIModelClassification_022",
+        "name": "Information security for use of cloud services",
+        "description": "Processes for acquisition, use, management and exit from cloud services including the AI platform should be established",
+        "version": "V1.0",
+        "information_need": "Processes for acquisition, use, management and exit from cloud services including the AI platform should be established",
+        "implementation_evidence": "Process configuration file",
+        "frequency": -1,
+        "data_source_type": "Cloud Service Provider",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "N/A",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity",
+          "associated_control_requirement": "eucs-7.AI-02_req.11",
+          "control_description": "Information security for use of cloud services"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Training Data_Poisoning"
+        ]
+      },
+      {
+        "id": "ManagingInformationSecurityInTheICTSupplyChain_AIModelClassification_023",
+        "name": "Managing information security in the ICT supply chain",
+        "description": "Processes and procedures should be defined and implemented to manage the information security risks associated with the ICT products and services supply chain in order to avoid potential vulnerabilities providing access to a malicious attacked to posion the AI model",
+        "version": "V1.0",
+        "information_need": "Processes and procedures should be defined and implemented to manage the information security risks associated with the ICT products and services supply chain in order to avoid potential vulnerabilities providing access to a malicious attacked to posion the AI model",
+        "implementation_evidence": "ICT Process and procedure configuration file",
+        "frequency": -1,
+        "data_source_type": "ICT supplier",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "N/A",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity",
+          "associated_control_requirement": "eucs-7.AI-02_req.12",
+          "control_description": "Managing information security in the ICT supply chain"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Training Data_Poisoning"
+        ]
+      },
+      {
+        "id": "PhysicalControls_AIModelClassification_026",
+        "name": "Physical controls",
+        "description": "Including controls for physical security perimeters, protecting against physical and environmental threats, security of assets of premises, storage media and so on to protect against physical access to training data or servers storing security relevant datasets",
+        "version": "V1.0",
+        "information_need": "Including controls for physical security perimeters, protecting against physical and environmental threats, security of assets of premises, storage media and so on to protect against physical access to training data or servers storing security relevant datasets",
+        "implementation_evidence": "Physical control configuration file",
+        "frequency": -1,
+        "data_source_type": "Environment Policy Document",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "Percentage",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity/Data Confidentiality",
+          "associated_control_requirement": "eucs-7.AI-02_req.15",
+          "control_description": "Physical controls"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Training Data_Poisoning"
+        ]
+      },
+      {
+        "id": "SecureAuthentication_AIModelClassification_027",
+        "name": "Secure authentication",
+        "description": "Ensure that only authorized users can modify training data",
+        "version": "V1.0",
+        "information_need": "Ensure that only authorized users can modify training data",
+        "implementation_evidence": "Authentication configuration file",
+        "frequency": -1,
+        "data_source_type": "Repository",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "Percentage",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity",
+          "associated_control_requirement": "eucs-7.AI-02_req.16",
+          "control_description": "Secure authentication"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Training Data_Poisoning"
+        ]
+      },
+      {
+        "id": "SecureDevelopmentLifecycle_AIModelClassification_028",
+        "name": "Secure development lifecycle",
+        "description": "Rules for secure development of software and systems should be established and applied",
+        "version": "V1.0",
+        "information_need": "Rules for secure development of software and systems should be established and applied",
+        "implementation_evidence": "Rules file",
+        "frequency": -1,
+        "data_source_type": "Repository Policy Document?",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "N/A",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity/Data Confidentiality",
+          "associated_control_requirement": "eucs-7.AI-02_req.17",
+          "control_description": "Secure development lifecycle"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Software_PreProcessTools",
+          "#AIRisk_Software_ProgramLang",
+          "#AIRisk_Training Data_Poisoning"
+        ]
+      },
+      {
+        "id": "SecureSystemArchitectureAndEngineeringPrinciples_AIModelClassification_029",
+        "name": "Secure system architecture and engineering principles",
+        "description": "Principles for engineering secure systems should be establied, documented, maintained and applied to any information system development acitivites in order to minimize the potential security threats",
+        "version": "V1.0",
+        "information_need": "Principles for engineering secure systems should be establied, documented, maintained and applied to any information system development acitivites in order to minimize the potential security threats",
+        "implementation_evidence": "Principles file",
+        "frequency": -1,
+        "data_source_type": "Policy Document",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "N/A",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity/Data Confidentiality",
+          "associated_control_requirement": "eucs-7.AI-02_req.18",
+          "control_description": "Secure system architecture and engineering principles"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Software_PreProcessTools",
+          "#AIRisk_Software_ProgramLang",
+          "#AIRisk_Training Data_Poisoning"
+        ]
+      },
+      {
+        "id": "AdversarialTraining_AIModelClassification_003",
+        "name": "Adversarial Training",
+        "description": "Train models with adversarial examples to strengthen their robustness against adversarial attacks",
+        "version": "V1.0",
+        "information_need": "Train models with adversarial examples to strengthen their robustness against adversarial attacks",
+        "implementation_evidence": "Adversarial Training configuration file",
+        "frequency": -1,
+        "data_source_type": "AI model",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "Percentage",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Model Confidentiality",
+          "associated_control_requirement": "eucs-7.AI-03_req.1",
+          "control_description": "Adversarial Training"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "EVASION",
+            "name": "Evasion",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Adversarial",
+          "#AIRisk_Attack_Evasion"
+        ]
+      },
+      {
+        "id": "DataAugmentation_AIModelClassification_030",
+        "name": "Data Augmentation and Randomization",
+        "description": "Apply data augmentation techniques and randomization to input data to make it harder for attackers to craft effective adversarial examples",
+        "version": "V1.0",
+        "information_need": "Apply data augmentation techniques and randomization to input data to make it harder for attackers to craft effective adversarial examples",
+        "implementation_evidence": "Augmentation and Randomization configuration file",
+        "frequency": -1,
+        "data_source_type": "Repository",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "N/A",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Model Confidentiality/Data integrity",
+          "associated_control_requirement": "eucs-7.AI-03_req.2",
+          "control_description": "Data Augmentation and Randomization"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "EVASION",
+            "name": "Evasion",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Adversarial",
+          "#AIRisk_Attack_Evasion"
+        ]
+      },
+      {
+        "id": "InputValidation_AIModelClassification_004",
+        "name": "Input Validation",
+        "description": "Implement mechanisms to filter invalid data or sanitizing to remove or neutralize characters or pattern that could be exploited",
+        "version": "V1.0",
+        "information_need": "Implement mechanisms to filter invalid data or sanitizing to remove or neutralize characters or pattern that could be exploited",
+        "implementation_evidence": "Input validation configuration file",
+        "frequency": -1,
+        "data_source_type": "API Gateway",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "Percentage",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity/Model Confidentiality",
+          "associated_control_requirement": "eucs-7.AI-03_req.3",
+          "control_description": "Input Validation"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "EVASION",
+            "name": "Evasion",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Adversarial",
+          "#AIRisk_Attack_Evasion"
+        ]
+      },
+      {
+        "id": "InputDistortion_AIModelClassification_031",
+        "name": "Input distortion",
+        "description": "Slight modification of the input data can be performed in order to distort the adversarial attack causing it to fail",
+        "version": "V1.0",
+        "information_need": "Slight modification of the input data can be performed in order to distort the adversarial attack causing it to fail",
+        "implementation_evidence": "Input distortion configuration file",
+        "frequency": -1,
+        "data_source_type": "API Gateway",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "N/A",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Model Confidentiality",
+          "associated_control_requirement": "eucs-7.AI-03_req.4",
+          "control_description": "Input distortion"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "EVASION",
+            "name": "Evasion",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Adversarial",
+          "#AIRisk_Attack_Evasion"
+        ]
+      },
+      {
+        "id": "AdversarialDetection_AIModelClassification_032",
+        "name": "Adversarial detection",
+        "description": "Deploy adversarial detection mechanisms that can identify and flag potential adversarial examples for further inspection",
+        "version": "V1.0",
+        "information_need": "Deploy adversarial detection mechanisms that can identify and flag potential adversarial examples for further inspection",
+        "implementation_evidence": "Detection mechanisms configuration",
+        "frequency": -1,
+        "data_source_type": "API Gateway",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "Percentage",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Model Confidentiality/data confidentiality",
+          "associated_control_requirement": "eucs-7.AI-03_req.5",
+          "control_description": "Adversarial detection"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "EVASION",
+            "name": "Evasion",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Adversarial",
+          "#AIRisk_Attack_Evasion"
+        ]
+      },
+      {
+        "id": "TransferKnowledge_AIModelClassification_033",
+        "name": "Transfer knowledge",
+        "description": "Transfer knowledge from robust teacher models to student models, making the student model resilient to adversarial attacks.",
+        "version": "V1.0",
+        "information_need": "Transfer knowledge from robust teacher models to student models, making the student model resilient to adversarial attacks.",
+        "implementation_evidence": "Teacher model",
+        "frequency": -1,
+        "data_source_type": "AI model",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "N/A",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Model Confidentiality",
+          "associated_control_requirement": "eucs-7.AI-03_req.6",
+          "control_description": "Transfer knowledge"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "EVASION",
+            "name": "Evasion",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Evasion"
+        ]
+      },
+      {
+        "id": "AccessControl_AIModelClassification_034",
+        "name": "Access control",
+        "description": "Rules to control physical and logical access to the software and the API should be established and implemented",
+        "version": "V1.0",
+        "information_need": "Rules to control physical and logical access to the software and the API should be established and implemented",
+        "implementation_evidence": "Access control configuration file",
+        "frequency": -1,
+        "data_source_type": "API/Repository",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "Percentage",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity",
+          "associated_control_requirement": "eucs-7.AI-03_req.7",
+          "control_description": "Access control"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "EVASION",
+            "name": "Evasion",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Evasion"
+        ]
+      },
+      {
+        "id": "AccessRights_AIModelClassification_035",
+        "name": "Access rights",
+        "description": "Access rights to the software should be provisioned, reviewed, modified and removed in accordance with the rules of access control",
+        "version": "V1.0",
+        "information_need": "Access rights to the software should be provisioned, reviewed, modified and removed in accordance with the rules of access control",
+        "implementation_evidence": "Access rights configuration file",
+        "frequency": -1,
+        "data_source_type": "API/Repository",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "Percentage",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity",
+          "associated_control_requirement": "eucs-7.AI-03_req.8",
+          "control_description": "Access rights"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "EVASION",
+            "name": "Evasion",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Evasion"
+        ]
+      },
+      {
+        "id": "InformationSecurityInSupplierRelationship_AIModelClassification_036",
+        "name": "Information security in supplier relationship",
+        "description": "Processes and procedures should be defined and implemented to manage the information security risks associated with the use of the AI platforms",
+        "version": "V1.0",
+        "information_need": "Processes and procedures should be defined and implemented to manage the information security risks associated with the use of the AI platforms",
+        "implementation_evidence": "Process and procedure configuration file",
+        "frequency": -1,
+        "data_source_type": "Supplier",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "N/A",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity",
+          "associated_control_requirement": "eucs-7.AI-03_req.9",
+          "control_description": "Information security in supplier relationship"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "EVASION",
+            "name": "Evasion",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Evasion"
+        ]
+      },
+      {
+        "id": "InformationSecurityForUseOfCloudServices_AIModelClassification_037",
+        "name": "Information security for use of cloud services",
+        "description": "Processes for acquisition, use, management and exit from cloud services including the AI platform should be established",
+        "version": "V1.0",
+        "information_need": "Processes for acquisition, use, management and exit from cloud services including the AI platform should be established",
+        "implementation_evidence": "Process configuration file",
+        "frequency": -1,
+        "data_source_type": "Cloud Service Provider",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "N/A",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity",
+          "associated_control_requirement": "eucs-7.AI-03_req.10",
+          "control_description": "Information security for use of cloud services"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "EVASION",
+            "name": "Evasion",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Evasion"
+        ]
+      },
+      {
+        "id": "ManagingInformationSecurityInTheICTSupplyChain_AIModelClassification_038",
+        "name": "Managing information security in the ICT supply chain",
+        "description": "Processes and procedures should be defined and implemented to manage the information security risk associated with the ICT products and services supply chain in order to avoid potential vulnerabilities providing access to a malicious attacked to poison the AI model",
+        "version": "V1.0",
+        "information_need": "Processes and procedures should be defined and implemented to manage the information security risk associated with the ICT products and services supply chain in order to avoid potential vulnerabilities providing access to a malicious attacked to poison the AI model",
+        "implementation_evidence": "ICT Process and procedure configuration file",
+        "frequency": -1,
+        "data_source_type": "ICT supplier",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "N/A",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity",
+          "associated_control_requirement": "eucs-7.AI-03_req.11",
+          "control_description": "Managing information security in the ICT supply chain"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "EVASION",
+            "name": "Evasion",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Evasion",
+          "#AIRisk_Software_SupplyChain"
+        ]
+      },
+      {
+        "id": "Controls_AIModelClassification_039",
+        "name": "Physical controls",
+        "description": "Processes and procedures to prevent malicious attackers having access to software and relevant devices",
+        "version": "V1.0",
+        "information_need": "Processes and procedures to prevent malicious attackers having access to software and relevant devices",
+        "implementation_evidence": "Physical control configuration file",
+        "frequency": -1,
+        "data_source_type": "Environment",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "N/A",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity/Data Confidentiality",
+          "associated_control_requirement": "eucs-7.AI-03_req.12",
+          "control_description": "Physical controls"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "EVASION",
+            "name": "Evasion",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Evasion"
+        ]
+      },
+      {
+        "id": "SecureAuthentication_AIModelClassification_040",
+        "name": "Secure authentication",
+        "description": "Apply authentication methods in order to ensure that just authorised users can access to the software and API which require it",
+        "version": "V1.0",
+        "information_need": "Apply authentication methods in order to ensure that just authorised users can access to the software and API which require it",
+        "implementation_evidence": "Authentication configuration file",
+        "frequency": -1,
+        "data_source_type": "Repository/API",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "Percentage",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity",
+          "associated_control_requirement": "eucs-7.AI-03_req.13",
+          "control_description": "Secure authentication"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "EVASION",
+            "name": "Evasion",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Evasion"
+        ]
+      },
+      {
+        "id": "SecureSystemArchitectureAndEngineeringPrinciples_AIModelClassification_041",
+        "name": "Secure system architecture and engineering principles",
+        "description": "Principles for engineering secure systems should be establied, documented, maintained and applied to any information system development acitivites in order to minimize the potential security threats",
+        "version": "V1.0",
+        "information_need": "Principles for engineering secure systems should be establied, documented, maintained and applied to any information system development acitivites in order to minimize the potential security threats",
+        "implementation_evidence": "Principles file",
+        "frequency": -1,
+        "data_source_type": "Policy Document",
+        "reporting_format": "N/A",
+        "target_values": {
+          "target_value_scale": "N/A",
+          "target_value": "N/A"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data Integrity/Data Confidentiality",
+          "associated_control_requirement": "eucs-7.AI-03_req.14",
+          "control_description": "Secure system architecture and engineering principles"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "EVASION",
+            "name": "Evasion",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": [
+          "#AIRisk_Attack_Evasion",
+          "#AIRisk_Software_PreProcessTools",
+          "#AIRisk_Software_ProgramLang"
+        ]
+      },
+      {
+        "id": "MachineLearningModelVulnerabilitiesDetected",
+        "name": "Model Validation",
+        "description": "This metric is used to assess if vulnerabilities are included in an AI model",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess if vulnerabilities are included in an AI model",
+        "implementation_evidence": "Model validation configuration",
+        "frequency": -1,
+        "data_source_type": "Repository",
+        "reporting_format": "Integer",
+        "target_values": {
+          "target_value_scale": "[0,...]",
+          "target_value": "0"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Model Confidentiality/Model integrity",
+          "associated_control_requirement": "eucs-7.AI-04_req.1",
+          "control_description": "Model Validation"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "SUPPLY_CHAIN_ATTACK_MODEL_POISONING",
+            "name": "Supply Chain Attack (Model Poisoning)",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": []
+      },
+      {
+        "id": "CodeNotebookVulnerabilitiesDetected",
+        "name": "Restrict Library Loading",
+        "description": "This metric is used to assess if vulnerabilities are included in a code notebook",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess if vulnerabilities are included in a code notebook",
+        "implementation_evidence": "Library loading mechanisms configuration",
+        "frequency": -1,
+        "data_source_type": "Repository",
+        "reporting_format": "Integer",
+        "target_values": {
+          "target_value_scale": "[0,...]",
+          "target_value": "0"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Model Confidentiality",
+          "associated_control_requirement": "eucs-7.AI-04_req.2",
+          "control_description": "Restrict Library Loading"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "SUPPLY_CHAIN_ATTACK_MODEL_POISONING",
+            "name": "Supply Chain Attack (Model Poisoning)",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": []
+      },
+      {
+        "id": "Stolen_Model_Accuracy_AIModelClassification_44",
+        "name": "Rate limiting and throttling",
+        "description": "This metric is used to assess if the vulnerbility scanning reports high relative accuracy of the potential shadow model",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess if the vulnerbility scanning reports high relative accuracy of the potential shadow model",
+        "implementation_evidence": "N/A",
+        "frequency": -1,
+        "data_source_type": "AImodel",
+        "reporting_format": "Float",
+        "target_values": {
+          "target_value_scale": "[0-100]",
+          "target_value": "30?"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Model confidentiality",
+          "associated_control_requirement": "eucs-7.AI-01_req.6",
+          "control_description": "Rate limiting and throttling"
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "MODEL_THEFT",
+            "name": "Model Theft",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_risks": []
+      },
+      {
+        "id": "Evasion_Efficacy_AIModelClassification_45",
+        "name": "N/A",
+        "description": "This metric is used to assess if the vulnerability scanning reports high efficacy of an Evasion attack",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess if the vulnerability scanning reports high efficacy of an Evasion attack",
+        "implementation_evidence": "N/A",
+        "frequency": -1,
+        "data_source_type": "AImodel",
+        "reporting_format": "Float",
+        "target_values": {
+          "target_value_scale": "[0-100]",
+          "target_value": "30?"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Model confidentiality",
+          "associated_control_requirement": "N/A",
+          "control_description": "Model Evasion protection"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      },
+      {
+        "id": "Poisoned_data_AIModelClassification_46",
+        "name": "N/A",
+        "description": "This metric is used to assess if the vulnerability scannin reports irregularities within the data",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess if the vulnerability scannin reports irregularities within the data",
+        "implementation_evidence": "N/A",
+        "frequency": -1,
+        "data_source_type": "Training data",
+        "reporting_format": "Float",
+        "target_values": {
+          "target_value_scale": "[0-100]",
+          "target_value": "0?"
+        },
+        "associated_control": {
+          "associated_control_framework": "N/A",
+          "associated_control_category": "Data confidentiality",
+          "associated_control_requirement": "N/A",
+          "control_description": "Data Poisoning protection"
+        },
+        "mapped_threats": [],
+        "mapped_risks": []
+      }
+    ],
+    "certifiable_standards_mapping": [
+      {
+        "metric_id": "MalwareProtectionEnabled_VirtualMachine_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess if the antimalware solution is enabled on the respective resource"
+      },
+      {
+        "metric_id": "NumberOfThreatsFound_VirtualMachine_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess if the antimalware solution reports no irregularities"
+      },
+      {
+        "metric_id": "BackupEnabled_Storage_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess if backups are enabled for a cloud service/asset"
+      },
+      {
+        "metric_id": "BackupRetentionSet_Storage_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess the configured backup retention (days) on a cloud service/asset"
+      },
+      {
+        "metric_id": "AnomalyDetectionEnabled_NetworkService_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess if Anomaly Detection is enabled for the cloud service/asset"
+      },
+      {
+        "metric_id": "ActivityLoggingEnabled_VirtualMachine_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess if activity logs are enabled for the cloud service/asset."
+      },
+      {
+        "metric_id": "ApplicationLoggingEnabled_VirtualMachine_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess if Application logs are enabled for the cloud service/asset."
+      },
+      {
+        "metric_id": "BootLoggingEnabled_VirtualMachine_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess if Boot logs are enabled for the cloud service/asset."
+      },
+      {
+        "metric_id": "OSLoggingEnabled_VirtualMachine_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess if OS logs are enabled for the cloud service/asset."
+      },
+      {
+        "metric_id": "BootLoggingRetention_VirtualMachine_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess the configured log retention (days) on a cloud service/asset"
+      },
+      {
+        "metric_id": "OSLoggingRetention_VirtualMachine_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess the configured log retention (days) on a cloud service/asset"
+      },
+      {
+        "metric_id": "AutomaticUpdatesEnabled_VirtualMachine_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess if automatic updates are enabled for the cloud service/asset"
+      },
+      {
+        "metric_id": "AutomaticUpdatesInterval_VirtualMachine_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess the update interval of automatic updates for the cloud service/asset"
+      },
+      {
+        "metric_id": "TLSVersion_NetworkService_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess if state-of-the-art encryption protocols are used for traffic served from public networks"
+      },
+      {
+        "metric_id": "WebApplicationFirewallEnabled_LoadBalancer_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess if a cloud service/asset has enabled WAF functionalities"
+      },
+      {
+        "metric_id": "TransportEncryptionEnabled_StorageService_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess if the cloud service/asset accepts encrypted connections"
+      },
+      {
+        "metric_id": "TransportEncryptionEnforced_StorageService_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess if the cloud service/asset enforces encrypted connections"
+      },
+      {
+        "metric_id": "L3FirewallEnabled_StorageService_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess if a service-level ACL has been enabled on a cloud service/asset"
+      },
+      {
+        "metric_id": "MalwareProtectionOutput_VirtualMachine_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric states whether automatic notifications are enabled (e.g. e-mail) about malware threats. This relates to EUCS’ definition of “continuous monitoring”"
+      },
+      {
+        "metric_id": "AtRestEncryptionEnabled_Storage_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess if encryption at rest has been enabled on a cloud service / asset"
+      },
+      {
+        "metric_id": "BackupEncryptionEnabled_Storage_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "Check if data is backed up in encrypted, state-of-the-art form"
+      },
+      {
+        "metric_id": "BootLoggingImmutability_StorageService_1.0",
+        "standard": "EUCS",
+        "control_id": "N/A",
+        "description": "This metric is used to assess if the boot logs are immutable (integrity protection)"
+      },
+      {
+        "metric_id": "SecureDevelopmentLifecycle_AIModelClassification_009",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-01_req.1",
+        "description": "Rules for secure development of software and systems should be established and applied."
+      },
+      {
+        "metric_id": "SecureCoding_AIModelClassification_010",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-01_req.2",
+        "description": "Ensure that APIs are secured with strong authentication, encryption, and proper access controls"
+      },
+      {
+        "metric_id": "AccessControl_AIModelClassification_011",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-01_req.3",
+        "description": "Rules to control physical and logical access to the AI sytem should be established and implemented"
+      },
+      {
+        "metric_id": "AccessRights_AIModelClassification_012",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-01_req.4",
+        "description": "Acces rights to the AI system should be provisioned, reviewed, modified and removed in accordance with the rules of access control"
+      },
+      {
+        "metric_id": "SecureAuthentication_AIModelClassification_013",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-01_req.5",
+        "description": "Ensure that only authorized users can access to the software and the API"
+      },
+      {
+        "metric_id": "WebFiltering_AIModelClassification_001",
+        "standard": "ISO/IEC 27002, ISO/IEC 27701 Consider adding AIA-specific",
+        "control_id": "eucs-7.AI-01_req.6",
+        "description": "Implement rate limiting and throttling to restrict the number of requests a user or system can make to the model, preventing data harvesting"
+      },
+      {
+        "metric_id": "ModelEncryption_AIModelClassification_002",
+        "standard": "ISO/IEC 27002, ISO/IEC 27701",
+        "control_id": "eucs-7.AI-01_req.7",
+        "description": "Encrypt the model weights and parameters to protect them from being accessed by unauthorized parties"
+      },
+      {
+        "metric_id": "DataAnomalyIdentification_AIModelClassification_013",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-02_req.2",
+        "description": "Use defence techniques to identify unusal or adversarial data patterns"
+      },
+      {
+        "metric_id": "ModelValidation_AIModelClassification_014",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-02_req.3",
+        "description": "Continously monitor and validate model performance to detect unexpected deviations from normal behaviour that may be caused by poisoned data"
+      },
+      {
+        "metric_id": "ModelEnsemble_AIModelClassification_015",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-02_req.4",
+        "description": "Model ensemble methods in the context of AI security refer to use of multiple machine learning models, trained on different subsets of the initial dataset, in combination to improve robustness and accuracy of threat detection"
+      },
+      {
+        "metric_id": "DataAugmentation_AIModelClassification_016",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-02_req.5",
+        "description": "Apply data augmentation techniques to diversify the training dataset and make the model more resilient to smallscale poisoning attacks"
+      },
+      {
+        "metric_id": "DataQualityMonitoring_AIModelClassification_017",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-02_req.6",
+        "description": "Continously monitor data quality, setting thresholds for acceptable quality metrcis. Automatically flag or quarantine data that falls below these standards"
+      },
+      {
+        "metric_id": "ActiveLearning_AIModelClassification_018",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-02_req.7",
+        "description": "Employ active learning strategies to prioritize the labeling of the most informative data points"
+      },
+      {
+        "metric_id": "AccessControl_AIModelClassification_019",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-02_req.8",
+        "description": "Rules to control physical and logical access to the training data as well as model or model server should be established and implemented"
+      },
+      {
+        "metric_id": "AccessRights_AIModelClassification_020",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-02_req.9",
+        "description": "Access rights to training or production data, model or relevant assets should be provisioned, reviewed, modified and removed in accordance with the rules of access control"
+      },
+      {
+        "metric_id": "InfromationSecurityInSupplierRelationship_AIModelClassification_021",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-02_req.10",
+        "description": "Processes and procedures should be defined and implemented to manage information security risks associated with the use of the AI platform"
+      },
+      {
+        "metric_id": "InformationSecurityForUseOfCloudServices_AIModelClassification_022",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-02_req.11",
+        "description": "Processes for acquisition, use, management and exit from cloud services including the AI platform should be established"
+      },
+      {
+        "metric_id": "ManagingInformationSecurityInTheICTSupplyChain_AIModelClassification_023",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-02_req.12",
+        "description": "Processes and procedures should be defined and implemented to manage the information security risks associated with the ICT products and services supply chain in order to avoid potential vulnerabilities providing access to a malicious attacked to posion the AI model"
+      },
+      {
+        "metric_id": "PhysicalControls_AIModelClassification_026",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-02_req.15",
+        "description": "Including controls for physical security perimeters, protecting against physical and environmental threats, security of assets of premises, storage media and so on to protect against physical access to training data or servers storing security relevant datasets"
+      },
+      {
+        "metric_id": "SecureAuthentication_AIModelClassification_027",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-02_req.16",
+        "description": "Ensure that only authorized users can modify training data"
+      },
+      {
+        "metric_id": "SecureDevelopmentLifecycle_AIModelClassification_028",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-02_req.17",
+        "description": "Rules for secure development of software and systems should be established and applied"
+      },
+      {
+        "metric_id": "SecureSystemArchitectureAndEngineeringPrinciples_AIModelClassification_029",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-02_req.18",
+        "description": "Principles for engineering secure systems should be establied, documented, maintained and applied to any information system development acitivites in order to minimize the potential security threats"
+      },
+      {
+        "metric_id": "AdversarialTraining_AIModelClassification_003",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-03_req.1",
+        "description": "Train models with adversarial examples to strengthen their robustness against adversarial attacks"
+      },
+      {
+        "metric_id": "DataAugmentation_AIModelClassification_030",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-03_req.2",
+        "description": "Apply data augmentation techniques and randomization to input data to make it harder for attackers to craft effective adversarial examples"
+      },
+      {
+        "metric_id": "InputValidation_AIModelClassification_004",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-03_req.3",
+        "description": "Implement mechanisms to filter invalid data or sanitizing to remove or neutralize characters or pattern that could be exploited"
+      },
+      {
+        "metric_id": "InputDistortion_AIModelClassification_031",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-03_req.4",
+        "description": "Slight modification of the input data can be performed in order to distort the adversarial attack causing it to fail"
+      },
+      {
+        "metric_id": "AdversarialDetection_AIModelClassification_032",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-03_req.5",
+        "description": "Deploy adversarial detection mechanisms that can identify and flag potential adversarial examples for further inspection"
+      },
+      {
+        "metric_id": "TransferKnowledge_AIModelClassification_033",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-03_req.6",
+        "description": "Transfer knowledge from robust teacher models to student models, making the student model resilient to adversarial attacks."
+      },
+      {
+        "metric_id": "AccessControl_AIModelClassification_034",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-03_req.7",
+        "description": "Rules to control physical and logical access to the software and the API should be established and implemented"
+      },
+      {
+        "metric_id": "AccessRights_AIModelClassification_035",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-03_req.8",
+        "description": "Access rights to the software should be provisioned, reviewed, modified and removed in accordance with the rules of access control"
+      },
+      {
+        "metric_id": "InformationSecurityInSupplierRelationship_AIModelClassification_036",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-03_req.9",
+        "description": "Processes and procedures should be defined and implemented to manage the information security risks associated with the use of the AI platforms"
+      },
+      {
+        "metric_id": "InformationSecurityForUseOfCloudServices_AIModelClassification_037",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-03_req.10",
+        "description": "Processes for acquisition, use, management and exit from cloud services including the AI platform should be established"
+      },
+      {
+        "metric_id": "ManagingInformationSecurityInTheICTSupplyChain_AIModelClassification_038",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-03_req.11",
+        "description": "Processes and procedures should be defined and implemented to manage the information security risk associated with the ICT products and services supply chain in order to avoid potential vulnerabilities providing access to a malicious attacked to poison the AI model"
+      },
+      {
+        "metric_id": "Controls_AIModelClassification_039",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-03_req.12",
+        "description": "Processes and procedures to prevent malicious attackers having access to software and relevant devices"
+      },
+      {
+        "metric_id": "SecureAuthentication_AIModelClassification_040",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-03_req.13",
+        "description": "Apply authentication methods in order to ensure that just authorised users can access to the software and API which require it"
+      },
+      {
+        "metric_id": "SecureSystemArchitectureAndEngineeringPrinciples_AIModelClassification_041",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-03_req.14",
+        "description": "Principles for engineering secure systems should be establied, documented, maintained and applied to any information system development acitivites in order to minimize the potential security threats"
+      },
+      {
+        "metric_id": "MachineLearningModelVulnerabilitiesDetected",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-04_req.1",
+        "description": "This metric is used to assess if vulnerabilities are included in an AI model"
+      },
+      {
+        "metric_id": "CodeNotebookVulnerabilitiesDetected",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-04_req.2",
+        "description": "This metric is used to assess if vulnerabilities are included in a code notebook"
+      },
+      {
+        "metric_id": "Stolen_Model_Accuracy_AIModelClassification_44",
+        "standard": "N/A",
+        "control_id": "eucs-7.AI-01_req.6",
+        "description": "This metric is used to assess if the vulnerbility scanning reports high relative accuracy of the potential shadow model"
+      },
+      {
+        "metric_id": "Evasion_Efficacy_AIModelClassification_45",
+        "standard": "N/A",
+        "control_id": "N/A",
+        "description": "This metric is used to assess if the vulnerability scanning reports high efficacy of an Evasion attack"
+      },
+      {
+        "metric_id": "Poisoned_data_AIModelClassification_46",
+        "standard": "N/A",
+        "control_id": "N/A",
+        "description": "This metric is used to assess if the vulnerability scannin reports irregularities within the data"
+      }
+    ],
+    "boundary_conditions": {
+      "environment": "Cloud + AI System",
+      "scope": "?; AI model; AImodel; API; API Gateway; API/Repository; Cloud Service Provider; Environment; Environment Policy Document; ICT supplier; LoadBalancer; NetworkService; Policy Document; Repository; Repository Policy Document?; Repository/API; Repository?; Storage; StorageService; Supplier; Training data; VirtualMachine",
+      "associated_component": "N/A",
+      "dependencies": [
+        "EUCS",
+        "ISO/IEC 27002, ISO/IEC 27701",
+        "ISO/IEC 27002, ISO/IEC 27701 Consider adding AIA-specific"
+      ]
+    },
+    "risk_catalogue": [
+      {
+        "risk_id": "#AIRisk_TrainingData_PersInfo",
+        "risk_name": "Personal information in data",
+        "risk_details": "Inclusion or presence of personal identifiable information (PII) and sensitive personal information (SPI) in the data used for training or fine tuning the model might result in unwanted disclosure of that information.",
+        "risk_category": "Training data risks",
+        "associated_framework": "COBALT-AI",
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_metrics": [
+          {
+            "metric_id": "DataValidationAndSanitization_AIModelClassification_005",
+            "impact": "N/A"
+          },
+          {
+            "metric_id": "DataAnomalyIdentification_AIModelClassification_013",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "DataQualityMonitoring_AIModelClassification_017",
+            "impact": "Unspecified"
+          }
+        ],
+        "mapped_controls": [
+          "eucs-7.AI-02_req.1",
+          "eucs-7.AI-02_req.2",
+          "eucs-7.AI-02_req.6"
+        ]
+      },
+      {
+        "risk_id": "#AIRisk_TrainingData_ConfInfo",
+        "risk_name": "Confidential information data",
+        "risk_details": "Confidential information might be included as part of the data that is used to train or tune the model.",
+        "risk_category": "Training data risks",
+        "associated_framework": "COBALT-AI",
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_metrics": [
+          {
+            "metric_id": "DataValidationAndSanitization_AIModelClassification_005",
+            "impact": "N/A"
+          },
+          {
+            "metric_id": "DataAnomalyIdentification_AIModelClassification_013",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "DataQualityMonitoring_AIModelClassification_017",
+            "impact": "Unspecified"
+          }
+        ],
+        "mapped_controls": [
+          "eucs-7.AI-02_req.1",
+          "eucs-7.AI-02_req.2",
+          "eucs-7.AI-02_req.6"
+        ]
+      },
+      {
+        "risk_id": "#AIRisk_Training Data_Poisoning",
+        "risk_name": "Data poisoning",
+        "risk_details": "A type of adversarial attack where an adversary or malicious insider injects intentionally corrupted, false, misleading, or incorrect samples into the training or fine-tuning datasets. An attacker manipulates development elements (the engineering environment and the supply chain), to alter the behavior of the model.",
+        "risk_category": "Training data risks",
+        "associated_framework": "COBALT-AI",
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_metrics": [
+          {
+            "metric_id": "DataValidationAndSanitization_AIModelClassification_005",
+            "impact": "N/A"
+          },
+          {
+            "metric_id": "DataAnomalyIdentification_AIModelClassification_013",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "ModelValidation_AIModelClassification_014",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "ModelEnsemble_AIModelClassification_015",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "DataAugmentation_AIModelClassification_016",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "DataQualityMonitoring_AIModelClassification_017",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "ActiveLearning_AIModelClassification_018",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "AccessControl_AIModelClassification_019",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "AccessRights_AIModelClassification_020",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "InfromationSecurityInSupplierRelationship_AIModelClassification_021",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "InformationSecurityForUseOfCloudServices_AIModelClassification_022",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "ManagingInformationSecurityInTheICTSupplyChain_AIModelClassification_023",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "Screening_AIModelClassification_024",
+            "impact": "N/A"
+          },
+          {
+            "metric_id": "InformationSecurityAwareness_AIModelClassification_025",
+            "impact": "N/A"
+          },
+          {
+            "metric_id": "PhysicalControls_AIModelClassification_026",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "SecureAuthentication_AIModelClassification_027",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "SecureDevelopmentLifecycle_AIModelClassification_028",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "SecureSystemArchitectureAndEngineeringPrinciples_AIModelClassification_029",
+            "impact": "Unspecified"
+          }
+        ],
+        "mapped_controls": [
+          "eucs-7.AI-02_req.1",
+          "eucs-7.AI-02_req.2",
+          "eucs-7.AI-02_req.3",
+          "eucs-7.AI-02_req.4",
+          "eucs-7.AI-02_req.5",
+          "eucs-7.AI-02_req.6",
+          "eucs-7.AI-02_req.7",
+          "eucs-7.AI-02_req.8",
+          "eucs-7.AI-02_req.9",
+          "eucs-7.AI-02_req.10",
+          "eucs-7.AI-02_req.11",
+          "eucs-7.AI-02_req.12",
+          "eucs-7.AI-02_req.13",
+          "eucs-7.AI-02_req.14",
+          "eucs-7.AI-02_req.15",
+          "eucs-7.AI-02_req.16",
+          "eucs-7.AI-02_req.17",
+          "eucs-7.AI-02_req.18"
+        ]
+      },
+      {
+        "risk_id": "#AIRisk_Attack_Extraction",
+        "risk_name": "Extraction attack",
+        "risk_details": "An extraction attack is used to create a shadow model of the original model. These attack occurs when an attacker is able to querie the original model to collect a sufficient number of outputs to create the shadow model that mimics the behaviour.",
+        "risk_category": "Attack Risks",
+        "associated_framework": "COBALT-AI",
+        "mapped_threats": [
+          {
+            "threat_id": "MODEL_THEFT",
+            "name": "Model Theft",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_metrics": [
+          {
+            "metric_id": "SecureDevelopmentLifecycle_AIModelClassification_009",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "SecureCoding_AIModelClassification_010",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "AccessControl_AIModelClassification_011",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "AccessRights_AIModelClassification_012",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "SecureAuthentication_AIModelClassification_013",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "WebFiltering_AIModelClassification_001",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "ModelEncryption_AIModelClassification_002",
+            "impact": "Unspecified"
+          }
+        ],
+        "mapped_controls": [
+          "eucs-7.AI-01_req.1",
+          "eucs-7.AI-01_req.2",
+          "eucs-7.AI-01_req.3",
+          "eucs-7.AI-01_req.4",
+          "eucs-7.AI-01_req.5",
+          "eucs-7.AI-01_req.6",
+          "eucs-7.AI-01_req.7"
+        ]
+      },
+      {
+        "risk_id": "#AIRisk_Attack_ModelTheft",
+        "risk_name": "Model Theft",
+        "risk_details": "An attacker collects inputs and outputs of an existing model and uses those combinations to train a new model, in order to replicate the original model.",
+        "risk_category": "Attack Risks",
+        "associated_framework": "COBALT-AI",
+        "mapped_threats": [
+          {
+            "threat_id": "MODEL_THEFT",
+            "name": "Model Theft",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_metrics": [
+          {
+            "metric_id": "SecureDevelopmentLifecycle_AIModelClassification_009",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "SecureCoding_AIModelClassification_010",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "AccessControl_AIModelClassification_011",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "AccessRights_AIModelClassification_012",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "SecureAuthentication_AIModelClassification_013",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "WebFiltering_AIModelClassification_001",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "ModelEncryption_AIModelClassification_002",
+            "impact": "Unspecified"
+          }
+        ],
+        "mapped_controls": [
+          "eucs-7.AI-01_req.1",
+          "eucs-7.AI-01_req.2",
+          "eucs-7.AI-01_req.3",
+          "eucs-7.AI-01_req.4",
+          "eucs-7.AI-01_req.5",
+          "eucs-7.AI-01_req.6",
+          "eucs-7.AI-01_req.7"
+        ]
+      },
+      {
+        "risk_id": "#AIRisk_Attack_Evasion",
+        "risk_name": "Evasion attack",
+        "risk_details": "Evasion attacks attempt to make a model output incorrect results by slightly perturbing the input data that is sent to the trained model. An attacker fools the model by crafting input to mislead it into performing its task incorrectly",
+        "risk_category": "Attack Risks",
+        "associated_framework": "COBALT-AI",
+        "mapped_threats": [
+          {
+            "threat_id": "EVASION",
+            "name": "Evasion",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_metrics": [
+          {
+            "metric_id": "AdversarialTraining_AIModelClassification_003",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "DataAugmentation_AIModelClassification_030",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "InputValidation_AIModelClassification_004",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "InputDistortion_AIModelClassification_031",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "AdversarialDetection_AIModelClassification_032",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "TransferKnowledge_AIModelClassification_033",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "AccessControl_AIModelClassification_034",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "AccessRights_AIModelClassification_035",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "InformationSecurityInSupplierRelationship_AIModelClassification_036",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "InformationSecurityForUseOfCloudServices_AIModelClassification_037",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "ManagingInformationSecurityInTheICTSupplyChain_AIModelClassification_038",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "Controls_AIModelClassification_039",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "SecureAuthentication_AIModelClassification_040",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "SecureSystemArchitectureAndEngineeringPrinciples_AIModelClassification_041",
+            "impact": "Unspecified"
+          }
+        ],
+        "mapped_controls": [
+          "eucs-7.AI-03_req.1",
+          "eucs-7.AI-03_req.2",
+          "eucs-7.AI-03_req.3",
+          "eucs-7.AI-03_req.4",
+          "eucs-7.AI-03_req.5",
+          "eucs-7.AI-03_req.6",
+          "eucs-7.AI-03_req.7",
+          "eucs-7.AI-03_req.8",
+          "eucs-7.AI-03_req.9",
+          "eucs-7.AI-03_req.10",
+          "eucs-7.AI-03_req.11",
+          "eucs-7.AI-03_req.12",
+          "eucs-7.AI-03_req.13",
+          "eucs-7.AI-03_req.14"
+        ]
+      },
+      {
+        "risk_id": "#AIRisk_Attack_Adversarial",
+        "risk_name": "Adversarial attack",
+        "risk_details": "\"Recent advances have shown that a deep learning model with high predictive accuracy frequently misbehaves on adversarial examples [57,58]. In particular, a small perturbation to an input image, which is imperceptible to humans, could fool a well-trained deep learning model into making completely different predictions [23].\"",
+        "risk_category": "Attack Risks",
+        "associated_framework": "COBALT-AI",
+        "mapped_threats": [
+          {
+            "threat_id": "EVASION",
+            "name": "Evasion",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_metrics": [
+          {
+            "metric_id": "AdversarialTraining_AIModelClassification_003",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "DataAugmentation_AIModelClassification_030",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "InputValidation_AIModelClassification_004",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "InputDistortion_AIModelClassification_031",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "AdversarialDetection_AIModelClassification_032",
+            "impact": "Unspecified"
+          }
+        ],
+        "mapped_controls": [
+          "eucs-7.AI-03_req.1",
+          "eucs-7.AI-03_req.2",
+          "eucs-7.AI-03_req.3",
+          "eucs-7.AI-03_req.4",
+          "eucs-7.AI-03_req.5"
+        ]
+      },
+      {
+        "risk_id": "#AIRisk_Software_ProgramLang",
+        "risk_name": "Programming Language",
+        "risk_details": "Most LLMs are developed using the Python language, whereas the vulnerabilities of Python interpreters pose threats to the developed models",
+        "risk_category": "Software security",
+        "associated_framework": "COBALT-AI",
+        "mapped_threats": [
+          {
+            "threat_id": "EVASION",
+            "name": "Evasion",
+            "threat_description": "N/A"
+          },
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          },
+          {
+            "threat_id": "SUPPLY_CHAIN_ATTACK_MODEL_POISONING",
+            "name": "Supply Chain Attack (Model Poisoning)",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_metrics": [
+          {
+            "metric_id": "SecureSystemArchitectureAndEngineeringPrinciples_AIModelClassification_041",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "SecureDevelopmentLifecycle_AIModelClassification_028",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "SecureSystemArchitectureAndEngineeringPrinciples_AIModelClassification_029",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "RestrictLibraryLoading_AIModelClassification_43",
+            "impact": "N/A"
+          }
+        ],
+        "mapped_controls": [
+          "eucs-7.AI-03_req.14",
+          "eucs-7.AI-02_req.17",
+          "eucs-7.AI-02_req.18",
+          "eucs-7.AI-04_req.2"
+        ]
+      },
+      {
+        "risk_id": "#AIRisk_Software_AI DevelopmentFrameworks/Libraries",
+        "risk_name": "Deep Learning Frameworks",
+        "risk_details": "Various Python libraries are used to create AI models. Vulnerabilities in these can affect the integrity of training data, AI models and deployment platforms.",
+        "risk_category": "Software security",
+        "associated_framework": "COBALT-AI",
+        "mapped_threats": [],
+        "mapped_metrics": [],
+        "mapped_controls": [
+          "N/A"
+        ]
+      },
+      {
+        "risk_id": "#AIRisk_Software_SupplyChain",
+        "risk_name": "Software Supply Chains",
+        "risk_details": "\"The software development toolchain of AI models is complex and could bring threats to the developed models.\" This results in the possibility of unrecognised malicious layers in a model,",
+        "risk_category": "Software security",
+        "associated_framework": "COBALT-AI",
+        "mapped_threats": [
+          {
+            "threat_id": "SUPPLY_CHAIN_ATTACK_MODEL_POISONING",
+            "name": "Supply Chain Attack (Model Poisoning)",
+            "threat_description": "N/A"
+          },
+          {
+            "threat_id": "EVASION",
+            "name": "Evasion",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_metrics": [
+          {
+            "metric_id": "ModelValidation_AIModelClassification_042",
+            "impact": "N/A"
+          },
+          {
+            "metric_id": "RestrictLibraryLoading_AIModelClassification_43",
+            "impact": "N/A"
+          },
+          {
+            "metric_id": "ManagingInformationSecurityInTheICTSupplyChain_AIModelClassification_038",
+            "impact": "Unspecified"
+          }
+        ],
+        "mapped_controls": [
+          "eucs-7.AI-04_req.1",
+          "eucs-7.AI-04_req.2",
+          "eucs-7.AI-03_req.11"
+        ]
+      },
+      {
+        "risk_id": "#AIRisk_Software_PreProcessTools",
+        "risk_name": "Pre-processing Tools",
+        "risk_details": "Pre-processing tools play a crucial role in the context of LLMs. These tools, which are often involved in computer vision (CV) tasks, are susceptible to attacks that exploit vulnerabilities in tools such as OpenCV.",
+        "risk_category": "Software security",
+        "associated_framework": "COBALT-AI",
+        "mapped_threats": [
+          {
+            "threat_id": "EVASION",
+            "name": "Evasion",
+            "threat_description": "N/A"
+          },
+          {
+            "threat_id": "DATA_POISONING",
+            "name": "Data Poisoning",
+            "threat_description": "N/A"
+          },
+          {
+            "threat_id": "SUPPLY_CHAIN_ATTACK_MODEL_POISONING",
+            "name": "Supply Chain Attack (Model Poisoning)",
+            "threat_description": "N/A"
+          }
+        ],
+        "mapped_metrics": [
+          {
+            "metric_id": "SecureSystemArchitectureAndEngineeringPrinciples_AIModelClassification_041",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "SecureDevelopmentLifecycle_AIModelClassification_028",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "SecureSystemArchitectureAndEngineeringPrinciples_AIModelClassification_029",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "RestrictLibraryLoading_AIModelClassification_43",
+            "impact": "N/A"
+          }
+        ],
+        "mapped_controls": [
+          "eucs-7.AI-03_req.14",
+          "eucs-7.AI-02_req.17",
+          "eucs-7.AI-02_req.18",
+          "eucs-7.AI-04_req.2"
+        ]
+      },
+      {
+        "risk_id": "#CLOUDRisk_DataBreach",
+        "risk_name": "Data Breach",
+        "risk_details": "Data breaches occur from unauthorized access to data stored in the cloud. There are consequences of such breaches, which may range from financial damages and losses, legal ramifications to even reputational damage. Furthermore, configuration errors in cloud security, credential compromises, and vulnerable applications are some of the common causes of data breaches. At least 80% of data breaches in 2023 were due to data stored in the cloud, making the cloud a vulnerable segment. The tangible impacts of such a breach normally have long-lasting effects, which also include loss of customer confidence and lost revenue.",
+        "risk_category": "CLOUD",
+        "associated_framework": "EUCS",
+        "mapped_threats": [],
+        "mapped_metrics": [],
+        "mapped_controls": [
+          "N/A"
+        ]
+      },
+      {
+        "risk_id": "#CLOUDRisk_IncorrectlyConfiguredCloudSettings",
+        "risk_name": "Incorrectly Configured Cloud Settings",
+        "risk_details": "Most of the significant factors that cause cloud security breaches usually revolve around misconfiguration. Poor configuration settings, open storage buckets, overly permissive IAM policies, and publicly exposed resources containing sensitive data will expose critical information to attackers. Recently, it was reported that about 15% of cybersecurity breaches have been caused by cloud misconfigurations. This pinpoints a dire need for periodic audits of configurations made within the cloud to avoid exposure.",
+        "risk_category": "CLOUD",
+        "associated_framework": "EUCS",
+        "mapped_threats": [],
+        "mapped_metrics": [],
+        "mapped_controls": [
+          "N/A"
+        ]
+      },
+      {
+        "risk_id": "#CLOUDRisk_InsecureAPIs",
+        "risk_name": "Insecure APIs",
+        "risk_details": "APIs are important for cloud functionality, and an unsecured API can be a reason for other security vulnerabilities. Insecure APIs generally have weak authentication, encryption, or validation, which hackers may then exploit in order to gain access to valuable cloud resources or to change data control. A staggering 92% of organizations experienced an API-related security incident in the past year. API vulnerabilities tend to go under the radar most times, hence a favorite target of attackers.",
+        "risk_category": "CLOUD",
+        "associated_framework": "EUCS",
+        "mapped_threats": [],
+        "mapped_metrics": [],
+        "mapped_controls": [
+          "N/A"
+        ]
+      },
+      {
+        "risk_id": "#CLOUDRisk_AccountHijacking",
+        "risk_name": "Account Hijacking",
+        "risk_details": "Account hijacking occurs when an attacker uses stolen credentials to gain unauthorized access to a cloud account via phishing or brute-force methods. Once the account has been taken by an attacker, several manipulations with data are possible, which means information can be stolen or services disrupted. In 2023, cloud account threats jumped 16-fold compared to the previous year. This suggests the speed at which the threats are rising and how the bad actors use the hijacked account to launch subsequent attacks or exfiltrate important data without getting detected.",
+        "risk_category": "CLOUD",
+        "associated_framework": "EUCS",
+        "mapped_threats": [],
+        "mapped_metrics": [],
+        "mapped_controls": [
+          "N/A"
+        ]
+      },
+      {
+        "risk_id": "#CLOUDRisk_InsiderThreats",
+        "risk_name": "Insider Threats",
+        "risk_details": "Insider threats can be employees, contractors, or partners who have been granted access to cloud resources and might intentionally or unintentionally misuse that access. Insider threats are extremely dangerous because they emanate from people trusted with access to sensitive information. Insider attacks can easily bypass traditional security measures and, therefore, remain very hard to detect and mitigate.",
+        "risk_category": "CLOUD",
+        "associated_framework": "EUCS",
+        "mapped_threats": [],
+        "mapped_metrics": [],
+        "mapped_controls": [
+          "N/A"
+        ]
+      },
+      {
+        "risk_id": "#CLOUDRisk_DenialofServiceDoSAttacks",
+        "risk_name": "Denial-of-Service (DoS) Attacks",
+        "risk_details": "DoS attacks intend to overload cloud services, thereby making them unavailable for valid users. Attackers usually flood cloud systems with excessive traffic with the aim of forcing performance degradation or complete outages. Such an attack results in downtime, revenue loss, and damage to reputation. DoS attacks in recent times appear to be fully sophisticated, using botnets to amplify their impact.",
+        "risk_category": "CLOUD",
+        "associated_framework": "EUCS",
+        "mapped_threats": [],
+        "mapped_metrics": [],
+        "mapped_controls": [
+          "N/A"
+        ]
+      },
+      {
+        "risk_id": "#CLOUDRisk_DataLoss",
+        "risk_name": "Data Loss",
+        "risk_details": "Data saved on the cloud can be lost via accidental deletion, hardware failures, and other types of malicious attacks. The lack of backup and disaster recovery puts most organizations in the line of risk of losing their valuable data permanently. Ransomware attacks are another leading cause of data loss, as they lock critical files with encryption and hold them for ransom.",
+        "risk_category": "CLOUD",
+        "associated_framework": "EUCS",
+        "mapped_threats": [],
+        "mapped_metrics": [],
+        "mapped_controls": [
+          "N/A"
+        ]
+      },
+      {
+        "risk_id": "#CLOUDRisk_LackofCloudVisibility",
+        "risk_name": "Lack of Cloud Visibility",
+        "risk_details": "As an organization grows, many are unable to maintain complete visibility into their cloud environments. This lack of visibility is very important and acts as a barrier to threat detection and response, thus leaving the resources in the cloud exposed. Inadequate depth of visibility would often leave security teams blind to either shadow IT or misconfigurations, furthering the propagation of undetected breaches.",
+        "risk_category": "CLOUD",
+        "associated_framework": "EUCS",
+        "mapped_threats": [],
+        "mapped_metrics": [],
+        "mapped_controls": [
+          "N/A"
+        ]
+      },
+      {
+        "risk_id": "#CLOUDRisk_SharedResponsibilityModel",
+        "risk_name": "Shared Responsibility Model",
+        "risk_details": "In cloud computing, security operates on a shared responsibility model. While cloud providers are responsible for securing the infrastructure, organizations are supposed to secure their data, applications, and configurations. Most businesses don’t fully understand this model and, therefore, leave certain areas with gaps in security coverage. Organizations have to be conscious of their responsibilities to avoid leaving critical assets vulnerable.",
+        "risk_category": "CLOUD",
+        "associated_framework": "EUCS",
+        "mapped_threats": [],
+        "mapped_metrics": [],
+        "mapped_controls": [
+          "N/A"
+        ]
+      },
+      {
+        "risk_id": "#CLOUDRisk_ComplianceViolations",
+        "risk_name": "Compliance Violations",
+        "risk_details": "Many industries are burdened with strict regulatory requirements with respect to data privacy and security, such as GDPR and HIPAA. Inadequate security in a cloud environment can result in failure to comply with procedures that have serious legal repercussions and bring negative impacts to the organization’s reputation. Moreover, compliance violations may lead to audits and potential disruption to businesses; hence, proactive steps are important.",
+        "risk_category": "CLOUD",
+        "associated_framework": "EUCS",
+        "mapped_threats": [],
+        "mapped_metrics": [],
+        "mapped_controls": [
+          "N/A"
+        ]
+      },
+      {
+        "risk_id": "#CLOUDRisk_AdvancedPersistentThreatsAPTs",
+        "risk_name": "Advanced Persistent Threats (APTs)",
+        "risk_details": "APTs are a class of sophisticated cyber-attacks where hackers gain access to the cloud environment and persist for extended periods. These are long-term stealth attacks aimed at stealing sensitive information without setting off alarms within security systems. APTs are normally state-sponsored or by highly skilled attackers, and it is very hard to defend against them using traditional methods of security.",
+        "risk_category": "CLOUD",
+        "associated_framework": "EUCS",
+        "mapped_threats": [],
+        "mapped_metrics": [],
+        "mapped_controls": [
+          "N/A"
+        ]
+      },
+      {
+        "risk_id": "#CLOUDRisk_LackofEncryption",
+        "risk_name": "Lack of Encryption",
+        "risk_details": "Encryption is a part of protection for sensitive data that is stored in cloud environments or data in transit. Information that does not have strong encryption becomes easy prey for interception or access by those not authorized. Businesses that fail to encrypt sensitive information expose it to breach risks and non-compliance with privacy regulations.",
+        "risk_category": "CLOUD",
+        "associated_framework": "EUCS",
+        "mapped_threats": [],
+        "mapped_metrics": [],
+        "mapped_controls": [
+          "N/A"
+        ]
+      },
+      {
+        "risk_id": "#CLOUDRisk_PoorIdentityandAccessManagementIAM",
+        "risk_name": "Poor Identity and Access Management (IAM)",
+        "risk_details": "Poor IAM practices, such as weak password policies or granting undue permission, can leave cloud resources open to unauthorized access. Such IAM misconfigurations pave the way for account compromises and data breaches. In addition, regular reviews of IAM policies and their respective MFA enforcement need to be performed to minimize the risk of unauthorized access.",
+        "risk_category": "CLOUD",
+        "associated_framework": "EUCS",
+        "mapped_threats": [],
+        "mapped_metrics": [],
+        "mapped_controls": [
+          "N/A"
+        ]
+      },
+      {
+        "risk_id": "#CLOUDRisk_ShadowIT",
+        "risk_name": "Shadow IT",
+        "risk_details": "Shadow IT refers to employees using unauthorized cloud applications or services without approval. This circumvents established security protocols, introducing risks and compliance issues. Shadow IT could result in data flows that are not monitored with possible data leaks, further increasing the attack surface for an organization. Implementing strict policies and monitoring tools can help mitigate the risks posed by Shadow IT.",
+        "risk_category": "CLOUD",
+        "associated_framework": "EUCS",
+        "mapped_threats": [],
+        "mapped_metrics": [],
+        "mapped_controls": [
+          "N/A"
+        ]
+      },
+      {
+        "risk_id": "#CLOUDRisk_ThirdPartyRisk",
+        "risk_name": "Third-Party Risk",
+        "risk_details": "Third-party vendors or partners dealing in cloud environments may introduce security risks of their own. Attackers may attack a third-party vendor to gain access to the larger cloud ecosystem. Vendor risk management becomes highly critical since a breach in one partner environment might lead to an effect cascading along the entire supply chain. Ensure thorough vetting and continuous monitoring of third-party vendors to maintain security across the entire ecosystem.",
+        "risk_category": "CLOUD",
+        "associated_framework": "EUCS",
+        "mapped_threats": [],
+        "mapped_metrics": [],
+        "mapped_controls": [
+          "N/A"
+        ]
+      },
+      {
+        "risk_id": "#CLOUDRisk_ContainerVulnerabilities",
+        "risk_name": "Container Vulnerabilities",
+        "risk_details": "While gaining much momentum in cloud environments, containers also introduce their own sets of security vulnerabilities if configured poorly. A container that is not properly configured or insecure communication between containers may expose the system to various kinds of attacks. There also should be a need for regular updates and security patches to minimize the danger of vulnerabilities in containerized environments.",
+        "risk_category": "CLOUD",
+        "associated_framework": "EUCS",
+        "mapped_threats": [],
+        "mapped_metrics": [],
+        "mapped_controls": [
+          "N/A"
+        ]
+      },
+      {
+        "risk_id": "#CLOUDRisk_SupplyChainAttacks",
+        "risk_name": "Supply Chain Attacks",
+        "risk_details": "In supply chain attacks, cloud service providers or any third-party vendor are targeted to compromise multiple customers at once. These can be much more catastrophic since they involve not just one organization but the entire ecosystem connected to the compromised vendor. As supply chains become increasingly complex, more weak links can be leveraged by attackers to compromise multiple businesses at once.",
+        "risk_category": "CLOUD",
+        "associated_framework": "EUCS",
+        "mapped_threats": [],
+        "mapped_metrics": [],
+        "mapped_controls": [
+          "N/A"
+        ]
+      }
+    ]
+  }
+}

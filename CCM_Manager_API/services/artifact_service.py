@@ -23,18 +23,137 @@ def list_vulnerabilities():
     return {"message": "No vulnerabilities found"}, 404
 
 
+def _profile_from_doc(doc):
+    content = doc.get("content", {})
+    if isinstance(content, dict):
+        profile = content.get("profile")
+        if isinstance(profile, dict):
+            return profile.get("profile", profile)
+
+    legacy_profile = doc.get("profile")
+    if isinstance(legacy_profile, dict):
+        return legacy_profile.get("profile", legacy_profile)
+
+    return None
+
+
 def get_oscal_control_ids(doc_uuid):
     doc = collection.find_one({"uuid": doc_uuid})
-    if not doc or "content" not in doc or "profile" not in doc["content"]:
+    if not doc:
+        return {"error": "Profile not found"}, 404
+
+    profile = _profile_from_doc(doc)
+    if not profile:
         return {"error": "Profile not found"}, 404
 
     control_ids = []
-    imports = doc["content"]["profile"].get("imports", [])
+    imports = profile.get("imports", [])
     for imported_profile in imports:
         for control in imported_profile.get("include-controls", []):
             control_ids.extend(control.get("with-ids", []))
 
-    return {"control_ids": list(set(control_ids))}, 200
+    return {"control_ids": sorted(set(control_ids))}, 200
+
+
+def _identify_oscal_document(oscal_json):
+    if not isinstance(oscal_json, dict):
+        raise ValueError("No JSON data or file provided.")
+
+    if "catalog" in oscal_json and isinstance(oscal_json["catalog"], dict):
+        doc_uuid = oscal_json["catalog"].get("uuid")
+        if not doc_uuid:
+            raise ValueError("Unrecognized OSCAL type or missing UUID.")
+        return "catalog", doc_uuid, oscal_json["catalog"]
+
+    if "profile" in oscal_json and isinstance(oscal_json["profile"], dict):
+        doc_uuid = oscal_json["profile"].get("uuid")
+        if not doc_uuid:
+            raise ValueError("Unrecognized OSCAL type or missing UUID.")
+        return "profile", doc_uuid, oscal_json["profile"]
+
+    if "component-definition" in oscal_json and isinstance(oscal_json["component-definition"], dict):
+        component_def = oscal_json["component-definition"]
+        return "component-definition", component_def.get("uuid") or str(uuid4()), component_def
+
+    raise ValueError("Unrecognized OSCAL type or missing UUID.")
+
+
+def _existing_oscal_section(doc, oscal_type):
+    content = doc.get("content", {})
+    if isinstance(content, dict) and oscal_type in content:
+        return content[oscal_type]
+
+    legacy_section = doc.get(oscal_type)
+    if isinstance(legacy_section, dict):
+        return legacy_section.get(oscal_type, legacy_section)
+
+    return None
+
+
+def upload_oscal(oscal_json):
+    try:
+        oscal_type, doc_uuid, content = _identify_oscal_document(oscal_json)
+    except ValueError as exc:
+        return {"error": str(exc)}, 400
+
+    timestamp = datetime.utcnow().isoformat()
+    doc_hash = generate_json_hash(oscal_json)
+
+    if oscal_type in {"catalog", "profile"}:
+        existing = collection.find_one({"uuid": doc_uuid})
+        if existing:
+            if _existing_oscal_section(existing, oscal_type):
+                return {
+                    "message": f"Duplicate {oscal_type} already exists for this UUID.",
+                    "uuid": doc_uuid,
+                }, 200
+
+            collection.update_one(
+                {"uuid": doc_uuid},
+                {
+                    "$set": {
+                        "type": "oscal",
+                        f"content.{oscal_type}": content,
+                        f"{oscal_type}_hash": doc_hash,
+                        "timestamp": timestamp,
+                    }
+                },
+            )
+            return {
+                "message": f"{oscal_type} added to existing UUID.",
+                "uuid": doc_uuid,
+            }, 200
+
+        collection.insert_one({
+            "uuid": doc_uuid,
+            "type": "oscal",
+            "content": {oscal_type: content},
+            f"{oscal_type}_hash": doc_hash,
+            "timestamp": timestamp,
+        })
+        return {
+            "message": f"{oscal_type} document saved successfully.",
+            "uuid": doc_uuid,
+        }, 200
+
+    existing = collection.find_one({"oscal_type": oscal_type, "hash": doc_hash})
+    if existing:
+        return {
+            "message": "Duplicate document already exists.",
+            "uuid": existing["uuid"],
+        }, 200
+
+    collection.insert_one({
+        "uuid": doc_uuid,
+        "hash": doc_hash,
+        "oscal_type": oscal_type,
+        "content": {oscal_type: content},
+        "timestamp": timestamp,
+    })
+    return {
+        "message": f"{oscal_type} document saved successfully.",
+        "uuid": doc_uuid,
+    }, 200
 
 
 def upload_saasbom(saasbom_json):

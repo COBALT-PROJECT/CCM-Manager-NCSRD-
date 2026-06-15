@@ -193,7 +193,7 @@ def populate_json():
 def send_files_to_api(main_file_path, api_url):
     hostname = socket.gethostname()
     local_conf_file = f"ccm-a-{hostname}-local.conf"
-    local_log_file = "ccm-a-{hostname}-local-conf.log"
+    local_log_file = f"ccm-a-{hostname}-local-conf.log"
 
     # Check if all files exist
     files_to_send = {
@@ -214,7 +214,7 @@ def send_files_to_api(main_file_path, api_url):
                 open(local_log_file, 'r') as local_log_file:
 
             files = {
-                "json_file": (os.path.basename(main_file_path), main_file, "application/json"),
+                "file": (os.path.basename(main_file_path), main_file, "application/json"),
                 "local_conf": (os.path.basename(local_conf_file), conf_file, "application/json"),
                 "local_log_file": (os.path.basename(local_log_file), local_log_file, "text/plain"),
             }
@@ -243,7 +243,7 @@ if __name__ == "__main__":
     logger.info("[%s]: Trying to connect with CCM Manager...", custom_id)
 
     main_file_path = output_file  # Ensure the variable is used correctly
-    api_url = "http://10.160.1.189:5001/receive_output"
+    api_url = os.getenv("CCM_MANAGER_RECEIVE_OUTPUT_URL", "http://10.160.1.189:5001/receive_output")
     response = send_files_to_api(main_file_path, api_url)  # Capture the response here
 
     if response is None:

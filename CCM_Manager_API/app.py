@@ -6,8 +6,13 @@ import logging
 import time
 import hashlib
 import requests
-from flask_cors import CORS 
-from flasgger import Swagger
+from flask_cors import CORS
+from werkzeug.utils import secure_filename
+
+try:
+    from flasgger import Swagger
+except ImportError:
+    Swagger = None
 
 from auth import auth_context, auth_status_payload
 from config import Config
@@ -41,7 +46,10 @@ app.config["SWAGGER"] = {
 swagger_template_path = os.path.join(
     os.path.dirname(__file__), "docs", "cobalt_2.json"
 )
-Swagger(app, template_file=swagger_template_path)
+if Swagger is not None:
+    Swagger(app, template_file=swagger_template_path)
+else:
+    logging.warning("flasgger is not installed; Swagger UI is disabled")
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 os.makedirs(app.config["TMP_FOLDER"], exist_ok=True)
 
@@ -56,6 +64,7 @@ def auth_status():
 def home():
     return jsonify({"message": "Flask API with MongoDB is running"})
 
+
 @app.route('/data', methods=['POST'])
 def insert_data():
     data = request.get_json()
@@ -65,10 +74,12 @@ def insert_data():
     except PyMongoError as e:
         return jsonify({'error': 'Database error', 'details': str(e)}), 500
 
+
 @app.route('/generate_sbom', methods=['POST'])
 def generate_sbom():
     payload, status_code = sbom_workflow.generate_sbom_for_folder(request.form.get('folder'))
     return jsonify(payload), status_code
+
 
 @app.route('/show_vulnerabilities', methods=['GET'])
 def get_vulnerabilities():
@@ -79,7 +90,7 @@ def get_vulnerabilities():
     except Exception as e:
         logging.error(f"An error occurred while fetching vulnerabilities: {e}")
         return jsonify({"error": "Internal server error"}), 500
-    
+
 
 @app.route('/generate_cbom', methods=['POST'])
 def generate_cbom():
@@ -90,6 +101,7 @@ def generate_cbom():
     )
     return jsonify(payload), status_code
 
+
 @app.route('/receive_output', methods=['POST'])
 def receive_output():
     try:
@@ -99,27 +111,38 @@ def receive_output():
 
         if 'file' in request.files:
             file = request.files['file']
-            if not file.filename.endswith('.json'):
+            filename = secure_filename(file.filename)
+            if not filename or not filename.endswith('.json'):
                 return jsonify({"error": "Invalid file format. Only .json files are allowed."}), 400
-            
-            temp_filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+
+            temp_filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(temp_filepath)
 
-            with app.test_request_context('/generate_cbom', method='POST', data={'file': open(temp_filepath, 'rb'), 'hashed_ip': hashed_ip}):
-                return generate_cbom()
+            with open(temp_filepath, 'rb') as temp_file:
+                with app.test_request_context(
+                    '/generate_cbom',
+                    method='POST',
+                    data={'file': temp_file, 'hashed_ip': hashed_ip},
+                ):
+                    return generate_cbom()
 
         elif request.is_json:
             data = request.get_json()
             if not data:
                 return jsonify({"error": "Invalid JSON data."}), 400
-            
+
             temp_filename = "temp_data.json"
             temp_filepath = os.path.join(app.config['UPLOAD_FOLDER'], temp_filename)
             with open(temp_filepath, 'w') as temp_file:
                 json.dump(data, temp_file)
 
-            with app.test_request_context('/generate_cbom', method='POST', data={'file': open(temp_filepath, 'rb'), 'hashed_ip': hashed_ip}):
-                return generate_cbom()
+            with open(temp_filepath, 'rb') as temp_file:
+                with app.test_request_context(
+                    '/generate_cbom',
+                    method='POST',
+                    data={'file': temp_file, 'hashed_ip': hashed_ip},
+                ):
+                    return generate_cbom()
 
         else:
             return jsonify({"error": "No valid input provided."}), 400
@@ -127,9 +150,11 @@ def receive_output():
     except Exception as e:
         logging.error(f"Error in receive_output: {str(e)}")
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
-    
+
+
 def generate_hash(data):
     return hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()
+
 
 # @app.route('/upload_oscal', methods=['POST'])
 # def upload_oscal():
@@ -209,6 +234,22 @@ def generate_hash(data):
 #         }), 200
 
 
+@app.route('/upload_oscal', methods=['POST'])
+def upload_oscal():
+    if request.is_json:
+        oscal_json = request.get_json(silent=True)
+    elif 'file' in request.files:
+        try:
+            oscal_json = json.load(request.files['file'])
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            return jsonify({"error": "Invalid JSON file."}), 400
+    else:
+        return jsonify({"error": "No JSON data or file provided."}), 400
+
+    payload, status_code = artifact_service.upload_oscal(oscal_json)
+    return jsonify(payload), status_code
+
+
 @app.route('/oscal_ids/<doc_uuid>', methods=['GET'])
 def get_oscal_ids_by_doc_uuid(doc_uuid):
     payload, status_code = artifact_service.get_oscal_control_ids(doc_uuid)
@@ -217,6 +258,7 @@ def get_oscal_ids_by_doc_uuid(doc_uuid):
 
 def is_valid_uuid(value):
     return is_valid_urn_uuid(value)
+
 
 @app.route('/upload_saasbom', methods=['POST'])
 def upload_saasbom():
@@ -227,10 +269,11 @@ def upload_saasbom():
     payload, status_code = artifact_service.upload_saasbom(saasbom_json)
     return jsonify(payload), status_code
 
+
 # @app.route("/upload_toe_descriptor", methods=["POST"])
 # def upload_toe_descriptor():
 #     data = request.get_json()
-    
+
 #     # Check for optional scheme linking parameter
 #     # Can be passed in URL (?scheme_id=...) or body
 #     scheme_id = request.args.get('scheme_id') or data.get('certification_scheme_id')
@@ -241,7 +284,7 @@ def upload_saasbom():
 #     try:
 #         comp_def = data["component"].get("component-definition", {})
 #         components = comp_def.get("components", [])
-        
+
 #         if not components:
 #             return jsonify({"error": "No components found"}), 400
 
@@ -290,6 +333,7 @@ def upload_saasbom():
 #     except Exception as e:
 #         return jsonify({"error": str(e)}), 500
 
+
 @app.route("/upload_toe_descriptor", methods=["POST"])
 def upload_toe_descriptor():
     data = request.get_json(silent=True)
@@ -306,6 +350,7 @@ def upload_certification_scheme():
     payload, status_code = scheme_service.upload_certification_scheme(request.get_json(silent=True))
     return jsonify(payload), status_code
 
+
 # --- Scheme Mapping & Export Endpoints ---
 
 @app.route('/schemes/<scheme_id>/mappings/rtc', methods=['GET'])
@@ -316,6 +361,7 @@ def get_rtc_mappings(scheme_id):
         return jsonify(payload), status_code
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route('/schemes/<scheme_id>/mappings/rtc', methods=['POST'])
 def set_rtc_mappings(scheme_id):
@@ -333,6 +379,7 @@ def set_rtc_mappings(scheme_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 @app.route('/schemes/<scheme_id>/mappings/cm', methods=['GET'])
 def get_cm_mappings(scheme_id):
     """Get all Control↔Metric mappings for a scheme."""
@@ -341,6 +388,7 @@ def get_cm_mappings(scheme_id):
         return jsonify(payload), status_code
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route('/schemes/<scheme_id>/mappings/cm', methods=['POST'])
 def set_cm_mappings(scheme_id):
@@ -358,6 +406,7 @@ def set_cm_mappings(scheme_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 @app.route('/schemes/<scheme_id>/export', methods=['GET'])
 def export_scheme(scheme_id):
     """Full scheme export for DRM consumption — includes all entities and mappings."""
@@ -366,6 +415,7 @@ def export_scheme(scheme_id):
         return jsonify(payload), status_code
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route('/schemes/<scheme_id>/sync-drm', methods=['POST'])
 def sync_drm(scheme_id):
@@ -381,6 +431,7 @@ def sync_drm(scheme_id):
             "outbound_auth": [auth_context("drm")],
         }), 502
 
+
 # --- CRUD Endpoints for Risk Catalogue Entities ---
 
 # Metrics
@@ -392,6 +443,7 @@ def get_all_metrics():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 @app.route('/metrics/<id>', methods=['GET'])
 def get_metric(id):
     try:
@@ -399,6 +451,7 @@ def get_metric(id):
         return jsonify(payload), status_code
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route('/metrics', methods=['POST', 'PUT'])
 def upload_or_update_metric():
@@ -418,6 +471,7 @@ def upload_or_update_metric():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 # Risks
 @app.route('/risks', methods=['GET'])
 def get_all_risks():
@@ -427,6 +481,7 @@ def get_all_risks():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 @app.route('/risks/<risk_id>', methods=['GET'])
 def get_risk(risk_id):
     try:
@@ -434,6 +489,7 @@ def get_risk(risk_id):
         return jsonify(payload), status_code
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route('/risks', methods=['POST', 'PUT'])
 def upload_or_update_risk():
@@ -453,6 +509,7 @@ def upload_or_update_risk():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 # Threats
 @app.route('/threats', methods=['GET'])
 def get_all_threats():
@@ -462,6 +519,7 @@ def get_all_threats():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 @app.route('/threats/<threat_id>', methods=['GET'])
 def get_threat(threat_id):
     try:
@@ -469,6 +527,7 @@ def get_threat(threat_id):
         return jsonify(payload), status_code
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route('/threats', methods=['POST', 'PUT'])
 def upload_or_update_threat():
@@ -488,6 +547,7 @@ def upload_or_update_threat():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 # Controls
 @app.route('/controls', methods=['GET'])
 def get_all_controls():
@@ -497,6 +557,7 @@ def get_all_controls():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 @app.route('/controls/<control_id>', methods=['GET'])
 def get_control(control_id):
     try:
@@ -504,6 +565,7 @@ def get_control(control_id):
         return jsonify(payload), status_code
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route('/controls', methods=['POST', 'PUT'])
 def upload_or_update_control():
@@ -524,20 +586,18 @@ def upload_or_update_control():
         return jsonify({"error": str(e)}), 500
 
 
-    
-    
 @app.route('/store-ledger', methods=['POST'])
 def store_ledger_entry():
     oscal_json = request.get_json(force=True)
     payload, status_code = artifact_service.store_ledger_entry(oscal_json)
     return jsonify(payload), status_code
 
+
 @app.route('/update-ledger/<uuid>', methods=['PUT'])
 def update_ledger_entry(uuid):
     oscal_json = request.get_json(force=True)
     payload, status_code = artifact_service.update_ledger_entry(uuid, oscal_json)
     return jsonify(payload), status_code
-
 
 
 @app.route("/send_sdt", methods=["POST"])
@@ -578,6 +638,7 @@ def trigger_delete():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 @app.route('/send_records', methods=['POST'])
 def receive_and_forward():
     try:
@@ -587,7 +648,7 @@ def receive_and_forward():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
+
 
 @app.route('/trigger-chain', methods=['POST'])
 def trigger_chain_post():
@@ -600,6 +661,7 @@ def stop_sdt():
     time.sleep(10)
     print("SDT manager has stopped")
     return "SDT manager stopped", 200
+
 
 @app.route('/evidence', methods=['POST'])
 def upload_evidence():
@@ -620,7 +682,7 @@ def post_assessment_result():
     except Exception as e:
         logging.error(f"Error: {str(e)}")
         return jsonify({"error": str(e)}), 500
-    
+
 
 @app.route('/retrieve_toe/<toe_id>', methods=['GET'])
 def retrieve_toe_data(toe_id):
@@ -644,7 +706,8 @@ def search_toe_by_id():
 def get_toe_by_id(toe_id):
     payload, status_code = toe_service.search_toe_by_id(toe_id)
     return jsonify(payload), status_code
-    
+
+
 @app.route('/sdts', methods=['GET'])
 def get_sdts():
     try:
@@ -656,6 +719,8 @@ def get_sdts():
             "details": str(e),
             "outbound_auth": [auth_context("sdt")],
         }), 502
+
+
 @app.route('/retrieve_toes', methods=['GET'])
 def retrieve_all_toes():
     try:
@@ -666,6 +731,7 @@ def retrieve_all_toes():
         logging.error(f"Error retrieving all ToEs: {e}")
         return jsonify({"error": "Internal server error", "details": str(e)}), 500
 
+
 @app.route('/certificates', methods=['GET'])
 def get_all_certificates():
     try:
@@ -675,6 +741,7 @@ def get_all_certificates():
     except Exception as e:
         logging.error(f"Error retrieving all certificates: {e}")
         return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
 
 @app.route('/certificates/<cert_uuid>', methods=['GET'])
 def get_certificate(cert_uuid):
@@ -695,6 +762,7 @@ def get_certification_scheme(scheme_id):
 
     except Exception as e:
         return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
 
 @app.route("/certification_scheme/<scheme_id>", methods=["DELETE"])
 def delete_certification_scheme(scheme_id):
@@ -723,6 +791,7 @@ def withdraw_certificate(cert_uuid):
         return jsonify(payload), status_code
     except Exception as e:
         return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
 
 if __name__ == '__main__':
     data_dir = os.path.join(os.path.dirname(__file__), "data")

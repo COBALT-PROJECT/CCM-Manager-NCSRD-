@@ -47,6 +47,26 @@ def _service_env_key(service):
     return re.sub(r"[^A-Z0-9]+", "_", service.upper()).strip("_")
 
 
+def _bearer_token_for_service(service):
+    service_key = _service_env_key(service)
+    for env_key in (
+        f"{service_key}_BEARER_TOKEN",
+        f"CCM_{service_key}_BEARER_TOKEN",
+        f"{service_key}_TOKEN",
+    ):
+        token = os.getenv(env_key, "").strip()
+        if token:
+            return token
+    return None
+
+
+def _with_bearer_header(kwargs, token):
+    headers = dict(kwargs.pop("headers", {}) or {})
+    headers.setdefault("Authorization", f"Bearer {token}")
+    kwargs["headers"] = headers
+    return kwargs
+
+
 def auth_role_for_service(service=None, scope=None):
     if scope:
         return scope
@@ -76,6 +96,10 @@ def authed_request(method, url, **kwargs):
     scope = kwargs.pop("scope", None)
     if scope is None and service is not None:
         scope = auth_role_for_service(service)
+
+    bearer_token = _bearer_token_for_service(service)
+    if bearer_token:
+        return requests.request(method, url, **_with_bearer_header(kwargs, bearer_token))
 
     if auth_client is not None:
         if scope is None:

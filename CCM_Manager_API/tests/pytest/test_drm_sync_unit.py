@@ -115,19 +115,26 @@ def test_sync_drm_uses_pdf_resource_endpoints(monkeypatch):
         "risk_threat_control_links": 1,
     }
     assert [path for path, _ in calls] == [
-        "/schemes",
         "/metrics",
         "/controls",
+        "/links/cm",
+        "/schemes",
         "/risks",
         "/threats",
-        "/links/cm",
         "/links/rtc",
     ]
-    assert calls[3][1]["scheme_id"] == "drm-scheme"
-    assert calls[5][1] == {
+    assert calls[2][1] == {
         "control_id": "drm-control",
         "metric_id": "drm-metric",
     }
+    assert calls[3][1] == {
+        "name": "Local Scheme",
+        "description": "Local description",
+        "scheme_admin_email": "admin@example.test",
+    }
+    assert calls[4][1]["scheme_id"] == "drm-scheme"
+    assert calls[4][1]["name"] == "local-risk"
+    assert calls[4][1]["description"] == "Risk - Risk description"
     assert calls[6][1] == {
         "risk_id": "drm-risk",
         "threat_id": "drm-threat",
@@ -160,6 +167,77 @@ def test_sync_drm_synthesizes_entities_referenced_only_by_mappings(monkeypatch):
     assert control_call["name"] == "local-control"
 
 
+def test_sync_drm_derives_pdf_relationships_from_scheme_fields(monkeypatch):
+    calls = []
+    export_payload = _export_payload()
+    export_payload["metrics"][0]["associated_control"] = {
+        "associated_control_requirement": "local-control",
+        "control_description": "Control from metric associated_control",
+    }
+    export_payload["risks"][0]["mapped_metrics"] = [{"metric_id": "local-metric"}]
+    export_payload["risks"][0]["mapped_threats"] = [
+        {
+            "threat_id": "local-threat",
+            "name": "Threat from risk",
+            "threat_description": "Threat from mapped_threats",
+        }
+    ]
+    export_payload["controls"] = []
+    export_payload["threats"] = []
+    export_payload["control_metric_mappings"] = []
+    export_payload["risk_threat_control_mappings"] = []
+
+    response_ids = {
+        "/metrics": "drm-metric",
+        "/controls": "drm-control",
+        "/links/cm": "drm-cm-link",
+        "/schemes": "drm-scheme",
+        "/risks": "drm-risk",
+        "/threats": "drm-threat",
+        "/links/rtc": "drm-rtc-link",
+    }
+
+    def fake_authed_request(method, url, **kwargs):
+        path = url.replace("http://drm.example.test/eu/cobalt", "")
+        calls.append((path, kwargs["json"]))
+        return FakeResponse(201, {"id": response_ids[path]})
+
+    monkeypatch.setenv("DRM_BASE_URL", "http://drm.example.test")
+    monkeypatch.setenv("DRM_CREATOR_EMAIL", "creator@example.test")
+    monkeypatch.setattr(service, "export_scheme", lambda scheme_id: (export_payload, 200))
+    monkeypatch.setattr(service, "authed_request", fake_authed_request)
+
+    payload, status = service.sync_drm("local-scheme")
+
+    assert status == 200
+    assert payload["created"]["control_metric_links"] == 1
+    assert payload["created"]["risk_threat_control_links"] == 1
+    assert [path for path, _ in calls] == [
+        "/metrics",
+        "/controls",
+        "/links/cm",
+        "/schemes",
+        "/risks",
+        "/threats",
+        "/links/rtc",
+    ]
+    assert calls[1][1] == {
+        "name": "local-control",
+        "description": "Control from metric associated_control",
+    }
+    assert calls[2][1] == {
+        "control_id": "drm-control",
+        "metric_id": "drm-metric",
+    }
+    assert calls[5][1]["description"] == "Threat from mapped_threats"
+    assert calls[6][1] == {
+        "risk_id": "drm-risk",
+        "threat_id": "drm-threat",
+        "control_id": "drm-control",
+        "creator_email": "creator@example.test",
+    }
+
+
 def test_sync_drm_returns_502_with_failed_drm_path(monkeypatch):
     def fake_authed_request(method, url, **kwargs):
         path = url.replace("http://drm.example.test/eu/cobalt", "")
@@ -176,7 +254,8 @@ def test_sync_drm_returns_502_with_failed_drm_path(monkeypatch):
     assert status == 502
     assert payload["path"] == "/metrics"
     assert payload["drm_status"] == 500
-    assert payload["created_before_failure"]["schemes"] == 1
+    assert payload["created_before_failure"]["schemes"] == 0
+    assert payload["created_before_failure"]["metrics"] == 0
 
 
 def test_sync_drm_requires_base_url(monkeypatch):

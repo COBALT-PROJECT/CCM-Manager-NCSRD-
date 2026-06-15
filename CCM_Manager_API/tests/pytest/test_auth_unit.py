@@ -53,10 +53,38 @@ def test_authed_request_falls_back_to_requests(monkeypatch):
     assert calls == [("GET", "http://example.test/status", {"timeout": 1})]
 
 
+def test_authed_request_uses_service_bearer_token(monkeypatch):
+    calls = []
+    client = DummyAuthClient()
+
+    def fake_request(method, url, **kwargs):
+        calls.append((method, url, kwargs))
+        return DummyResponse()
+
+    monkeypatch.setattr(auth, "auth_client", client)
+    monkeypatch.setattr(auth.requests, "request", fake_request)
+    monkeypatch.setenv("DRM_BEARER_TOKEN", "drm-token")
+
+    response = auth.authed_request("POST", "http://drm.example.test/metrics", service="drm")
+
+    assert isinstance(response, DummyResponse)
+    assert client.calls == []
+    assert calls == [
+        (
+            "POST",
+            "http://drm.example.test/metrics",
+            {"headers": {"Authorization": "Bearer drm-token"}},
+        )
+    ]
+
+
 def test_authed_request_uses_service_specific_role(monkeypatch):
     client = DummyAuthClient()
     monkeypatch.setattr(auth, "auth_client", client)
     monkeypatch.setenv("DRM_AUTH_ROLE", "SchemeAdmin")
+    monkeypatch.delenv("DRM_BEARER_TOKEN", raising=False)
+    monkeypatch.delenv("CCM_DRM_BEARER_TOKEN", raising=False)
+    monkeypatch.delenv("DRM_TOKEN", raising=False)
 
     response = auth.authed_request("POST", "http://drm.example.test/schemes", service="drm")
 

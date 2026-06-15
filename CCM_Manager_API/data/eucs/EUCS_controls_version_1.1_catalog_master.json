@@ -1,0 +1,2822 @@
+{
+  "catalog": {
+    "uuid": "74c8ba1e-5cd4-4ad1-bbfd-d888e2f6c724",
+    "metadata": {
+      "title": "EUCS Controls Catalog (Enriched: Cloud + AI)",
+      "published": "2024-10-29T09:15:27.916543+01:00",
+      "last-modified": "2024-10-29T09:15:27.916543+01:00",
+      "version": "1.1",
+      "oscal-version": "1.1.2",
+      "props": [
+        {
+          "name": "keywords",
+          "value": "cybersecurity, information security, information system, OSCAL, Open Security Controls Assessment Language"
+        }
+      ],
+      "links": [
+        {
+          "href": "3ab41d8a-66e3-4732-ae28-07405dad5127",
+          "rel": "alternate"
+        }
+      ],
+      "roles": [
+        {
+          "id": "publisher",
+          "title": "Source document converter to OSCAL."
+        },
+        {
+          "id": "author",
+          "title": "Source document author."
+        },
+        {
+          "id": "contact",
+          "title": "Contact."
+        }
+      ],
+      "parties": [
+        {
+          "uuid": "f550d94e-0f01-415f-a1e2-c8188c9ff4a5",
+          "type": "organization",
+          "name": "ENISA",
+          "email-addresses": [
+            "name@domain.eu"
+          ],
+          "addresses": [
+            {
+              "addr-lines": [
+                "ENISA",
+                "Attn: Somebody",
+                "1 Some Street"
+              ],
+              "city": "City",
+              "country": "EU"
+            }
+          ]
+        }
+      ],
+      "responsible-parties": [
+        {
+          "role-id": "publisher",
+          "party-uuids": [
+            "f550d94e-0f01-415f-a1e2-c8188c9ff4a5"
+          ]
+        },
+        {
+          "role-id": "author",
+          "party-uuids": [
+            "f550d94e-0f01-415f-a1e2-c8188c9ff4a5"
+          ]
+        },
+        {
+          "role-id": "contact",
+          "party-uuids": [
+            "f550d94e-0f01-415f-a1e2-c8188c9ff4a5"
+          ]
+        }
+      ],
+      "remarks": "The following is a short excerpt from EUCS Catalog. This work is provided here under copyright fair use for non-profit, educational purposes only. Copyrights for this work are held by the publisher."
+    },
+    "groups": [
+      {
+        "id": "eucs-4",
+        "title": "Organization of Information Security",
+        "props": [
+          {
+            "name": "label",
+            "value": "4."
+          }
+        ],
+        "groups": [
+          {
+            "id": "eucs-4.OIS-01",
+            "class": "eucs",
+            "title": "OIS-01 Information Security Management System",
+            "props": [
+              {
+                "name": "label",
+                "value": "1."
+              }
+            ],
+            "parts": [
+              {
+                "id": "eucs-4.OIS-01_obj",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "1."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Objective"
+                  }
+                ],
+                "prose": "The CSP operates an Information Security Management System (ISMS). The scope of the ISMS covers the CSP's organisational units, locations and processes for providing the cloud service."
+              },
+              {
+                "id": "eucs-4.OIS-01_req",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "2."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Requirements"
+                  }
+                ]
+              }
+            ],
+            "groups": [
+              {
+                "id": "eucs-4.OIS-01_level_Basic",
+                "class": "Basic",
+                "title": "4.OIS-01.Basic",
+                "controls": [
+                  {
+                    "id": "eucs-4.OIS-01_level_Basic_req.1B",
+                    "class": "Basic",
+                    "title": "OIS-01.1B",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-01_level_Basic_req.1B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall document the scope of the cloud service that is under the CSP’s control and the boundaries."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-4.OIS-01_level_Basic_req.2B",
+                    "class": "Basic",
+                    "title": "OIS-01.2B",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-01_level_Basic_req.2B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall have an information security management system (ISMS), covering at least the operational units, locations, people and processes for providing the cloud service."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-4.OIS-01_level_Basic_req.3B",
+                    "class": "Basic",
+                    "title": "OIS-01.3B",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-01_level_Basic_req.3B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall provide documented information about the ISMS as applied to the cloud service, covering what is applicable to the cloud service regarding:  Scope and boundaries of the ISMS;  The context of the CSP;  Description of how the cloud service is covered by activities in the ISMS; and  How the security of the cloud service is maintained and improved"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-4.OIS-01_level_Substantial",
+                "class": "Substantial",
+                "title": "4.OIS-01.Substantial",
+                "controls": [
+                  {
+                    "id": "eucs-4.OIS-01_level_Substantial_req.1S",
+                    "class": "Substantial",
+                    "title": "OIS-01.1S",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-01_level_Substantial_req.1S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall document the scope of the cloud service that is under the CSP’s control and the boundaries."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-4.OIS-01_level_Substantial_req.2S",
+                    "class": "Substantial",
+                    "title": "OIS-01.2S",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-01_level_Substantial_req.2S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall have an information security management system (ISMS), covering at least the operational units, locations, people and processes for providing the cloud service."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-4.OIS-01_level_Substantial_req.3S",
+                    "class": "Substantial",
+                    "title": "OIS-01.3S",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-01_level_Substantial_req.3S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall provide documented information about the ISMS as applied to the cloud service, covering what is applicable to the cloud service regarding:  Scope and boundaries of the ISMS;  The context of the CSP;  Description of how the cloud service is covered by activities in the ISMS; and  How the security of the cloud service is maintained and improved"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-4.OIS-01_level_High",
+                "class": "High",
+                "title": "4.OIS-01.High",
+                "controls": [
+                  {
+                    "id": "eucs-4.OIS-01_level_High_req.1H",
+                    "class": "High",
+                    "title": "OIS-01.1H",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-01_level_High_req.1H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall document the scope of the cloud service that is under the CSP’s control and the boundaries."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-4.OIS-01_level_High_req.2H",
+                    "class": "High",
+                    "title": "OIS-01.2H",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-01_level_High_req.2H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall have an information security management system (ISMS), covering at least the operational units, locations, people and processes for providing the cloud service."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-4.OIS-01_level_High_req.3H",
+                    "class": "High",
+                    "title": "OIS-01.3H",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-01_level_High_req.3H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall provide documented information about the ISMS as applied to the cloud service, covering what is applicable to the cloud service regarding:  Scope and boundaries of the ISMS;  The context of the CSP;  Description of how the cloud service is covered by activities in the ISMS; and  How the security of the cloud service is maintained and improved"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "eucs-4.OIS-02",
+            "class": "eucs",
+            "title": "OIS-02 Segregation of Duties",
+            "props": [
+              {
+                "name": "label",
+                "value": "2."
+              }
+            ],
+            "parts": [
+              {
+                "id": "eucs-4.OIS-02_obj",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "1."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Objective"
+                  }
+                ],
+                "prose": "Conflicting tasks and responsibilities are separated based on an RM-01 risk assessment to reduce the risk of unauthorised or unintended changes or misuse of CSC data in use, in motion or at rest in the cloud service."
+              },
+              {
+                "id": "eucs-4.OIS-02_req",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "2."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Requirements"
+                  }
+                ]
+              }
+            ],
+            "groups": [
+              {
+                "id": "eucs-4.OIS-02_level_Basic",
+                "class": "Basic",
+                "title": "4.OIS-02.Basic",
+                "controls": [
+                  {
+                    "id": "eucs-4.OIS-02_level_Basic_req.1B",
+                    "class": "Basic",
+                    "title": "OIS-02.1B",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-02_level_Basic_req.1B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall perform a risk assessment as defined in RM-01 about the accumulation of responsibilities or tasks on roles or individuals, regarding the provision of the CSC, covering at least the following areas, insofar as these are applicable to the provision of the cloud service and are in the area of responsibility of the cloud service:  Administration of rights profiles, approval and assignment of access and access authorisations (cf. IAM-01);  Development, testing and release of changes (cf. DEV_x0002_01, CCM-01); and  Operation of the system components."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-4.OIS-02_level_Basic_req.2B",
+                    "class": "Basic",
+                    "title": "OIS-02.2B",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-02_level_Basic_req.2B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall implement the mitigating measures defined in the risk treatment plan, prioritising separation of duties."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-4.OIS-02_level_Basic_req.3B",
+                    "class": "Basic",
+                    "title": "OIS-02.3B",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-02_level_Basic_req.3B_stmt",
+                        "name": "statement",
+                        "prose": "If implementation is impossible for organisational or technical reasons, the measures shall include the monitoring of activities in order to detect unauthorised or unintended changes as well as misuse and the subsequent appropriate actions."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-4.OIS-02_level_Substantial",
+                "class": "Substantial",
+                "title": "4.OIS-02.Substantial",
+                "controls": [
+                  {
+                    "id": "eucs-4.OIS-02_level_Substantial_req.1S",
+                    "class": "Substantial",
+                    "title": "OIS-02.1S",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-02_level_Substantial_req.1S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall perform a risk assessment as defined in RM-01 about the accumulation of responsibilities or tasks on roles or individuals, regarding the provision of the CSC, covering at least the following areas, insofar as these are applicable to the provision of the cloud service and are in the area of responsibility of the cloud service:  Administration of rights profiles, approval and assignment of access and access authorisations (cf. IAM-01);  Development, testing and release of changes (cf. DEV_x0002_01, CCM-01); and  Operation of the system components."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-4.OIS-02_level_Substantial_req.2S",
+                    "class": "Substantial",
+                    "title": "OIS-02.2S",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-02_level_Substantial_req.2S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall implement the mitigating measures defined in the risk treatment plan, prioritising separation of duties."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-4.OIS-02_level_Substantial_req.3S",
+                    "class": "Substantial",
+                    "title": "OIS-02.3S",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-02_level_Substantial_req.3S_stmt",
+                        "name": "statement",
+                        "prose": "If implementation is impossible for organisational or technical reasons, the measures shall include the monitoring of activities in order to detect unauthorised or unintended changes as well as misuse and the subsequent appropriate actions."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-4.OIS-02_level_Substantial_req.4S",
+                    "class": "Substantial",
+                    "title": "OIS-02.4S",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-02_level_Substantial_req.4S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall:  Introduce and maintain an inventory of conflicting roles including resolving measures"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-4.OIS-02_level_Substantial_req.5S",
+                    "class": "Substantial",
+                    "title": "OIS-02.5S",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-02_level_Substantial_req.5S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall:  Enforce the segregation of duties during the assignment or modification of roles as part of the role management process"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-4.OIS-02_level_High",
+                "class": "High",
+                "title": "4.OIS-02.High",
+                "controls": [
+                  {
+                    "id": "eucs-4.OIS-02_level_High_req.1H",
+                    "class": "High",
+                    "title": "OIS-02.1H",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-02_level_High_req.1H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall perform a risk assessment as defined in RM-01 about the accumulation of responsibilities or tasks on roles or individuals, regarding the provision of the CSC, covering at least the following areas, insofar as these are applicable to the provision of the cloud service and are in the area of responsibility of the cloud service:  Administration of rights profiles, approval and assignment of access and access authorisations (cf. IAM-01);  Development, testing and release of changes (cf. DEV_x0002_01, CCM-01); and  Operation of the system components."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-4.OIS-02_level_High_req.2H",
+                    "class": "High",
+                    "title": "OIS-02.2H",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-02_level_High_req.2H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall implement the mitigating measures defined in the risk treatment plan, prioritising separation of duties."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-4.OIS-02_level_High_req.3H",
+                    "class": "High",
+                    "title": "OIS-02.3H",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-02_level_High_req.3H_stmt",
+                        "name": "statement",
+                        "prose": "If implementation is impossible for organisational or technical reasons, the measures shall include the monitoring of activities in order to detect unauthorised or unintended changes as well as misuse and the subsequent appropriate actions."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-4.OIS-02_level_High_req.4H",
+                    "class": "High",
+                    "title": "OIS-02.4H",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-02_level_High_req.4H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall:  Introduce and maintain an inventory of conflicting roles including resolving measures"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-4.OIS-02_level_High_req.5H",
+                    "class": "High",
+                    "title": "OIS-02.5H",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-02_level_High_req.5H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall:  Enforce the segregation of duties during the assignment or modification of roles as part of the role management process"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-4.OIS-02_level_High_req.6H",
+                    "class": "High",
+                    "title": "OIS-02.6H",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-02_level_High_req.6H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall monitor and enforce measures related to segregation of duties to resolve conflicting roles."
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "eucs-4.OIS-03",
+            "class": "eucs",
+            "title": "OIS-03 Contact with Authorities and Interest Groups",
+            "props": [
+              {
+                "name": "label",
+                "value": "3."
+              }
+            ],
+            "parts": [
+              {
+                "id": "eucs-4.OIS-03_obj",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "1."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Objective"
+                  }
+                ],
+                "prose": "The CSP stays informed about current threats and vulnerabilities by maintaining the cooperation and coordination of security-related aspects with relevant authorities and special interest groups. The information flows into the procedures for handling risks (cf. RM-01) and vulnerabilities (cf. OPS-17)."
+              },
+              {
+                "id": "eucs-4.OIS-03_req",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "2."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Requirements"
+                  }
+                ]
+              }
+            ],
+            "groups": [
+              {
+                "id": "eucs-4.OIS-03_level_Basic",
+                "class": "Basic",
+                "title": "4.OIS-03.Basic",
+                "controls": [
+                  {
+                    "id": "eucs-4.OIS-03_level_Basic_req.1B",
+                    "class": "Basic",
+                    "title": "OIS-03.1B",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-03_level_Basic_req.1B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall stay informed about current threats and vulnerabilities related to the cloud service."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-4.OIS-03_level_Substantial",
+                "class": "Substantial",
+                "title": "4.OIS-03.Substantial",
+                "controls": [
+                  {
+                    "id": "eucs-4.OIS-03_level_Substantial_req.1S",
+                    "class": "Substantial",
+                    "title": "OIS-03.1S",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-03_level_Substantial_req.1S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall maintain contact with relevant information security related authorities and appropriate technical groups to stay informed about current threats and vulnerabilities related to the cloud service."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-4.OIS-03_level_High",
+                "class": "High",
+                "title": "4.OIS-03.High",
+                "controls": [
+                  {
+                    "id": "eucs-4.OIS-03_level_High_req.1H",
+                    "class": "High",
+                    "title": "OIS-03.1H",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-03_level_High_req.1H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall maintain contact with relevant information security related authorities and appropriate technical groups to stay informed about current threats and vulnerabilities related to the cloud service."
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "eucs-4.OIS-04",
+            "class": "eucs",
+            "title": "OIS-04 Information Security in Project Management",
+            "props": [
+              {
+                "name": "label",
+                "value": "4."
+              }
+            ],
+            "parts": [
+              {
+                "id": "eucs-4.OIS-04_obj",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "1."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Objective"
+                  }
+                ],
+                "prose": "Information security is considered in project management, regardless of the nature of the project."
+              },
+              {
+                "id": "eucs-4.OIS-04_req",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "2."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Requirements"
+                  }
+                ]
+              }
+            ],
+            "groups": [
+              {
+                "id": "eucs-4.OIS-04_level_Basic",
+                "class": "Basic",
+                "title": "4.OIS-04.Basic",
+                "controls": [
+                  {
+                    "id": "eucs-4.OIS-04_level_Basic_req.1B",
+                    "class": "Basic",
+                    "title": "OIS-04.1B",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-04_level_Basic_req.1B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall incorporate the consideration of information security into the project management activities throughout the project lifecycle of all projects that may affect the provision of the cloud service, regardless of the nature of the project."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-4.OIS-04_level_Substantial",
+                "class": "Substantial",
+                "title": "4.OIS-04.Substantial",
+                "controls": [
+                  {
+                    "id": "eucs-4.OIS-04_level_Substantial_req.1S",
+                    "class": "Substantial",
+                    "title": "OIS-04.1S",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-04_level_Substantial_req.1S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall perform a risk assessment according to RM-01 and if necessary proceed with risk treatment, to assess and treat the risks on all projects that may affect the provision of the cloud service, regardless of the nature of the project."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-4.OIS-04_level_High",
+                "class": "High",
+                "title": "4.OIS-04.High",
+                "controls": [
+                  {
+                    "id": "eucs-4.OIS-04_level_High_req.1H",
+                    "class": "High",
+                    "title": "OIS-04.1H",
+                    "parts": [
+                      {
+                        "id": "eucs-4.OIS-04_level_High_req.1H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall perform a risk assessment according to RM-01 and if necessary proceed with risk treatment, to assess and treat the risks on all projects that may affect the provision of the cloud service, regardless of the nature of the project."
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "eucs-5",
+        "title": "Information Security Policies",
+        "props": [
+          {
+            "name": "label",
+            "value": "5."
+          }
+        ],
+        "groups": [
+          {
+            "id": "eucs-5.ISP-01",
+            "class": "eucs",
+            "title": "ISP-01 Information Security Policy",
+            "props": [
+              {
+                "name": "label",
+                "value": "1."
+              }
+            ],
+            "parts": [
+              {
+                "id": "eucs-5.ISP-01_obj",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "1."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Objective"
+                  }
+                ],
+                "prose": "The top management of the CSP has adopted an information security policy, communicated and made available to personnel of the CSP and a statement on the CSP commitment to information security to the relevant CSCs"
+              },
+              {
+                "id": "eucs-5.ISP-01_req",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "2."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Requirements"
+                  }
+                ]
+              }
+            ],
+            "groups": [
+              {
+                "id": "eucs-5.ISP-01_level_Basic",
+                "class": "Basic",
+                "title": "5.ISP-01.Basic",
+                "controls": [
+                  {
+                    "id": "eucs-5.ISP-01_level_Basic_req.1B",
+                    "class": "Basic",
+                    "title": "ISP-01.1B",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-01_level_Basic_req.1B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall document an information security policy, covering the cloud service, including at least the following aspects:  The importance of information security, based on the requirements of CSCs in relation to information security, as well as on the need to ensure the security of the information processed and stored by the CSP and the assets that support the cloud service provided;  The information security objectives, based on the business objectives and tasks of the CSP;  The commitment of the CSP to implement the security measures required to achieve the established security objectives;  The most important aspects of the security strategy to achieve the established security objectives; and  The organisational structure for information security in the scope of the cloud service."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-01_level_Basic_req.2B",
+                    "class": "Basic",
+                    "title": "ISP-01.2B",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-01_level_Basic_req.2B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP’s top management shall approve and endorse the information security policy."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-01_level_Basic_req.3B",
+                    "class": "Basic",
+                    "title": "ISP-01.3B",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-01_level_Basic_req.3B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall communicate and make available the information security policy to personnel and a statement on the CSP commitment to information security to the relevant CSCs."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-5.ISP-01_level_Substantial",
+                "class": "Substantial",
+                "title": "5.ISP-01.Substantial",
+                "controls": [
+                  {
+                    "id": "eucs-5.ISP-01_level_Substantial_req.1S",
+                    "class": "Substantial",
+                    "title": "ISP-01.1S",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-01_level_Substantial_req.1S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall document an information security policy, covering the cloud service, including at least the following aspects:  The importance of information security, based on the requirements of CSCs in relation to information security, as well as on the need to ensure the security of the information processed and stored by the CSP and the assets that support the cloud service provided;  The information security objectives, based on the business objectives and tasks of the CSP;  The commitment of the CSP to implement the security measures required to achieve the established security objectives;  The most important aspects of the security strategy to achieve the established security objectives; and  The organisational structure for information security in the scope of the cloud service."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-01_level_Substantial_req.2S",
+                    "class": "Substantial",
+                    "title": "ISP-01.2S",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-01_level_Substantial_req.2S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP’s top management shall approve and endorse the information security policy."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-01_level_Substantial_req.3S",
+                    "class": "Substantial",
+                    "title": "ISP-01.3S",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-01_level_Substantial_req.3S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall communicate and make available the information security policy to personnel and a statement on the CSP commitment to information security to the relevant CSCs."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-01_level_Substantial_req.4S",
+                    "class": "Substantial",
+                    "title": "ISP-01.4S",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-01_level_Substantial_req.4S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall review the information security policy on a regular basis and at least following significant changes that are likely to affect the principles defined in the policy, including the approval and endorsement by top management."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-5.ISP-01_level_High",
+                "class": "High",
+                "title": "5.ISP-01.High",
+                "controls": [
+                  {
+                    "id": "eucs-5.ISP-01_level_High_req.1H",
+                    "class": "High",
+                    "title": "ISP-01.1H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-01_level_High_req.1H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall document an information security policy, covering the cloud service, including at least the following aspects:  The importance of information security, based on the requirements of CSCs in relation to information security, as well as on the need to ensure the security of the information processed and stored by the CSP and the assets that support the cloud service provided;  The information security objectives, based on the business objectives and tasks of the CSP;  The commitment of the CSP to implement the security measures required to achieve the established security objectives;  The most important aspects of the security strategy to achieve the established security objectives; and  The organisational structure for information security in the scope of the cloud service."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-01_level_High_req.2H",
+                    "class": "High",
+                    "title": "ISP-01.2H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-01_level_High_req.2H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP’s top management shall approve and endorse the information security policy."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-01_level_High_req.3H",
+                    "class": "High",
+                    "title": "ISP-01.3H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-01_level_High_req.3H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall communicate and make available the information security policy to personnel and a statement on the CSP commitment to information security to the relevant CSCs."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-01_level_High_req.4H",
+                    "class": "High",
+                    "title": "ISP-01.4H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-01_level_High_req.4H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall review the information security policy at least annually and at least following significant changes that are likely to affect the principles defined in the policy, including the approval and endorsement by top management."
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "eucs-5.ISP-02",
+            "class": "eucs",
+            "title": "ISP-02 Topic-Specific Policies and Procedures",
+            "props": [
+              {
+                "name": "label",
+                "value": "2."
+              }
+            ],
+            "parts": [
+              {
+                "id": "eucs-5.ISP-02_obj",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "1."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Objective"
+                  }
+                ],
+                "prose": "Topic-specific policies and procedures are derived from the information security policy, documented according to a uniform structure, communicated and made available to all personnel of the CSP in an appropriate manner."
+              },
+              {
+                "id": "eucs-5.ISP-02_req",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "2."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Requirements"
+                  }
+                ]
+              }
+            ],
+            "groups": [
+              {
+                "id": "eucs-5.ISP-02_level_Basic",
+                "class": "Basic",
+                "title": "5.ISP-02.Basic",
+                "controls": [
+                  {
+                    "id": "eucs-5.ISP-02_level_Basic_req.1B",
+                    "class": "Basic",
+                    "title": "ISP-02.1B",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-02_level_Basic_req.1B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall derive topic-specific policies and procedures from the information security policy for all relevant subject matters applicable to the cloud service, and document them according to a uniform structure, including at least the following aspects:  Objectives;  Scope;  Roles and responsibilities within the organisation;  Roles and dependencies on other organisations (especially CSCs and subservice providers);  Steps for the execution of the security strategy; and  Applicable legal and regulatory requirements."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-02_level_Basic_req.2B",
+                    "class": "Basic",
+                    "title": "ISP-02.2B",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-02_level_Basic_req.2B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall communicate and make available the topic_x0002_specific policies and procedures to all personnel."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-02_level_Basic_req.3B",
+                    "class": "Basic",
+                    "title": "ISP-02.3B",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-02_level_Basic_req.3B_stmt",
+                        "name": "statement",
+                        "prose": "The topic-specific policies and procedures shall be approved by the appropriate level of management."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-02_level_Basic_req.4B",
+                    "class": "Basic",
+                    "title": "ISP-02.4B",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-02_level_Basic_req.4B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP’s subject matter experts shall review the topic_x0002_specific policies and procedures for adequacy at least annually, and when major changes may affect the security of the cloud service."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-02_level_Basic_req.5B",
+                    "class": "Basic",
+                    "title": "ISP-02.5B",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-02_level_Basic_req.5B_stmt",
+                        "name": "statement",
+                        "prose": "After a modification of topic-specific policies and procedures, they shall be approved by the appropriate level of management before they become effective, and then communicated and made available to personnel."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-5.ISP-02_level_Substantial",
+                "class": "Substantial",
+                "title": "5.ISP-02.Substantial",
+                "controls": [
+                  {
+                    "id": "eucs-5.ISP-02_level_Substantial_req.1S",
+                    "class": "Substantial",
+                    "title": "ISP-02.1S",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-02_level_Substantial_req.1S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall derive topic-specific policies and procedures from the information security policy for all relevant subject matters applicable to the cloud service, documented according to a uniform structure, including at least the following aspects:  Objectives;  Scope;  Roles and responsibilities within the organisation, including personnel competence requirements and the establishment of substitution rules;  Roles and dependencies on other organisations (especially CSCs and subservice providers);  Steps for the execution of the security strategy; and  Applicable legal and regulatory requirements"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-02_level_Substantial_req.2S",
+                    "class": "Substantial",
+                    "title": "ISP-02.2S",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-02_level_Substantial_req.2S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall communicate and make available the topic_x0002_specific policies and procedures to all personnel."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-02_level_Substantial_req.3S",
+                    "class": "Substantial",
+                    "title": "ISP-02.3S",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-02_level_Substantial_req.3S_stmt",
+                        "name": "statement",
+                        "prose": "The topic-specific policies and procedures shall be approved by the appropriate level of management."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-02_level_Substantial_req.4S",
+                    "class": "Substantial",
+                    "title": "ISP-02.4S",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-02_level_Substantial_req.4S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP’s subject matter experts shall review the topic_x0002_specific policies and procedures for adequacy at least annually, and when major changes may affect the security of the cloud service."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-02_level_Substantial_req.5S",
+                    "class": "Substantial",
+                    "title": "ISP-02.5S",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-02_level_Substantial_req.5S_stmt",
+                        "name": "statement",
+                        "prose": "After a modification of topic-specific policies and procedures, they shall be approved by the appropriate level of management before they become effective, and then communicated and made available to personnel."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-02_level_Substantial_req.6S",
+                    "class": "Substantial",
+                    "title": "ISP-02.6S",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-02_level_Substantial_req.6S_stmt",
+                        "name": "statement",
+                        "prose": "The appropriate level of management shall report at least annually to the top management on the topic-specific policies and procedures and their implementation."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-02_level_Substantial_req.7S",
+                    "class": "Substantial",
+                    "title": "ISP-02.7S",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-02_level_Substantial_req.7S_stmt",
+                        "name": "statement",
+                        "prose": "The appropriate level of management shall report at least annually to the top management on the topic-specific policies and procedures and their implementation. This reporting should include at least:  Implemented changes to address cyber risks for the topic;  Information security incidents for the topic and the follow-up;  Performance of the internal controls regarding information security for the topic (Cf. CO-04.1S); and  Planned changes for the topic to address cyber risks and information security and cybersecurity."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-5.ISP-02_level_High",
+                "class": "High",
+                "title": "5.ISP-02.High",
+                "controls": [
+                  {
+                    "id": "eucs-5.ISP-02_level_High_req.1H",
+                    "class": "High",
+                    "title": "ISP-02.1H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-02_level_High_req.1H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall derive topic-specific policies and procedures from the information security policy for all relevant subject matters applicable to the cloud service, documented according to a uniform structure, including at least the following aspects:  Objectives;  Scope;  Roles and responsibilities within the organisation, including personnel competence requirements and the establishment of substitution rules;  Roles and dependencies on other organisations (especially CSCs and subservice providers);  Steps for the execution of the security strategy; and  Applicable legal and regulatory requirements"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-02_level_High_req.2H",
+                    "class": "High",
+                    "title": "ISP-02.2H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-02_level_High_req.2H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall communicate and make available the topic_x0002_specific policies and procedures to all personnel."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-02_level_High_req.3H",
+                    "class": "High",
+                    "title": "ISP-02.3H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-02_level_High_req.3H_stmt",
+                        "name": "statement",
+                        "prose": "The topic-specific policies and procedures shall be approved by the appropriate level of management."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-02_level_High_req.4H",
+                    "class": "High",
+                    "title": "ISP-02.4H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-02_level_High_req.4H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP’s subject matter experts shall review the topic_x0002_specific policies and procedures for adequacy at least annually, and when major changes may affect the security of the cloud service."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-02_level_High_req.5H",
+                    "class": "High",
+                    "title": "ISP-02.5H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-02_level_High_req.5H_stmt",
+                        "name": "statement",
+                        "prose": "After a modification of topic-specific policies and procedures, they shall be approved by the appropriate level of management before they become effective, and then communicated and made available to personnel."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-02_level_High_req.6H",
+                    "class": "High",
+                    "title": "ISP-02.6H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-02_level_High_req.6H_stmt",
+                        "name": "statement",
+                        "prose": "The appropriate level of management shall report at least annually to the top management on the topic-specific policies and procedures and their implementation."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-02_level_High_req.7H",
+                    "class": "High",
+                    "title": "ISP-02.7H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-02_level_High_req.7H_stmt",
+                        "name": "statement",
+                        "prose": "The appropriate level of management shall report at least annually to the top management on the topic-specific policies and procedures and their implementation. This reporting should include at least:  Implemented changes to address cyber risks for the topic;  Information security incidents for the topic and the follow-up;  Performance of the internal controls regarding information security for the topic (Cf. CO-04.1S); and  Planned changes for the topic to address cyber risks and information security and cybersecurity."
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "eucs-5.ISP-03",
+            "class": "eucs",
+            "title": "ISP-03 Exceptions",
+            "props": [
+              {
+                "name": "label",
+                "value": "3."
+              }
+            ],
+            "parts": [
+              {
+                "id": "eucs-5.ISP-03_obj",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "1."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Objective"
+                  }
+                ],
+                "prose": "Exceptions to the policies and procedures for information security are documented."
+              },
+              {
+                "id": "eucs-5.ISP-03_req",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "2."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Requirements"
+                  }
+                ]
+              }
+            ],
+            "groups": [
+              {
+                "id": "eucs-5.ISP-03_level_Basic",
+                "class": "Basic",
+                "title": "5.ISP-03.Basic",
+                "controls": [
+                  {
+                    "id": "eucs-5.ISP-03_level_Basic_req.1B",
+                    "class": "Basic",
+                    "title": "ISP-03.1B",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_Basic_req.1B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall maintain a list of exceptions to the information security policies and procedures, including associated controls."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-03_level_Basic_req.2B",
+                    "class": "Basic",
+                    "title": "ISP-03.2B",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_Basic_req.2B_stmt",
+                        "name": "statement",
+                        "prose": "The exceptions shall be limited in time where applicable."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-03_level_Basic_req.3B",
+                    "class": "Basic",
+                    "title": "ISP-03.3B",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_Basic_req.3B_stmt",
+                        "name": "statement",
+                        "prose": "The exceptions shall be documented."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-03_level_Basic_req.4B",
+                    "class": "Basic",
+                    "title": "ISP-03.4B",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_Basic_req.4B_stmt",
+                        "name": "statement",
+                        "prose": "The exceptions leading to a nonconformity to any of the certification requirements of a certified cloud service shall not be allowed."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-03_level_Basic_req.5B",
+                    "class": "Basic",
+                    "title": "ISP-03.5B",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_Basic_req.5B_stmt",
+                        "name": "statement",
+                        "prose": "The list of exceptions shall be reviewed at least annually"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-5.ISP-03_level_Substantial",
+                "class": "Substantial",
+                "title": "5.ISP-03.Substantial",
+                "controls": [
+                  {
+                    "id": "eucs-5.ISP-03_level_Substantial_req.1S",
+                    "class": "Substantial",
+                    "title": "ISP-03.1S",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_Substantial_req.1S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall maintain a list of exceptions to the information security policies and procedures, including associated controls."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-03_level_Substantial_req.2S",
+                    "class": "Substantial",
+                    "title": "ISP-03.2S",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_Substantial_req.2S_stmt",
+                        "name": "statement",
+                        "prose": "The exceptions shall be limited in time where applicable."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-03_level_Substantial_req.3S",
+                    "class": "Substantial",
+                    "title": "ISP-03.3S",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_Substantial_req.3S_stmt",
+                        "name": "statement",
+                        "prose": "The exceptions shall be documented."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-03_level_Substantial_req.4S",
+                    "class": "Substantial",
+                    "title": "ISP-03.4S",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_Substantial_req.4S_stmt",
+                        "name": "statement",
+                        "prose": "The exceptions leading to a nonconformity to any of the certification requirements of a certified cloud service shall not be allowed."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-03_level_Substantial_req.5S",
+                    "class": "Substantial",
+                    "title": "ISP-03.5S",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_Substantial_req.5S_stmt",
+                        "name": "statement",
+                        "prose": "The list of exceptions shall be reviewed at least annually"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-03_level_Substantial_req.6S",
+                    "class": "Substantial",
+                    "title": "ISP-03.6S",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_Substantial_req.6S_stmt",
+                        "name": "statement",
+                        "prose": "The approval of the exceptions by risk owners shall be reviewed at least annually, even if the list has not been modified."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-03_level_Substantial_req.7S",
+                    "class": "Substantial",
+                    "title": "ISP-03.7S",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_Substantial_req.7S_stmt",
+                        "name": "statement",
+                        "prose": "The exceptions shall be subjected to the RM-01 risk management process, including approval of these exceptions and acceptance of the associated risks by the risk owners."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-5.ISP-03_level_High",
+                "class": "High",
+                "title": "5.ISP-03.High",
+                "controls": [
+                  {
+                    "id": "eucs-5.ISP-03_level_High_req.1H",
+                    "class": "High",
+                    "title": "ISP-03.1H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_High_req.1H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall maintain a list of exceptions to the information security policies and procedures, including associated controls."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-03_level_High_req.2H",
+                    "class": "High",
+                    "title": "ISP-03.2H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_High_req.2H_stmt",
+                        "name": "statement",
+                        "prose": "The exceptions shall be limited in time where applicable."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-03_level_High_req.3H",
+                    "class": "High",
+                    "title": "ISP-03.3H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_High_req.3H_stmt",
+                        "name": "statement",
+                        "prose": "The exceptions shall be documented."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-03_level_High_req.4H",
+                    "class": "High",
+                    "title": "ISP-03.4H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_High_req.4H_stmt",
+                        "name": "statement",
+                        "prose": "The exceptions leading to a nonconformity to any of the certification requirements of a certified cloud service shall not be allowed."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-03_level_High_req.5H",
+                    "class": "High",
+                    "title": "ISP-03.5H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_High_req.5H_stmt",
+                        "name": "statement",
+                        "prose": "The list of exceptions shall be reviewed at least annually"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-03_level_High_req.6H",
+                    "class": "High",
+                    "title": "ISP-03.6H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_High_req.6H_stmt",
+                        "name": "statement",
+                        "prose": "The approval of the exceptions by risk owners shall be reviewed at least annually, even if the list has not been modified."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-03_level_High_req.7H",
+                    "class": "High",
+                    "title": "ISP-03.7H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_High_req.7H_stmt",
+                        "name": "statement",
+                        "prose": "The exceptions shall be subjected to the RM-01 risk management process, including approval of these exceptions and acceptance of the associated risks by the risk owners."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-03_level_High_req.8H",
+                    "class": "High",
+                    "title": "ISP-03.8H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_High_req.8H_stmt",
+                        "name": "statement",
+                        "prose": "The exceptions to an information security policy shall be approved by the top management."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-03_level_High_req.9H",
+                    "class": "High",
+                    "title": "ISP-03.9H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_High_req.9H_stmt",
+                        "name": "statement",
+                        "prose": "The exceptions to a topic-specific policy or procedure shall be approved by the appropriate level of management who approved the topic-specific policy or procedure."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-5.ISP-03_level_High_req.0H",
+                    "class": "High",
+                    "title": "ISP-03.10H",
+                    "parts": [
+                      {
+                        "id": "eucs-5.ISP-03_level_High_req.0H_stmt",
+                        "name": "statement",
+                        "prose": "The list of exceptions shall be monitored to ensure that the approved exceptions have not expired and that all reviews and approvals are up-to-date."
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "eucs-6",
+        "title": "Risk management",
+        "props": [
+          {
+            "name": "label",
+            "value": "6."
+          }
+        ],
+        "groups": [
+          {
+            "id": "eucs-6.RM-01",
+            "class": "eucs",
+            "title": "RM-01 Risk Management Policy",
+            "props": [
+              {
+                "name": "label",
+                "value": "1."
+              }
+            ],
+            "parts": [
+              {
+                "id": "eucs-6.RM-01_obj",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "1."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Objective"
+                  }
+                ],
+                "prose": "Risk management policies and procedures are defined and documented."
+              },
+              {
+                "id": "eucs-6.RM-01_req",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "2."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Requirements"
+                  }
+                ]
+              }
+            ],
+            "groups": [
+              {
+                "id": "eucs-6.RM-01_level_Basic",
+                "class": "Basic",
+                "title": "6.RM-01.Basic",
+                "controls": [
+                  {
+                    "id": "eucs-6.RM-01_level_Basic_req.1B",
+                    "class": "Basic",
+                    "title": "RM-01.1B",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-01_level_Basic_req.1B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall define policies and procedures for the cloud service in accordance with ISP-02 for the following aspects:  Identification of cyber risks associated with the loss of confidentiality, integrity and availability of information within the scope of the cloud service (cf. OIS-01.1B) and assigning risk owners within the CSP;  Analysis and determination of the likelihood, level and consequence of the identified cyber risks on people, society, organisations and nations;  Evaluation of the risk analysis based on defined criteria for risk acceptance and prioritisation of risk treatment;  Treatment of the identified cyber risks, including approval of authorisation and acceptance of residual risk by risk owners;  Ensuring that the risk assessment activities provide consistent, valid and comparable results, where possible; and  Retaining documented information of the risk assessment activities."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-6.RM-01_level_Substantial",
+                "class": "Substantial",
+                "title": "6.RM-01.Substantial",
+                "controls": [
+                  {
+                    "id": "eucs-6.RM-01_level_Substantial_req.1S",
+                    "class": "Substantial",
+                    "title": "RM-01.1S",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-01_level_Substantial_req.1S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall define policies and procedures for the cloud service in accordance with ISP-02 and using a documented risk assessment methodology that enables reproducibility and comparability, for the following aspects:  Identification of cyber risks associated with the loss of confidentiality, integrity and availability of information within the scope of the cloud service (cf. OIS-01.1S) and assigning risk owners within the CSP;  Analysis and determination of the likelihood, level and consequence of the identified cyber risks on people, society, organisations and nations;  Evaluation of the risk analysis based on defined criteria for risk acceptance and prioritisation of risk treatment;  Treatment of the identified cyber risks, including approval of authorisation and acceptance of residual risk by risk owners;  Ensuring that the risk assessment activities provide consistent, valid and comparable results, where possible;  Retaining documented information of the risk assessment activities; and  Conducting a review of the risk assessment and status of risk treatment plans by the management responsible for the security of the cloud service."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-6.RM-01_level_High",
+                "class": "High",
+                "title": "6.RM-01.High",
+                "controls": [
+                  {
+                    "id": "eucs-6.RM-01_level_High_req.1H",
+                    "class": "High",
+                    "title": "RM-01.1H",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-01_level_High_req.1H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall define policies and procedures in accordance with ISP-02 and using a documented risk assessment methodology that enables reproducibility and comparability, for the following aspects:  Identification of cyber risks associated with the loss of confidentiality, integrity and availability of information within the scope of the cloud service (cf. OIS-01.1H) and assigning risk owners within the CSP;  Analysis and determination of the likelihood, level and consequence of the identified cyber risks on people, society, organisations and nations;  Evaluation of the risk analysis based on defined criteria for risk acceptance and prioritisation of risk treatment;  Treatment of the identified cyber risks, including approval of authorisation and acceptance of residual risk by risk owners;  Ensuring that the risk assessment activities provide consistent, valid and comparable results;  Retaining documented information of the risk assessment activities; and  Conducting a review of the risk assessment and status of risk treatment plans by the management responsible for the security of the cloud service."
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "eucs-6.RM-02",
+            "class": "eucs",
+            "title": "RM-02 Risk Assessment Implementation",
+            "props": [
+              {
+                "name": "label",
+                "value": "2."
+              }
+            ],
+            "parts": [
+              {
+                "id": "eucs-6.RM-02_obj",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "1."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Objective"
+                  }
+                ],
+                "prose": "Risk assessment-related policies and procedures are implemented and have the entire cloud service in scope, and the results of the risk assessments made available to relevant parties."
+              },
+              {
+                "id": "eucs-6.RM-02_req",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "2."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Requirements"
+                  }
+                ]
+              }
+            ],
+            "groups": [
+              {
+                "id": "eucs-6.RM-02_level_Basic",
+                "class": "Basic",
+                "title": "6.RM-02.Basic",
+                "controls": [
+                  {
+                    "id": "eucs-6.RM-02_level_Basic_req.1B",
+                    "class": "Basic",
+                    "title": "RM-02.1B",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-02_level_Basic_req.1B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall implement the policies and procedures covering risk assessments on the entire cloud service."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-02_level_Basic_req.2B",
+                    "class": "Basic",
+                    "title": "RM-02.2B",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-02_level_Basic_req.2B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall make the results of the risk assessments available to relevant internal parties."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-02_level_Basic_req.3B",
+                    "class": "Basic",
+                    "title": "RM-02.3B",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-02_level_Basic_req.3B_stmt",
+                        "name": "statement",
+                        "prose": "Information, specific for their purposes, shall be made available to relevant external parties."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-02_level_Basic_req.4B",
+                    "class": "Basic",
+                    "title": "RM-02.4B",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-02_level_Basic_req.4B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall review the risk assessments at least annually, and after each major change that may affect the security of the cloud service."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-02_level_Basic_req.5B",
+                    "class": "Basic",
+                    "title": "RM-02.5B",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-02_level_Basic_req.5B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall monitor the evolution of the risk and review the risk assessments accordingly."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-6.RM-02_level_Substantial",
+                "class": "Substantial",
+                "title": "6.RM-02.Substantial",
+                "controls": [
+                  {
+                    "id": "eucs-6.RM-02_level_Substantial_req.1S",
+                    "class": "Substantial",
+                    "title": "RM-02.1S",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-02_level_Substantial_req.1S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall implement the policies and procedures covering risk assessments on the entire cloud service."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-02_level_Substantial_req.2S",
+                    "class": "Substantial",
+                    "title": "RM-02.2S",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-02_level_Substantial_req.2S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall make the results of the risk assessments available to relevant internal parties."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-02_level_Substantial_req.3S",
+                    "class": "Substantial",
+                    "title": "RM-02.3S",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-02_level_Substantial_req.3S_stmt",
+                        "name": "statement",
+                        "prose": "Information, specific for their purposes, shall be made available to relevant external parties."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-02_level_Substantial_req.4S",
+                    "class": "Substantial",
+                    "title": "RM-02.4S",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-02_level_Substantial_req.4S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall review the risk assessments at least annually, and after each major change that may affect the security of the cloud service."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-02_level_Substantial_req.5S",
+                    "class": "Substantial",
+                    "title": "RM-02.5S",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-02_level_Substantial_req.5S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall monitor the evolution of the risk and review the risk assessments accordingly."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-6.RM-02_level_High",
+                "class": "High",
+                "title": "6.RM-02.High",
+                "controls": [
+                  {
+                    "id": "eucs-6.RM-02_level_High_req.1H",
+                    "class": "High",
+                    "title": "RM-02.1H",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-02_level_High_req.1H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall implement the policies and procedures covering risk assessments on the entire cloud service."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-02_level_High_req.2H",
+                    "class": "High",
+                    "title": "RM-02.2H",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-02_level_High_req.2H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall make the results of the risk assessments available to relevant internal parties."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-02_level_High_req.3H",
+                    "class": "High",
+                    "title": "RM-02.3H",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-02_level_High_req.3H_stmt",
+                        "name": "statement",
+                        "prose": "Information, specific for their purposes, shall be made available to relevant external parties."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-02_level_High_req.4H",
+                    "class": "High",
+                    "title": "RM-02.4H",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-02_level_High_req.4H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall review the risk assessments at least annually, and after each major change that may affect the security of the cloud service."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-02_level_High_req.5H",
+                    "class": "High",
+                    "title": "RM-02.5H",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-02_level_High_req.5H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall monitor the evolution of the risk and review the risk assessments accordingly."
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "eucs-6.RM-03",
+            "class": "eucs",
+            "title": "RM-03 Risk Treatment Implementation",
+            "props": [
+              {
+                "name": "label",
+                "value": "3."
+              }
+            ],
+            "parts": [
+              {
+                "id": "eucs-6.RM-03_obj",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "1."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Objective"
+                  }
+                ],
+                "prose": "Identified risks are treated based upon to their criticality prioritization according to the risk policies and procedures by applying controls. Residual risk is accepted or determined as retained risk by the risk owners."
+              },
+              {
+                "id": "eucs-6.RM-03_req",
+                "name": "statement",
+                "props": [
+                  {
+                    "name": "label",
+                    "value": "2."
+                  },
+                  {
+                    "name": "alt-identifier",
+                    "value": "Requirements"
+                  }
+                ]
+              }
+            ],
+            "groups": [
+              {
+                "id": "eucs-6.RM-03_level_Basic",
+                "class": "Basic",
+                "title": "6.RM-03.Basic",
+                "controls": [
+                  {
+                    "id": "eucs-6.RM-03_level_Basic_req.1B",
+                    "class": "Basic",
+                    "title": "RM-03.1B",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_Basic_req.1B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall prioritize the risk treatment according to the level of cyber risks related to the cloud service."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_Basic_req.2B",
+                    "class": "Basic",
+                    "title": "RM-03.2B",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_Basic_req.2B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall document and implement a risk treatment plan based on the risk assessment (RM-01.1B)."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_Basic_req.3B",
+                    "class": "Basic",
+                    "title": "RM-03.3B",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_Basic_req.3B_stmt",
+                        "name": "statement",
+                        "prose": "The risk treatment plan shall reduce the risk level to a residual risk acceptable to the CSP."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_Basic_req.4B",
+                    "class": "Basic",
+                    "title": "RM-03.4B",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_Basic_req.4B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall make the risk treatment plan available to relevant internal parties, including appropriately summarised and abstracted versions."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_Basic_req.5B",
+                    "class": "Basic",
+                    "title": "RM-03.5B",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_Basic_req.5B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall determine if relevant external parties shall receive information, specific for their purposes, about the risk treatment plan and to what extent."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_Basic_req.6B",
+                    "class": "Basic",
+                    "title": "RM-03.6B",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_Basic_req.6B_stmt",
+                        "name": "statement",
+                        "prose": "If the CSP shares risks with the CSC, the shared risks shall be associated to complementary user entity controls and described in the user documentation."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_Basic_req.7B",
+                    "class": "Basic",
+                    "title": "RM-03.7B",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_Basic_req.7B_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall review the risk treatment plan every time the risk assessment is modified."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-6.RM-03_level_Substantial",
+                "class": "Substantial",
+                "title": "6.RM-03.Substantial",
+                "controls": [
+                  {
+                    "id": "eucs-6.RM-03_level_Substantial_req.1S",
+                    "class": "Substantial",
+                    "title": "RM-03.1S",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_Substantial_req.1S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall prioritize the risk treatment according to the level of cyber risks related to the cloud service."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_Substantial_req.2S",
+                    "class": "Substantial",
+                    "title": "RM-03.2S",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_Substantial_req.2S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall document and implement a risk treatment plan based on the risk assessment (RM-01.1B)."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_Substantial_req.3S",
+                    "class": "Substantial",
+                    "title": "RM-03.3S",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_Substantial_req.3S_stmt",
+                        "name": "statement",
+                        "prose": "The risk treatment plan shall reduce the risk level to a residual risk acceptable to the risk owners."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_Substantial_req.4S",
+                    "class": "Substantial",
+                    "title": "RM-03.4S",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_Substantial_req.4S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall make the risk treatment plan available to relevant internal parties, including appropriately summarised and abstracted versions."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_Substantial_req.5S",
+                    "class": "Substantial",
+                    "title": "RM-03.5S",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_Substantial_req.5S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall determine if relevant external parties shall receive information, specific for their purposes, about the risk treatment plan and to what extent."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_Substantial_req.6S",
+                    "class": "Substantial",
+                    "title": "RM-03.6S",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_Substantial_req.6S_stmt",
+                        "name": "statement",
+                        "prose": "If the CSP shares risks with the CSC, the shared risks shall be associated to complementary user entity controls and described in the user documentation."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_Substantial_req.7S",
+                    "class": "Substantial",
+                    "title": "RM-03.7S",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_Substantial_req.7S_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall review the risk treatment plan every time the risk assessment is modified."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_Substantial_req.8S",
+                    "class": "Substantial",
+                    "title": "RM-03.8S",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_Substantial_req.8S_stmt",
+                        "name": "statement",
+                        "prose": "The risk owners shall formally accept the risk treatment plan."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_Substantial_req.9S",
+                    "class": "Substantial",
+                    "title": "RM-03.9S",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_Substantial_req.9S_stmt",
+                        "name": "statement",
+                        "prose": "The risk owners shall review for adequacy the analysis, evaluation and treatment of risks, including the approval of actions and acceptance of residual risks, after each modification of the risk assessment and treatment plans."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "eucs-6.RM-03_level_High",
+                "class": "High",
+                "title": "6.RM-03.High",
+                "controls": [
+                  {
+                    "id": "eucs-6.RM-03_level_High_req.1H",
+                    "class": "High",
+                    "title": "RM-03.1H",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_High_req.1H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall prioritize the risk treatment according to the level of cyber risks related to the cloud service."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_High_req.2H",
+                    "class": "High",
+                    "title": "RM-03.2H",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_High_req.2H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall document and implement a risk treatment plan based on the risk assessment (RM-01.1B)."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_High_req.3H",
+                    "class": "High",
+                    "title": "RM-03.3H",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_High_req.3H_stmt",
+                        "name": "statement",
+                        "prose": "The risk treatment plan shall reduce the risk level to a residual risk acceptable to the risk owners."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_High_req.4H",
+                    "class": "High",
+                    "title": "RM-03.4H",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_High_req.4H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall make the risk treatment plan available to relevant internal parties, including appropriately summarised and abstracted versions."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_High_req.5H",
+                    "class": "High",
+                    "title": "RM-03.5H",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_High_req.5H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall determine if relevant external parties shall receive information, specific for their purposes, about the risk treatment plan and to what extent."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_High_req.6H",
+                    "class": "High",
+                    "title": "RM-03.6H",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_High_req.6H_stmt",
+                        "name": "statement",
+                        "prose": "If the CSP shares risks with the CSC, the shared risks shall be associated to complementary user entity controls and described in the user documentation."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_High_req.7H",
+                    "class": "High",
+                    "title": "RM-03.7H",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_High_req.7H_stmt",
+                        "name": "statement",
+                        "prose": "The CSP shall review the risk treatment plan every time the risk assessment is modified."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_High_req.8H",
+                    "class": "High",
+                    "title": "RM-03.8H",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_High_req.8H_stmt",
+                        "name": "statement",
+                        "prose": "The risk owners shall formally accept the risk treatment plan."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "eucs-6.RM-03_level_High_req.9H",
+                    "class": "High",
+                    "title": "RM-03.9H",
+                    "parts": [
+                      {
+                        "id": "eucs-6.RM-03_level_High_req.9H_stmt",
+                        "name": "statement",
+                        "prose": "The risk owners shall review for adequacy the analysis, evaluation and treatment of risks, including the approval of actions and acceptance of residual risks, after each modification of the risk assessment and treatment plans."
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "eucs-7",
+        "title": "Artificial Intelligence",
+        "props": [
+          {
+            "name": "label",
+            "value": "7."
+          }
+        ],
+        "groups": [
+          {
+            "id": "eucs-7.AI-01",
+            "title": "AI-01 Model Theft",
+            "props": [
+              {
+                "name": "label",
+                "value": "1."
+              }
+            ],
+            "controls": [
+              {
+                "id": "eucs-7.AI-01_req.1",
+                "class": "Model Theft",
+                "title": "AI-01.1",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-01_req.1_stmt",
+                    "name": "statement",
+                    "prose": "Secure development lifecycle"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-01_req.2",
+                "class": "Model Theft",
+                "title": "AI-01.2",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-01_req.2_stmt",
+                    "name": "statement",
+                    "prose": "Secure coding (Secure APIs)"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-01_req.3",
+                "class": "Model Theft",
+                "title": "AI-01.3",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-01_req.3_stmt",
+                    "name": "statement",
+                    "prose": "Access control"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-01_req.4",
+                "class": "Model Theft",
+                "title": "AI-01.4",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-01_req.4_stmt",
+                    "name": "statement",
+                    "prose": "Access rights"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-01_req.5",
+                "class": "Model Theft",
+                "title": "AI-01.5",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-01_req.5_stmt",
+                    "name": "statement",
+                    "prose": "Secure authentication"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-01_req.6",
+                "class": "Model Theft",
+                "title": "AI-01.6",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-01_req.6_stmt",
+                    "name": "statement",
+                    "prose": "Web filtering (Rate limiting and throttling)"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-01_req.7",
+                "class": "Model Theft",
+                "title": "AI-01.7",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-01_req.7_stmt",
+                    "name": "statement",
+                    "prose": "Use of Cryptography (Model Encryption)"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "eucs-7.AI-02",
+            "title": "AI-02 Data Poisoning",
+            "props": [
+              {
+                "name": "label",
+                "value": "2."
+              }
+            ],
+            "controls": [
+              {
+                "id": "eucs-7.AI-02_req.1",
+                "class": "Data Poisoning",
+                "title": "AI-02.1",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-02_req.1_stmt",
+                    "name": "statement",
+                    "prose": "Data Validation and Sanitization"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-02_req.2",
+                "class": "Data Poisoning",
+                "title": "AI-02.2",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-02_req.2_stmt",
+                    "name": "statement",
+                    "prose": "Data Anomaly Identification"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-02_req.3",
+                "class": "Data Poisoning",
+                "title": "AI-02.3",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-02_req.3_stmt",
+                    "name": "statement",
+                    "prose": "Model validation"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-02_req.4",
+                "class": "Data Poisoning",
+                "title": "AI-02.4",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-02_req.4_stmt",
+                    "name": "statement",
+                    "prose": "Model ensemble"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-02_req.5",
+                "class": "Data Poisoning",
+                "title": "AI-02.5",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-02_req.5_stmt",
+                    "name": "statement",
+                    "prose": "Data augmentation"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-02_req.6",
+                "class": "Data Poisoning",
+                "title": "AI-02.6",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-02_req.6_stmt",
+                    "name": "statement",
+                    "prose": "Data qualitiy monitoring - In operation (Data in Motion)"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-02_req.7",
+                "class": "Data Poisoning",
+                "title": "AI-02.7",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-02_req.7_stmt",
+                    "name": "statement",
+                    "prose": "Active Learning"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-02_req.8",
+                "class": "Data Poisoning",
+                "title": "AI-02.8",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-02_req.8_stmt",
+                    "name": "statement",
+                    "prose": "Access control"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-02_req.9",
+                "class": "Data Poisoning",
+                "title": "AI-02.9",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-02_req.9_stmt",
+                    "name": "statement",
+                    "prose": "Access rights"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-02_req.10",
+                "class": "Data Poisoning",
+                "title": "AI-02.10",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-02_req.10_stmt",
+                    "name": "statement",
+                    "prose": "Information security in supplier relationship"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-02_req.11",
+                "class": "Data Poisoning",
+                "title": "AI-02.11",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-02_req.11_stmt",
+                    "name": "statement",
+                    "prose": "Information security for use of cloud services"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-02_req.12",
+                "class": "Data Poisoning",
+                "title": "AI-02.12",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-02_req.12_stmt",
+                    "name": "statement",
+                    "prose": "Managing information security in the ICT supply chain"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-02_req.13",
+                "class": "Data Poisoning",
+                "title": "AI-02.13",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-02_req.13_stmt",
+                    "name": "statement",
+                    "prose": "Screening"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-02_req.14",
+                "class": "Data Poisoning",
+                "title": "AI-02.14",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-02_req.14_stmt",
+                    "name": "statement",
+                    "prose": "Infromation security awareness, education and training"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-02_req.15",
+                "class": "Data Poisoning",
+                "title": "AI-02.15",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-02_req.15_stmt",
+                    "name": "statement",
+                    "prose": "Physical controls"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-02_req.16",
+                "class": "Data Poisoning",
+                "title": "AI-02.16",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-02_req.16_stmt",
+                    "name": "statement",
+                    "prose": "Secure authentication"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-02_req.17",
+                "class": "Data Poisoning",
+                "title": "AI-02.17",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-02_req.17_stmt",
+                    "name": "statement",
+                    "prose": "Secure development lifecycle"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-02_req.18",
+                "class": "Data Poisoning",
+                "title": "AI-02.18",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-02_req.18_stmt",
+                    "name": "statement",
+                    "prose": "Secure system architecture and engineering principles"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "eucs-7.AI-03",
+            "title": "AI-03 Evasion",
+            "props": [
+              {
+                "name": "label",
+                "value": "3."
+              }
+            ],
+            "controls": [
+              {
+                "id": "eucs-7.AI-03_req.1",
+                "class": "Evasion",
+                "title": "AI-03.1",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-03_req.1_stmt",
+                    "name": "statement",
+                    "prose": "Adversarial Training"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-03_req.2",
+                "class": "Evasion",
+                "title": "AI-03.2",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-03_req.2_stmt",
+                    "name": "statement",
+                    "prose": "Data Augmentation and Randomization"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-03_req.3",
+                "class": "Evasion",
+                "title": "AI-03.3",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-03_req.3_stmt",
+                    "name": "statement",
+                    "prose": "Input Validation"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-03_req.4",
+                "class": "Evasion",
+                "title": "AI-03.4",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-03_req.4_stmt",
+                    "name": "statement",
+                    "prose": "Input distortion"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-03_req.5",
+                "class": "Evasion",
+                "title": "AI-03.5",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-03_req.5_stmt",
+                    "name": "statement",
+                    "prose": "Adversarial detection"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-03_req.6",
+                "class": "Evasion",
+                "title": "AI-03.6",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-03_req.6_stmt",
+                    "name": "statement",
+                    "prose": "Transfer knowledge"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-03_req.7",
+                "class": "Evasion",
+                "title": "AI-03.7",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-03_req.7_stmt",
+                    "name": "statement",
+                    "prose": "Access control"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-03_req.8",
+                "class": "Evasion",
+                "title": "AI-03.8",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-03_req.8_stmt",
+                    "name": "statement",
+                    "prose": "Access rights"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-03_req.9",
+                "class": "Evasion",
+                "title": "AI-03.9",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-03_req.9_stmt",
+                    "name": "statement",
+                    "prose": "Information security in supplier relationship"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-03_req.10",
+                "class": "Evasion",
+                "title": "AI-03.10",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-03_req.10_stmt",
+                    "name": "statement",
+                    "prose": "Information security for use of cloud services"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-03_req.11",
+                "class": "Evasion",
+                "title": "AI-03.11",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-03_req.11_stmt",
+                    "name": "statement",
+                    "prose": "Managing information security in the ICT supply chain"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-03_req.12",
+                "class": "Evasion",
+                "title": "AI-03.12",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-03_req.12_stmt",
+                    "name": "statement",
+                    "prose": "Physical controls"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-03_req.13",
+                "class": "Evasion",
+                "title": "AI-03.13",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-03_req.13_stmt",
+                    "name": "statement",
+                    "prose": "Secure authentication"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-03_req.14",
+                "class": "Evasion",
+                "title": "AI-03.14",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-03_req.14_stmt",
+                    "name": "statement",
+                    "prose": "Secure system architecture and engineering principles"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "eucs-7.AI-04",
+            "title": "AI-04 Supply Chain Attack (Model Poisoning)",
+            "props": [
+              {
+                "name": "label",
+                "value": "4."
+              }
+            ],
+            "controls": [
+              {
+                "id": "eucs-7.AI-04_req.1",
+                "class": "Supply Chain Attack (Model Poisoning)",
+                "title": "AI-04.1",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-04_req.1_stmt",
+                    "name": "statement",
+                    "prose": "Model Validation"
+                  }
+                ]
+              },
+              {
+                "id": "eucs-7.AI-04_req.2",
+                "class": "Supply Chain Attack (Model Poisoning)",
+                "title": "AI-04.2",
+                "parts": [
+                  {
+                    "id": "eucs-7.AI-04_req.2_stmt",
+                    "name": "statement",
+                    "prose": "Restrict Library Loading"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "back-matter": {
+      "resources": [
+        {
+          "uuid": "3ab41d8a-66e3-4732-ae28-07405dad5127",
+          "title": "EUCS prCEN/TS (PDF)",
+          "rlinks": [
+            {
+              "href": "https://enisa.europa.eu/publications/eucs.pdf",
+              "media-type": "application/pdf"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -83,7 +83,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             logger.info("Received valid trigger, executing main.py")
 
             # Run main.py using subprocess
-            subprocess.Popen(["python", "main.py"])
+            subprocess.Popen(["python3", "main.py"])
         else:
             # Send a 404 response for unknown paths
             self.send_response(404)
