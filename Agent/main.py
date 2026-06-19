@@ -4,8 +4,6 @@ import time
 import socket
 # import subprocess
 # import uuid
-import logging
-from logging.handlers import RotatingFileHandler
 # import re
 from datetime import datetime
 from parsers import parse_security_levels
@@ -22,30 +20,7 @@ from configure_logger import configure_logger, close_logger
 global custom_id
 custom_id = 22524368
 
-# Starting logger
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-# Create rotating file handler for the logger
-# max_bytes = 15 * 1024 * 1024  # 15 MB
-max_bytes = 50 * 1024 # 5KB to test the rotation
-backup_count = 30 # up to 30 old log files
-#file_handler = logging.FileHandler('ccm-agent.log')
-file_handler = RotatingFileHandler('ccm-agent.log', 'a', max_bytes, backup_count)
-file_handler.setLevel(logging.INFO)
-
-# Create formatter of the log file
-script_name = os.path.basename(__name__)
-
-
-logger = configure_logger(script_name, custom_id)
-
-formatter = logging.Formatter(f'%(asctime)s - %(name)s - %(levelname)s - %{custom_id}s: %(message)s')
-# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s: %(message)s')
-file_handler.setFormatter(formatter)
-
-# Add the handler to the logger
-logger.addHandler(file_handler)
+logger = configure_logger(os.path.basename(__file__), custom_id)
 
 logger.info("[%s]: #--------------------------------------------------#", custom_id)
 logger.info("[%s]: #----------- INITIATING LOCAL CCM AGENT -----------#", custom_id)
@@ -193,13 +168,13 @@ def populate_json():
 def send_files_to_api(main_file_path, api_url):
     hostname = socket.gethostname()
     local_conf_file = f"ccm-a-{hostname}-local.conf"
-    local_log_file = f"ccm-a-{hostname}-local-conf.log"
+    local_log_file_path = f"ccm-a-{hostname}-local-conf.log"
 
     # Check if all files exist
     files_to_send = {
         "main_file": main_file_path,
         "local_conf_file": local_conf_file,
-        "local_log_file": local_log_file,
+        "local_log_file": local_log_file_path,
     }
 
     for key, file_path in files_to_send.items():
@@ -211,12 +186,12 @@ def send_files_to_api(main_file_path, api_url):
     try:
         with open(main_file_path, 'r') as main_file, \
                 open(local_conf_file, 'r') as conf_file, \
-                open(local_log_file, 'r') as local_log_file:
+                open(local_log_file_path, 'r') as local_log_file:
 
             files = {
                 "file": (os.path.basename(main_file_path), main_file, "application/json"),
                 "local_conf": (os.path.basename(local_conf_file), conf_file, "application/json"),
-                "local_log_file": (os.path.basename(local_log_file), local_log_file, "text/plain"),
+                "local_log_file": (os.path.basename(local_log_file_path), local_log_file, "text/plain"),
             }
 
             response = requests.post(api_url, files=files)
@@ -266,7 +241,7 @@ if __name__ == "__main__":
     elapsed_time = end_time - start_time
     minutes, seconds = divmod(int(elapsed_time), 60)
     # logger.info("[%s]: *** Total time elapsed: %s minutes %s seconds ***", custom_id, minutes, seconds)
-    logger.info("*** Total time elapsed: {minutes} minutes {seconds} seconds ***")
+    logger.info("*** Total time elapsed: %s minutes %s seconds ***", minutes, seconds)
     # print(f"*** Total time elapsed: {minutes} minutes {seconds} seconds ***")
     logger.info("[%s]: #--------------------------------------------------#", custom_id)
     logger.info("[%s]: #----------- TERMINATING LOCAL CCM AGENT ----------#", custom_id)

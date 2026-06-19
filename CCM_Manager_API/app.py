@@ -338,7 +338,31 @@ def upload_saasbom():
 def upload_toe_descriptor():
     data = request.get_json(silent=True)
     scheme_id = request.args.get('scheme_id') or (data or {}).get('certification_scheme_id')
-    payload, status_code = toe_service.upload_toe_descriptor(data, scheme_id)
+    deploy_sdt = (data or {}).get("deploy_sdt")
+    if deploy_sdt is None:
+        deploy_sdt = request.args.get("deploy_sdt")
+
+    sdt_bom_path = (
+        request.args.get("sdt_bom_path")
+        or request.args.get("bom_path")
+        or (data or {}).get("sdt_bom_path")
+        or (data or {}).get("bom_path")
+    )
+    sdt_payload_type = (
+        request.args.get("payload_type")
+        or request.args.get("sdt_payload_type")
+        or (data or {}).get("payload_type")
+        or (data or {}).get("sdt_payload_type")
+        or (data or {}).get("category")
+    )
+
+    payload, status_code = toe_service.upload_toe_descriptor(
+        data,
+        scheme_id,
+        deploy_sdt=deploy_sdt,
+        sdt_bom_path=sdt_bom_path,
+        sdt_payload_type=sdt_payload_type,
+    )
     return jsonify(payload), status_code
 
 
@@ -603,11 +627,20 @@ def update_ledger_entry(uuid):
 @app.route("/send_sdt", methods=["POST"])
 def send_std():
     try:
-        data = request.get_json()
-        if not data or "hash" not in data:
-            return jsonify({"error": "Missing 'hash' in request body"}), 400
+        data = request.get_json(silent=True) or {}
+        bom_content = data.get("bom_content") or data.get("bom")
+        if not (data.get("hash") or data.get("bom_path") or bom_content is not None):
+            return jsonify({"error": "Missing 'hash', 'bom_path', or 'bom_content' in request body"}), 400
 
-        payload, status_code = sdt_sender.send_sdt(data["hash"])
+        payload, status_code = sdt_sender.send_sdt(
+            data.get("hash"),
+            bom_path=data.get("bom_path"),
+            toe_id=data.get("toe_id"),
+            category=data.get("category"),
+            deployment_payload=data.get("payload"),
+            bom_content=bom_content,
+            bom_source=data.get("bom_source") or "request.bom_content",
+        )
         return jsonify(payload), status_code
 
     except requests.RequestException as e:
@@ -715,7 +748,20 @@ def get_sdts():
         return jsonify(payload), status_code
     except requests.RequestException as e:
         return jsonify({
-            "error": "Failed to fetch from SDT deployment service",
+            "error": "Failed to fetch from SDT service",
+            "details": str(e),
+            "outbound_auth": [auth_context("sdt")],
+        }), 502
+
+
+@app.route('/sdts/<twin_id>', methods=['GET'])
+def get_sdt(twin_id):
+    try:
+        payload, status_code = sdt_sender.get_sdt(twin_id)
+        return jsonify(payload), status_code
+    except requests.RequestException as e:
+        return jsonify({
+            "error": "Failed to fetch SDT instance",
             "details": str(e),
             "outbound_auth": [auth_context("sdt")],
         }), 502

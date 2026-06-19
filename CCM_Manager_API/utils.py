@@ -11,6 +11,23 @@ def generate_json_hash(data):
     return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
 
+def mongo_safe_document(value):
+    if isinstance(value, dict):
+        safe = {}
+        for key, nested_value in value.items():
+            safe_key = str(key)
+            if safe_key.startswith("$"):
+                safe_key = f"_{safe_key[1:]}"
+            safe_key = safe_key.replace(".", "_")
+            safe[safe_key] = mongo_safe_document(nested_value)
+        return safe
+
+    if isinstance(value, list):
+        return [mongo_safe_document(item) for item in value]
+
+    return value
+
+
 def hash_ip(ip):
     return hashlib.sha256(ip.encode("utf-8")).hexdigest()
 

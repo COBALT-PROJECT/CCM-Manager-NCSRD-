@@ -1,0 +1,1033 @@
+{
+  "oid_refs": {
+    "aes-256-ccm": {
+      "algo_oid": "2.16.840.1.101.3.4.1.47"
+    },
+    "id-aes256-CCM": {
+      "algo_oid": "N/A"
+    },
+    "AES-128-OFB": {
+      "algo_oid": "2.16.840.1.101.3.4.1.3"
+    },
+    "AES-128-ECB": {
+      "algo_oid": "2.16.840.1.101.3.4.1.1"
+    },
+    "ARIA-256-CBC": {
+      "algo_oid": "1.2.410.200046.1.1.12"
+    },
+    "ARIA256": {
+      "algo_oid": "N/A"
+    },
+    "aes-256-gcm": {
+      "algo_oid": "2.16.840.1.101.3.4.1.46"
+    },
+    "id-aes256-GCM": {
+      "algo_oid": "N/A"
+    },
+    "ARIA-128-GCM": {
+      "algo_oid": "1.2.410.200046.1.1.34"
+    },
+    "SM4-ECB": {
+      "algo_oid": "1.2.156.10197.1.104.1"
+    },
+    "AES-192-CFB": {
+      "algo_oid": "2.16.840.1.101.3.4.1.24"
+    },
+    "ARIA-256-ECB": {
+      "algo_oid": "1.2.410.200046.1.1.11"
+    },
+    "CAMELLIA-128-CBC": {
+      "algo_oid": "1.2.392.200011.61.1.1.1.2"
+    },
+    "CAMELLIA128": {
+      "algo_oid": "N/A"
+    },
+    "AES-128-WRAP": {
+      "algo_oid": "2.16.840.1.101.3.4.1.5"
+    },
+    "AES128-WRAP": {
+      "algo_oid": "N/A"
+    },
+    "id-aes128-wrap": {
+      "algo_oid": "N/A"
+    },
+    "DES3-WRAP": {
+      "algo_oid": "1.2.840.113549.1.9.16.3.6"
+    },
+    "id-smime-alg-CMS3DESwrap": {
+      "algo_oid": "N/A"
+    },
+    "CAMELLIA-128-CTR": {
+      "algo_oid": "0.3.4401.5.3.1.9.9"
+    },
+    "SM4-OFB": {
+      "algo_oid": "1.2.156.10197.1.104.3"
+    },
+    "SM4-OFB128": {
+      "algo_oid": "N/A"
+    },
+    "CAMELLIA-192-CFB": {
+      "algo_oid": "0.3.4401.5.3.1.9.24"
+    },
+    "ARIA-256-CCM": {
+      "algo_oid": "1.2.410.200046.1.1.39"
+    },
+    "AES-128-XTS": {
+      "algo_oid": "1.3.111.2.1619.0.1.1"
+    },
+    "ARIA-256-GCM": {
+      "algo_oid": "1.2.410.200046.1.1.36"
+    },
+    "AES-128-CFB": {
+      "algo_oid": "2.16.840.1.101.3.4.1.4"
+    },
+    "aes-128-gcm": {
+      "algo_oid": "2.16.840.1.101.3.4.1.6"
+    },
+    "id-aes128-GCM": {
+      "algo_oid": "N/A"
+    },
+    "AES-256-CBC": {
+      "algo_oid": "2.16.840.1.101.3.4.1.42"
+    },
+    "AES256": {
+      "algo_oid": "N/A"
+    },
+    "DES-EDE3-CBC": {
+      "algo_oid": "1.2.840.113549.3.7"
+    },
+    "DES3": {
+      "algo_oid": "N/A"
+    },
+    "CAMELLIA-256-CFB": {
+      "algo_oid": "0.3.4401.5.3.1.9.44"
+    },
+    "CAMELLIA-128-CFB": {
+      "algo_oid": "0.3.4401.5.3.1.9.4"
+    },
+    "CAMELLIA-192-ECB": {
+      "algo_oid": "0.3.4401.5.3.1.9.21"
+    },
+    "AES-256-WRAP": {
+      "algo_oid": "2.16.840.1.101.3.4.1.45"
+    },
+    "AES256-WRAP": {
+      "algo_oid": "N/A"
+    },
+    "id-aes256-wrap": {
+      "algo_oid": "N/A"
+    },
+    "aes-192-ccm": {
+      "algo_oid": "2.16.840.1.101.3.4.1.27"
+    },
+    "id-aes192-CCM": {
+      "algo_oid": "N/A"
+    },
+    "ARIA-192-ECB": {
+      "algo_oid": "1.2.410.200046.1.1.6"
+    },
+    "AES-256-OFB": {
+      "algo_oid": "2.16.840.1.101.3.4.1.43"
+    },
+    "CAMELLIA-192-CTR": {
+      "algo_oid": "0.3.4401.5.3.1.9.29"
+    },
+    "AES-256-CFB": {
+      "algo_oid": "2.16.840.1.101.3.4.1.44"
+    },
+    "aes-128-ccm": {
+      "algo_oid": "2.16.840.1.101.3.4.1.7"
+    },
+    "id-aes128-CCM": {
+      "algo_oid": "N/A"
+    },
+    "aes-192-gcm": {
+      "algo_oid": "2.16.840.1.101.3.4.1.26"
+    },
+    "id-aes192-GCM": {
+      "algo_oid": "N/A"
+    },
+    "AES-128-WRAP-PAD": {
+      "algo_oid": "2.16.840.1.101.3.4.1.8"
+    },
+    "AES128-WRAP-PAD": {
+      "algo_oid": "N/A"
+    },
+    "id-aes128-wrap-pad": {
+      "algo_oid": "N/A"
+    },
+    "ARIA-128-CTR": {
+      "algo_oid": "1.2.410.200046.1.1.5"
+    },
+    "AES-256-ECB": {
+      "algo_oid": "2.16.840.1.101.3.4.1.41"
+    },
+    "ARIA-128-OFB": {
+      "algo_oid": "1.2.410.200046.1.1.4"
+    },
+    "ARIA-256-CFB": {
+      "algo_oid": "1.2.410.200046.1.1.13"
+    },
+    "ARIA-192-GCM": {
+      "algo_oid": "1.2.410.200046.1.1.35"
+    },
+    "CAMELLIA-128-ECB": {
+      "algo_oid": "0.3.4401.5.3.1.9.1"
+    },
+    "CAMELLIA-192-CBC": {
+      "algo_oid": "1.2.392.200011.61.1.1.1.3"
+    },
+    "CAMELLIA192": {
+      "algo_oid": "N/A"
+    },
+    "AES-192-CBC": {
+      "algo_oid": "2.16.840.1.101.3.4.1.22"
+    },
+    "AES192": {
+      "algo_oid": "N/A"
+    },
+    "ARIA-192-CBC": {
+      "algo_oid": "1.2.410.200046.1.1.7"
+    },
+    "ARIA192": {
+      "algo_oid": "N/A"
+    },
+    "AES-192-ECB": {
+      "algo_oid": "2.16.840.1.101.3.4.1.21"
+    },
+    "ARIA-128-CFB": {
+      "algo_oid": "1.2.410.200046.1.1.3"
+    },
+    "ARIA-256-CTR": {
+      "algo_oid": "1.2.410.200046.1.1.15"
+    },
+    "SM4": {
+      "algo_oid": "1.2.156.10197.1.104.2"
+    },
+    "SM4-CBC": {
+      "algo_oid": "N/A"
+    },
+    "AES-256-WRAP-PAD": {
+      "algo_oid": "2.16.840.1.101.3.4.1.48"
+    },
+    "AES256-WRAP-PAD": {
+      "algo_oid": "N/A"
+    },
+    "id-aes256-wrap-pad": {
+      "algo_oid": "N/A"
+    },
+    "AES-192-WRAP": {
+      "algo_oid": "2.16.840.1.101.3.4.1.25"
+    },
+    "AES192-WRAP": {
+      "algo_oid": "N/A"
+    },
+    "id-aes192-wrap": {
+      "algo_oid": "N/A"
+    },
+    "SM4-CTR": {
+      "algo_oid": "1.2.156.10197.1.104.7"
+    },
+    "CAMELLIA-192-OFB": {
+      "algo_oid": "0.3.4401.5.3.1.9.23"
+    },
+    "AES-128-CBC": {
+      "algo_oid": "2.16.840.1.101.3.4.1.2"
+    },
+    "AES128": {
+      "algo_oid": "N/A"
+    },
+    "CAMELLIA-256-OFB": {
+      "algo_oid": "0.3.4401.5.3.1.9.43"
+    },
+    "CAMELLIA-256-CBC": {
+      "algo_oid": "1.2.392.200011.61.1.1.1.4"
+    },
+    "CAMELLIA256": {
+      "algo_oid": "N/A"
+    },
+    "SM4-CFB": {
+      "algo_oid": "1.2.156.10197.1.104.4"
+    },
+    "SM4-CFB128": {
+      "algo_oid": "N/A"
+    },
+    "ARIA-128-CBC": {
+      "algo_oid": "1.2.410.200046.1.1.2"
+    },
+    "ARIA128": {
+      "algo_oid": "N/A"
+    },
+    "CAMELLIA-128-OFB": {
+      "algo_oid": "0.3.4401.5.3.1.9.3"
+    },
+    "ARIA-192-CCM": {
+      "algo_oid": "1.2.410.200046.1.1.38"
+    },
+    "ARIA-256-OFB": {
+      "algo_oid": "1.2.410.200046.1.1.14"
+    },
+    "CAMELLIA-256-CTR": {
+      "algo_oid": "0.3.4401.5.3.1.9.49"
+    },
+    "DES-EDE": {
+      "algo_oid": "1.3.14.3.2.17"
+    },
+    "DES-EDE-ECB": {
+      "algo_oid": "N/A"
+    },
+    "AES-192-OFB": {
+      "algo_oid": "2.16.840.1.101.3.4.1.23"
+    },
+    "ARIA-192-CTR": {
+      "algo_oid": "1.2.410.200046.1.1.10"
+    },
+    "CAMELLIA-256-ECB": {
+      "algo_oid": "0.3.4401.5.3.1.9.41"
+    },
+    "ARIA-128-ECB": {
+      "algo_oid": "1.2.410.200046.1.1.1"
+    },
+    "ARIA-192-CFB": {
+      "algo_oid": "1.2.410.200046.1.1.8"
+    },
+    "ARIA-192-OFB": {
+      "algo_oid": "1.2.410.200046.1.1.9"
+    },
+    "ARIA-128-CCM": {
+      "algo_oid": "1.2.410.200046.1.1.37"
+    },
+    "AES-256-XTS": {
+      "algo_oid": "1.3.111.2.1619.0.1.2"
+    },
+    "AES-192-WRAP-PAD": {
+      "algo_oid": "2.16.840.1.101.3.4.1.28"
+    },
+    "AES192-WRAP-PAD": {
+      "algo_oid": "N/A"
+    },
+    "id-aes192-wrap-pad": {
+      "algo_oid": "N/A"
+    },
+    "AES-256-WRAP-INV": {
+      "algo_oid": "N/A"
+    },
+    "AES256-WRAP-INV": {
+      "algo_oid": "N/A"
+    },
+    "AES-192-WRAP-INV": {
+      "algo_oid": "N/A"
+    },
+    "AES192-WRAP-INV": {
+      "algo_oid": "N/A"
+    },
+    "AES-128-WRAP-INV": {
+      "algo_oid": "N/A"
+    },
+    "AES128-WRAP-INV": {
+      "algo_oid": "N/A"
+    },
+    "AES-256-WRAP-PAD-INV": {
+      "algo_oid": "N/A"
+    },
+    "AES256-WRAP-PAD-INV": {
+      "algo_oid": "N/A"
+    },
+    "AES-192-WRAP-PAD-INV": {
+      "algo_oid": "N/A"
+    },
+    "AES192-WRAP-PAD-INV": {
+      "algo_oid": "N/A"
+    },
+    "AES-128-WRAP-PAD-INV": {
+      "algo_oid": "N/A"
+    },
+    "AES128-WRAP-PAD-INV": {
+      "algo_oid": "N/A"
+    },
+    "DES-EDE3": {
+      "algo_oid": "N/A"
+    },
+    "DES-EDE3-ECB": {
+      "algo_oid": "N/A"
+    }
+  },
+  "ciphers": {
+    "tls": {
+      "TLS_AES_256_GCM_SHA384": {
+        "TLS_version": "TLSv1.3",
+        "key_exchange_algorithm": "any",
+        "authentication": "any",
+        "encryption_algorithm": "AESGCM(256)",
+        "mac": "AEAD"
+      },
+      "TLS_CHACHA20_POLY1305_SHA256": {
+        "TLS_version": "TLSv1.3",
+        "key_exchange_algorithm": "any",
+        "authentication": "any",
+        "encryption_algorithm": "CHACHA20/POLY1305(256)",
+        "mac": "AEAD"
+      },
+      "TLS_AES_128_GCM_SHA256": {
+        "TLS_version": "TLSv1.3",
+        "key_exchange_algorithm": "any",
+        "authentication": "any",
+        "encryption_algorithm": "AESGCM(128)",
+        "mac": "AEAD"
+      },
+      "ECDHE-ECDSA-AES256-GCM-SHA384": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "ECDH",
+        "authentication": "ECDSA",
+        "encryption_algorithm": "AESGCM(256)",
+        "mac": "AEAD"
+      },
+      "ECDHE-RSA-AES256-GCM-SHA384": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "ECDH",
+        "authentication": "RSA",
+        "encryption_algorithm": "AESGCM(256)",
+        "mac": "AEAD"
+      },
+      "DHE-RSA-AES256-GCM-SHA384": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "DH",
+        "authentication": "RSA",
+        "encryption_algorithm": "AESGCM(256)",
+        "mac": "AEAD"
+      },
+      "ECDHE-ECDSA-CHACHA20-POLY1305": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "ECDH",
+        "authentication": "ECDSA",
+        "encryption_algorithm": "CHACHA20/POLY1305(256)",
+        "mac": "AEAD"
+      },
+      "ECDHE-RSA-CHACHA20-POLY1305": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "ECDH",
+        "authentication": "RSA",
+        "encryption_algorithm": "CHACHA20/POLY1305(256)",
+        "mac": "AEAD"
+      },
+      "DHE-RSA-CHACHA20-POLY1305": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "DH",
+        "authentication": "RSA",
+        "encryption_algorithm": "CHACHA20/POLY1305(256)",
+        "mac": "AEAD"
+      },
+      "ECDHE-ECDSA-AES128-GCM-SHA256": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "ECDH",
+        "authentication": "ECDSA",
+        "encryption_algorithm": "AESGCM(128)",
+        "mac": "AEAD"
+      },
+      "ECDHE-RSA-AES128-GCM-SHA256": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "ECDH",
+        "authentication": "RSA",
+        "encryption_algorithm": "AESGCM(128)",
+        "mac": "AEAD"
+      },
+      "DHE-RSA-AES128-GCM-SHA256": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "DH",
+        "authentication": "RSA",
+        "encryption_algorithm": "AESGCM(128)",
+        "mac": "AEAD"
+      },
+      "ECDHE-ECDSA-AES256-SHA384": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "ECDH",
+        "authentication": "ECDSA",
+        "encryption_algorithm": "AES(256)",
+        "mac": "SHA384"
+      },
+      "ECDHE-RSA-AES256-SHA384": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "ECDH",
+        "authentication": "RSA",
+        "encryption_algorithm": "AES(256)",
+        "mac": "SHA384"
+      },
+      "DHE-RSA-AES256-SHA256": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "DH",
+        "authentication": "RSA",
+        "encryption_algorithm": "AES(256)",
+        "mac": "SHA256"
+      },
+      "ECDHE-ECDSA-AES128-SHA256": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "ECDH",
+        "authentication": "ECDSA",
+        "encryption_algorithm": "AES(128)",
+        "mac": "SHA256"
+      },
+      "ECDHE-RSA-AES128-SHA256": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "ECDH",
+        "authentication": "RSA",
+        "encryption_algorithm": "AES(128)",
+        "mac": "SHA256"
+      },
+      "DHE-RSA-AES128-SHA256": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "DH",
+        "authentication": "RSA",
+        "encryption_algorithm": "AES(128)",
+        "mac": "SHA256"
+      },
+      "ECDHE-ECDSA-AES256-SHA": {
+        "TLS_version": "TLSv1",
+        "key_exchange_algorithm": "ECDH",
+        "authentication": "ECDSA",
+        "encryption_algorithm": "AES(256)",
+        "mac": "SHA1"
+      },
+      "ECDHE-RSA-AES256-SHA": {
+        "TLS_version": "TLSv1",
+        "key_exchange_algorithm": "ECDH",
+        "authentication": "RSA",
+        "encryption_algorithm": "AES(256)",
+        "mac": "SHA1"
+      },
+      "DHE-RSA-AES256-SHA": {
+        "TLS_version": "SSLv3",
+        "key_exchange_algorithm": "DH",
+        "authentication": "RSA",
+        "encryption_algorithm": "AES(256)",
+        "mac": "SHA1"
+      },
+      "ECDHE-ECDSA-AES128-SHA": {
+        "TLS_version": "TLSv1",
+        "key_exchange_algorithm": "ECDH",
+        "authentication": "ECDSA",
+        "encryption_algorithm": "AES(128)",
+        "mac": "SHA1"
+      },
+      "ECDHE-RSA-AES128-SHA": {
+        "TLS_version": "TLSv1",
+        "key_exchange_algorithm": "ECDH",
+        "authentication": "RSA",
+        "encryption_algorithm": "AES(128)",
+        "mac": "SHA1"
+      },
+      "DHE-RSA-AES128-SHA": {
+        "TLS_version": "SSLv3",
+        "key_exchange_algorithm": "DH",
+        "authentication": "RSA",
+        "encryption_algorithm": "AES(128)",
+        "mac": "SHA1"
+      },
+      "RSA-PSK-AES256-GCM-SHA384": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "RSAPSK",
+        "authentication": "RSA",
+        "encryption_algorithm": "AESGCM(256)",
+        "mac": "AEAD"
+      },
+      "DHE-PSK-AES256-GCM-SHA384": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "DHEPSK",
+        "authentication": "PSK",
+        "encryption_algorithm": "AESGCM(256)",
+        "mac": "AEAD"
+      },
+      "RSA-PSK-CHACHA20-POLY1305": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "RSAPSK",
+        "authentication": "RSA",
+        "encryption_algorithm": "CHACHA20/POLY1305(256)",
+        "mac": "AEAD"
+      },
+      "DHE-PSK-CHACHA20-POLY1305": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "DHEPSK",
+        "authentication": "PSK",
+        "encryption_algorithm": "CHACHA20/POLY1305(256)",
+        "mac": "AEAD"
+      },
+      "ECDHE-PSK-CHACHA20-POLY1305": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "ECDHEPSK",
+        "authentication": "PSK",
+        "encryption_algorithm": "CHACHA20/POLY1305(256)",
+        "mac": "AEAD"
+      },
+      "AES256-GCM-SHA384": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "RSA",
+        "authentication": "RSA",
+        "encryption_algorithm": "AESGCM(256)",
+        "mac": "AEAD"
+      },
+      "PSK-AES256-GCM-SHA384": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "PSK",
+        "authentication": "PSK",
+        "encryption_algorithm": "AESGCM(256)",
+        "mac": "AEAD"
+      },
+      "PSK-CHACHA20-POLY1305": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "PSK",
+        "authentication": "PSK",
+        "encryption_algorithm": "CHACHA20/POLY1305(256)",
+        "mac": "AEAD"
+      },
+      "RSA-PSK-AES128-GCM-SHA256": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "RSAPSK",
+        "authentication": "RSA",
+        "encryption_algorithm": "AESGCM(128)",
+        "mac": "AEAD"
+      },
+      "DHE-PSK-AES128-GCM-SHA256": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "DHEPSK",
+        "authentication": "PSK",
+        "encryption_algorithm": "AESGCM(128)",
+        "mac": "AEAD"
+      },
+      "AES128-GCM-SHA256": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "RSA",
+        "authentication": "RSA",
+        "encryption_algorithm": "AESGCM(128)",
+        "mac": "AEAD"
+      },
+      "PSK-AES128-GCM-SHA256": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "PSK",
+        "authentication": "PSK",
+        "encryption_algorithm": "AESGCM(128)",
+        "mac": "AEAD"
+      },
+      "AES256-SHA256": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "RSA",
+        "authentication": "RSA",
+        "encryption_algorithm": "AES(256)",
+        "mac": "SHA256"
+      },
+      "AES128-SHA256": {
+        "TLS_version": "TLSv1.2",
+        "key_exchange_algorithm": "RSA",
+        "authentication": "RSA",
+        "encryption_algorithm": "AES(128)",
+        "mac": "SHA256"
+      },
+      "ECDHE-PSK-AES256-CBC-SHA384": {
+        "TLS_version": "TLSv1",
+        "key_exchange_algorithm": "ECDHEPSK",
+        "authentication": "PSK",
+        "encryption_algorithm": "AES(256)",
+        "mac": "SHA384"
+      },
+      "ECDHE-PSK-AES256-CBC-SHA": {
+        "TLS_version": "TLSv1",
+        "key_exchange_algorithm": "ECDHEPSK",
+        "authentication": "PSK",
+        "encryption_algorithm": "AES(256)",
+        "mac": "SHA1"
+      },
+      "SRP-RSA-AES-256-CBC-SHA": {
+        "TLS_version": "SSLv3",
+        "key_exchange_algorithm": "SRP",
+        "authentication": "RSA",
+        "encryption_algorithm": "AES(256)",
+        "mac": "SHA1"
+      },
+      "SRP-AES-256-CBC-SHA": {
+        "TLS_version": "SSLv3",
+        "key_exchange_algorithm": "SRP",
+        "authentication": "SRP",
+        "encryption_algorithm": "AES(256)",
+        "mac": "SHA1"
+      },
+      "RSA-PSK-AES256-CBC-SHA384": {
+        "TLS_version": "TLSv1",
+        "key_exchange_algorithm": "RSAPSK",
+        "authentication": "RSA",
+        "encryption_algorithm": "AES(256)",
+        "mac": "SHA384"
+      },
+      "DHE-PSK-AES256-CBC-SHA384": {
+        "TLS_version": "TLSv1",
+        "key_exchange_algorithm": "DHEPSK",
+        "authentication": "PSK",
+        "encryption_algorithm": "AES(256)",
+        "mac": "SHA384"
+      },
+      "RSA-PSK-AES256-CBC-SHA": {
+        "TLS_version": "SSLv3",
+        "key_exchange_algorithm": "RSAPSK",
+        "authentication": "RSA",
+        "encryption_algorithm": "AES(256)",
+        "mac": "SHA1"
+      },
+      "DHE-PSK-AES256-CBC-SHA": {
+        "TLS_version": "SSLv3",
+        "key_exchange_algorithm": "DHEPSK",
+        "authentication": "PSK",
+        "encryption_algorithm": "AES(256)",
+        "mac": "SHA1"
+      },
+      "AES256-SHA": {
+        "TLS_version": "SSLv3",
+        "key_exchange_algorithm": "RSA",
+        "authentication": "RSA",
+        "encryption_algorithm": "AES(256)",
+        "mac": "SHA1"
+      },
+      "PSK-AES256-CBC-SHA384": {
+        "TLS_version": "TLSv1",
+        "key_exchange_algorithm": "PSK",
+        "authentication": "PSK",
+        "encryption_algorithm": "AES(256)",
+        "mac": "SHA384"
+      },
+      "PSK-AES256-CBC-SHA": {
+        "TLS_version": "SSLv3",
+        "key_exchange_algorithm": "PSK",
+        "authentication": "PSK",
+        "encryption_algorithm": "AES(256)",
+        "mac": "SHA1"
+      },
+      "ECDHE-PSK-AES128-CBC-SHA256": {
+        "TLS_version": "TLSv1",
+        "key_exchange_algorithm": "ECDHEPSK",
+        "authentication": "PSK",
+        "encryption_algorithm": "AES(128)",
+        "mac": "SHA256"
+      },
+      "ECDHE-PSK-AES128-CBC-SHA": {
+        "TLS_version": "TLSv1",
+        "key_exchange_algorithm": "ECDHEPSK",
+        "authentication": "PSK",
+        "encryption_algorithm": "AES(128)",
+        "mac": "SHA1"
+      },
+      "SRP-RSA-AES-128-CBC-SHA": {
+        "TLS_version": "SSLv3",
+        "key_exchange_algorithm": "SRP",
+        "authentication": "RSA",
+        "encryption_algorithm": "AES(128)",
+        "mac": "SHA1"
+      },
+      "SRP-AES-128-CBC-SHA": {
+        "TLS_version": "SSLv3",
+        "key_exchange_algorithm": "SRP",
+        "authentication": "SRP",
+        "encryption_algorithm": "AES(128)",
+        "mac": "SHA1"
+      },
+      "RSA-PSK-AES128-CBC-SHA256": {
+        "TLS_version": "TLSv1",
+        "key_exchange_algorithm": "RSAPSK",
+        "authentication": "RSA",
+        "encryption_algorithm": "AES(128)",
+        "mac": "SHA256"
+      },
+      "DHE-PSK-AES128-CBC-SHA256": {
+        "TLS_version": "TLSv1",
+        "key_exchange_algorithm": "DHEPSK",
+        "authentication": "PSK",
+        "encryption_algorithm": "AES(128)",
+        "mac": "SHA256"
+      },
+      "RSA-PSK-AES128-CBC-SHA": {
+        "TLS_version": "SSLv3",
+        "key_exchange_algorithm": "RSAPSK",
+        "authentication": "RSA",
+        "encryption_algorithm": "AES(128)",
+        "mac": "SHA1"
+      },
+      "DHE-PSK-AES128-CBC-SHA": {
+        "TLS_version": "SSLv3",
+        "key_exchange_algorithm": "DHEPSK",
+        "authentication": "PSK",
+        "encryption_algorithm": "AES(128)",
+        "mac": "SHA1"
+      },
+      "AES128-SHA": {
+        "TLS_version": "SSLv3",
+        "key_exchange_algorithm": "RSA",
+        "authentication": "RSA",
+        "encryption_algorithm": "AES(128)",
+        "mac": "SHA1"
+      },
+      "PSK-AES128-CBC-SHA256": {
+        "TLS_version": "TLSv1",
+        "key_exchange_algorithm": "PSK",
+        "authentication": "PSK",
+        "encryption_algorithm": "AES(128)",
+        "mac": "SHA256"
+      },
+      "PSK-AES128-CBC-SHA": {
+        "TLS_version": "SSLv3",
+        "key_exchange_algorithm": "PSK",
+        "authentication": "PSK",
+        "encryption_algorithm": "AES(128)",
+        "mac": "SHA1"
+      }
+    }
+  },
+  "nmap_tls_info": {
+    "nmap_tls_ssl_enum_ciphers_info": {
+      "22": {
+        "net_proto": "tcp",
+        "status": "open",
+        "tls_vers_enabled": {}
+      },
+      "80": {
+        "net_proto": "tcp",
+        "status": "filtered",
+        "tls_vers_enabled": {}
+      },
+      "443": {
+        "net_proto": "tcp",
+        "status": "filtered",
+        "tls_vers_enabled": {}
+      },
+      "6444": {
+        "net_proto": "tcp",
+        "status": "open",
+        "tls_vers_enabled": {
+          "TLSv1.2": [
+            "ciphers:",
+            "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256 (secp256r1) - A",
+            "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 (secp256r1) - A",
+            "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384 (secp256r1) - A",
+            "compressors:",
+            "NULL",
+            "cipher preference: server"
+          ],
+          "TLSv1.3": [
+            "ciphers:",
+            "TLS_AKE_WITH_CHACHA20_POLY1305_SHA256 (ecdh_x25519) - A",
+            "TLS_AKE_WITH_AES_128_GCM_SHA256 (ecdh_x25519) - A",
+            "TLS_AKE_WITH_AES_256_GCM_SHA384 (ecdh_x25519) - A",
+            "cipher preference: server",
+            "_  least strength: A",
+            "fingerprint-strings:",
+            "FourOhFourRequest:",
+            "HTTP/1.0 401 Unauthorized",
+            "Audit-Id: 834e6c8a-8faa-477f-b9ad-b5e0a2a01bdc",
+            "Cache-Control: no-cache, private",
+            "Content-Type: application/json",
+            "Date: Mon, 15 Jun 2026 11:29:40 GMT",
+            "Content-Length: 129",
+            "{\"kind\":\"Status\",\"apiVersion\":\"v1\",\"metadata\":{},\"status\":\"Failure\",\"message\":\"Unauthorized\",\"reason\":\"Unauthorized\",\"code\":401}",
+            "GenericLines, Help, Kerberos, RTSPRequest, SSLSessionReq, TLSSessionReq, TerminalServerCookie:",
+            "HTTP/1.1 400 Bad Request",
+            "Content-Type: text/plain; charset=utf-8",
+            "Connection: close",
+            "Request",
+            "GetRequest:",
+            "HTTP/1.0 401 Unauthorized",
+            "Audit-Id: 8bbb5857-fe53-450a-b82e-f366f707a172",
+            "Cache-Control: no-cache, private",
+            "Content-Type: application/json",
+            "Date: Mon, 15 Jun 2026 11:29:15 GMT",
+            "Content-Length: 129",
+            "{\"kind\":\"Status\",\"apiVersion\":\"v1\",\"metadata\":{},\"status\":\"Failure\",\"message\":\"Unauthorized\",\"reason\":\"Unauthorized\",\"code\":401}",
+            "HTTPOptions:",
+            "HTTP/1.0 401 Unauthorized",
+            "Audit-Id: 30a2dc0a-8412-4718-a3b2-0f3571c36dae",
+            "Cache-Control: no-cache, private",
+            "Content-Type: application/json",
+            "Date: Mon, 15 Jun 2026 11:29:15 GMT",
+            "Content-Length: 129",
+            "_    {\"kind\":\"Status\",\"apiVersion\":\"v1\",\"metadata\":{},\"status\":\"Failure\",\"message\":\"Unauthorized\",\"reason\":\"Unauthorized\",\"code\":401}"
+          ]
+        }
+      },
+      "10010": {
+        "net_proto": "tcp",
+        "status": "open",
+        "tls_vers_enabled": {}
+      },
+      "10248": {
+        "net_proto": "tcp",
+        "status": "open",
+        "tls_vers_enabled": {}
+      },
+      "10249": {
+        "net_proto": "tcp",
+        "status": "open",
+        "tls_vers_enabled": {}
+      },
+      "10250": {
+        "net_proto": "tcp",
+        "status": "open",
+        "tls_vers_enabled": {
+          "TLSv1.2": [
+            "ciphers:",
+            "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256 (secp256r1) - A",
+            "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 (secp256r1) - A",
+            "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384 (secp256r1) - A",
+            "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA (secp256r1) - A",
+            "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA (secp256r1) - A",
+            "compressors:",
+            "NULL",
+            "cipher preference: server"
+          ],
+          "TLSv1.3": [
+            "ciphers:",
+            "TLS_AKE_WITH_CHACHA20_POLY1305_SHA256 (ecdh_x25519) - A",
+            "TLS_AKE_WITH_AES_128_GCM_SHA256 (ecdh_x25519) - A",
+            "TLS_AKE_WITH_AES_256_GCM_SHA384 (ecdh_x25519) - A",
+            "cipher preference: server",
+            "_  least strength: A"
+          ]
+        }
+      },
+      "10256": {
+        "net_proto": "tcp",
+        "status": "open",
+        "tls_vers_enabled": {}
+      },
+      "30483": {
+        "net_proto": "tcp",
+        "status": "filtered",
+        "tls_vers_enabled": {}
+      },
+      "32021": {
+        "net_proto": "tcp",
+        "status": "filtered",
+        "tls_vers_enabled": {}
+      },
+      "33289": {
+        "net_proto": "tcp",
+        "status": "open",
+        "tls_vers_enabled": {}
+      },
+      "38581": {
+        "net_proto": "tcp",
+        "status": "open",
+        "tls_vers_enabled": {}
+      },
+      "39781": {
+        "net_proto": "tcp",
+        "status": "open",
+        "tls_vers_enabled": {}
+      },
+      "43401": {
+        "net_proto": "tcp",
+        "status": "open",
+        "tls_vers_enabled": {}
+      }
+    }
+  },
+  "certificate": {},
+  "ssh_crypto_info": {
+    "gssapikexalgorithms": [
+      "gss-group14-sha256-",
+      "gss-group16-sha512-",
+      "gss-nistp256-sha256-",
+      "gss-curve25519-sha256-",
+      "gss-group14-sha1-",
+      "gss-gex-sha1-"
+    ],
+    "ciphers": [
+      "chacha20-poly1305@openssh.com",
+      "aes128-ctr",
+      "aes192-ctr",
+      "aes256-ctr",
+      "aes128-gcm@openssh.com",
+      "aes256-gcm@openssh.com"
+    ],
+    "macs": [
+      "umac-64-etm@openssh.com",
+      "umac-128-etm@openssh.com",
+      "hmac-sha2-256-etm@openssh.com",
+      "hmac-sha2-512-etm@openssh.com",
+      "hmac-sha1-etm@openssh.com",
+      "umac-64@openssh.com",
+      "umac-128@openssh.com",
+      "hmac-sha2-256",
+      "hmac-sha2-512",
+      "hmac-sha1"
+    ],
+    "kexalgorithms": [
+      "sntrup761x25519-sha512@openssh.com",
+      "curve25519-sha256",
+      "curve25519-sha256@libssh.org",
+      "ecdh-sha2-nistp256",
+      "ecdh-sha2-nistp384",
+      "ecdh-sha2-nistp521",
+      "diffie-hellman-group-exchange-sha256",
+      "diffie-hellman-group16-sha512",
+      "diffie-hellman-group18-sha512",
+      "diffie-hellman-group14-sha256"
+    ],
+    "casignaturealgorithms": [
+      "ssh-ed25519",
+      "ecdsa-sha2-nistp256",
+      "ecdsa-sha2-nistp384",
+      "ecdsa-sha2-nistp521",
+      "sk-ssh-ed25519@openssh.com",
+      "sk-ecdsa-sha2-nistp256@openssh.com",
+      "rsa-sha2-512",
+      "rsa-sha2-256"
+    ],
+    "hostbasedacceptedalgorithms": [
+      "ssh-ed25519-cert-v01@openssh.com",
+      "ecdsa-sha2-nistp256-cert-v01@openssh.com",
+      "ecdsa-sha2-nistp384-cert-v01@openssh.com",
+      "ecdsa-sha2-nistp521-cert-v01@openssh.com",
+      "sk-ssh-ed25519-cert-v01@openssh.com",
+      "sk-ecdsa-sha2-nistp256-cert-v01@openssh.com",
+      "rsa-sha2-512-cert-v01@openssh.com",
+      "rsa-sha2-256-cert-v01@openssh.com",
+      "ssh-ed25519",
+      "ecdsa-sha2-nistp256",
+      "ecdsa-sha2-nistp384",
+      "ecdsa-sha2-nistp521",
+      "sk-ssh-ed25519@openssh.com",
+      "sk-ecdsa-sha2-nistp256@openssh.com",
+      "rsa-sha2-512",
+      "rsa-sha2-256"
+    ],
+    "hostkeyalgorithms": [
+      "ssh-ed25519-cert-v01@openssh.com",
+      "ecdsa-sha2-nistp256-cert-v01@openssh.com",
+      "ecdsa-sha2-nistp384-cert-v01@openssh.com",
+      "ecdsa-sha2-nistp521-cert-v01@openssh.com",
+      "sk-ssh-ed25519-cert-v01@openssh.com",
+      "sk-ecdsa-sha2-nistp256-cert-v01@openssh.com",
+      "rsa-sha2-512-cert-v01@openssh.com",
+      "rsa-sha2-256-cert-v01@openssh.com",
+      "ssh-ed25519",
+      "ecdsa-sha2-nistp256",
+      "ecdsa-sha2-nistp384",
+      "ecdsa-sha2-nistp521",
+      "sk-ssh-ed25519@openssh.com",
+      "sk-ecdsa-sha2-nistp256@openssh.com",
+      "rsa-sha2-512",
+      "rsa-sha2-256"
+    ],
+    "pubkeyacceptedalgorithms": [
+      "ssh-ed25519-cert-v01@openssh.com",
+      "ecdsa-sha2-nistp256-cert-v01@openssh.com",
+      "ecdsa-sha2-nistp384-cert-v01@openssh.com",
+      "ecdsa-sha2-nistp521-cert-v01@openssh.com",
+      "sk-ssh-ed25519-cert-v01@openssh.com",
+      "sk-ecdsa-sha2-nistp256-cert-v01@openssh.com",
+      "rsa-sha2-512-cert-v01@openssh.com",
+      "rsa-sha2-256-cert-v01@openssh.com",
+      "ssh-ed25519",
+      "ecdsa-sha2-nistp256",
+      "ecdsa-sha2-nistp384",
+      "ecdsa-sha2-nistp521",
+      "sk-ssh-ed25519@openssh.com",
+      "sk-ecdsa-sha2-nistp256@openssh.com",
+      "rsa-sha2-512",
+      "rsa-sha2-256"
+    ]
+  }
+}

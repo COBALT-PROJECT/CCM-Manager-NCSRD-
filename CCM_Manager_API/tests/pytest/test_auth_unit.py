@@ -19,7 +19,7 @@ class DummyAuthClient:
         self.calls.append((method, url, kwargs))
         return DummyResponse()
 
-    def get_token(self):
+    def get_token(self, scope=None):
         if self.token_error:
             raise self.token_error
         return "token"
@@ -97,6 +97,7 @@ def test_authed_request_uses_service_specific_role(monkeypatch):
 def test_auth_context_reports_configured_role(monkeypatch):
     monkeypatch.setattr(auth, "auth_client", DummyAuthClient())
     monkeypatch.setenv("CCM_SDT_AUTH_ROLE", "component sdt profile")
+    monkeypatch.setenv("SDT_AUTH_DISABLED", "false")
 
     assert auth.auth_context("sdt") == {
         "service": "sdt",
@@ -143,6 +144,24 @@ def test_auth_status_token_error(monkeypatch):
         "auth_enabled": True,
         "status": "token_error",
     }
+
+
+def test_access_token_for_service_prefers_static_bearer_token(monkeypatch):
+    monkeypatch.setattr(auth, "auth_client", None)
+    monkeypatch.setenv("SDT_BEARER_TOKEN", "static-sdt-token")
+    monkeypatch.setenv("SDT_AUTH_DISABLED", "false")
+
+    assert auth.access_token_for_service("sdt") == "static-sdt-token"
+
+
+def test_access_token_for_service_uses_component_auth_client(monkeypatch):
+    client = DummyAuthClient()
+    monkeypatch.setattr(auth, "auth_client", client)
+    monkeypatch.delenv("SDT_BEARER_TOKEN", raising=False)
+    monkeypatch.setenv("CCM_SDT_AUTH_ROLE", "digital_twins profile")
+    monkeypatch.setenv("SDT_AUTH_DISABLED", "false")
+
+    assert auth.access_token_for_service("sdt") == "token"
 
 
 def test_build_auth_client_requires_configuration(monkeypatch):

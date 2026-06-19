@@ -4,20 +4,41 @@ import uuid
 import pytest
 
 
+def _sdt_deploy_configured():
+    return any(
+        os.getenv(name)
+        for name in ("SDTM_DIGITAL_TWIN_URL", "SDTM_BASE_URL", "SDT_BASE_URL", "DEPLOY_SDT")
+    )
+
+
+def _sdt_read_configured():
+    return any(
+        os.getenv(name)
+        for name in ("SDTM_DEPLOYMENTS_URL", "SDTM_BASE_URL", "SDT_BASE_URL", "DEPLOYMENTS_SDT")
+    )
+
+
+def _sdt_delete_configured():
+    return any(
+        os.getenv(name)
+        for name in ("SDTM_DIGITAL_TWIN_URL", "SDTM_BASE_URL", "SDT_BASE_URL", "DELETE_SDT")
+    )
+
+
 def test_send_sdt_requires_hash(http, base_url):
     response = http.post(f"{base_url}/send_sdt", json={})
 
     assert response.status_code == 400
-    assert response.json().get("error") == "Missing 'hash' in request body"
+    assert response.json().get("error") == "Missing 'hash', 'bom_path', or 'bom_content' in request body"
 
 
 def test_send_sdt_configured_or_fails_gracefully(http, base_url):
     response = http.post(f"{base_url}/send_sdt", json={"hash": f"hash-{uuid.uuid4()}"})
 
-    if os.getenv("DEPLOY_SDT") and os.getenv("DEPLOYMENTS_SDT") and os.getenv("CREATE_SDT"):
-        assert response.status_code in (200, 404, 500, 502)
+    if _sdt_deploy_configured():
+        assert response.status_code in (200, 500, 502)
     else:
-        assert response.status_code == 502
+        assert response.status_code in (500, 502)
         assert "error" in response.json()
 
 
@@ -34,17 +55,17 @@ def test_trigger_delete_configured_or_fails_gracefully(http, base_url):
         json={"identifier": f"sdt-{uuid.uuid4()}"},
     )
 
-    if os.getenv("DELETE_SDT"):
+    if _sdt_delete_configured():
         assert response.status_code in (200, 400, 404, 500, 502)
     else:
         assert response.status_code == 500
-        assert "DELETE_SDT" in response.json().get("error", "")
+        assert "configured" in response.json().get("error", "")
 
 
 def test_sdts_configured_or_fails_gracefully(http, base_url):
     response = http.get(f"{base_url}/sdts")
 
-    if os.getenv("DEPLOYMENTS_SDT"):
+    if _sdt_read_configured():
         assert response.status_code in (200, 502)
         if response.status_code == 200:
             payload = response.json()
@@ -52,7 +73,18 @@ def test_sdts_configured_or_fails_gracefully(http, base_url):
             assert "outbound_auth" in payload
     else:
         assert response.status_code == 500
-        assert "DEPLOYMENTS_SDT" in response.json().get("error", "")
+        assert "configured" in response.json().get("error", "")
+        assert "outbound_auth" in response.json()
+
+
+def test_single_sdt_configured_or_fails_gracefully(http, base_url):
+    response = http.get(f"{base_url}/sdts/sdt-{uuid.uuid4()}")
+
+    if _sdt_deploy_configured():
+        assert response.status_code in (200, 404, 502)
+    else:
+        assert response.status_code == 500
+        assert "configured" in response.json().get("error", "")
         assert "outbound_auth" in response.json()
 
 

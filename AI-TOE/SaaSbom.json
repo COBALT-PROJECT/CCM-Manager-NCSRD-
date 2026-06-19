@@ -1,0 +1,70 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2021-01-10T10:00:00.000Z",
+    "component": {
+      "bom-ref": "cobalt-uc1-app",
+      "type": "application",
+      "name": "COBALT UC1 Defect Detection",
+      "version": "1.0.0"
+    }
+  },
+  "services": [
+    {
+      "bom-ref": "casting-detection-api",
+      "provider": {
+        "name": "Acme Inc",
+        "url": []
+      },
+      "group": "com.example",
+      "name": "Casting Defect Detection API",
+      "version": "1.0.0",
+      "description": "AIaaS microservice for training and inference of Convolutional Neural Networks on industrial casting data.",
+      "endpoints": [
+        "http://localhost:8000/train",
+        "http://localhost:8000/predict",
+        "http://localhost:8000/docs"
+      ],
+      "authenticated": false,
+      "x-trust-boundary": false,
+      "data": [
+        {
+          "classification": "ProprietaryIndustrialImage",
+          "flow": "inbound"
+        },
+        {
+          "classification": "ClassificationResult",
+          "flow": "outbound"
+        },
+        {
+          "classification": "TrainingMetrics",
+          "flow": "outbound"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "documentation",
+          "url": "http://localhost:8000/docs"
+        }
+      ],
+      "services": []
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "casting-detection-api",
+      "dependsOn": [
+        "fastapi",
+        "uvicorn",
+        "tensorflow",
+        "numpy",
+        "opencv-python-headless",
+        "python-multipart",
+        "pydantic"
+      ]
+    }
+  ]
+}

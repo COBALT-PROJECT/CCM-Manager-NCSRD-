@@ -131,7 +131,12 @@ def trigger_chain(request_data):
         send_sdt_resp = authed_request(
             "POST",
             SEND_SDT_URL,
-            json={"hash": hash_value},
+            json={
+                "hash": hash_value,
+                "bom_path": (request_data or {}).get("bom_path"),
+                "toe_id": (request_data or {}).get("toe_id"),
+                "category": (request_data or {}).get("category"),
+            },
             service="sdt",
         )
         outbound_auth.append(auth_context("sdt"))

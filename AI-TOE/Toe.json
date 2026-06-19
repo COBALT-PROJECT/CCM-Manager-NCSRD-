@@ -1,0 +1,710 @@
+{
+  "component": {
+    "component-definition": {
+      "uuid": "4b6c3e80-a432-44cd-9075-0862cd66da6b",
+      "metadata": {
+        "title": "COBALT UC1 Defect Detection Component Definition",
+        "last-modified": "2026-06-10T13:41:14Z",
+        "version": "1.0.0",
+        "oscal-version": "1.1.2",
+        "roles": [
+          {
+            "id": "provider",
+            "title": "Provider"
+          }
+        ],
+        "parties": [
+          {
+            "uuid": "ef7c799a-c50e-49ab-83e0-515e989e6df1",
+            "type": "organization",
+            "name": "Acme Inc",
+            "links": [
+              {
+                "href": "http://localhost:8000/docs",
+                "rel": "website"
+              }
+            ]
+          }
+        ]
+      },
+      "components": [
+        {
+          "uuid": "3e671687-395b-41f5-a30f-a58921a69b79",
+          "type": "service",
+          "title": "Casting Defect Detection API",
+          "description": "AIaaS microservice for training and inference of Convolutional Neural Networks on industrial casting data.",
+          "purpose": "Provides machine learning training and inference endpoints for proprietary industrial image classification.",
+          "links": [
+            {
+              "href": "SaaSbom.json",
+              "media-type": "application/json",
+              "text": "saasbom-file"
+            },
+            {
+              "href": "sbom.json",
+              "media-type": "application/json",
+              "text": "sbom-file"
+            },
+            {
+              "href": "vex.json",
+              "media-type": "application/json",
+              "text": "vex-file"
+            },
+            {
+              "href": "algorithm_sbom.json",
+              "media-type": "application/json",
+              "text": "cbom-file"
+            },
+            {
+              "href": "protocol_sbom.json",
+              "media-type": "application/json",
+              "text": "cbom-file"
+            }
+          ],
+          "responsible-roles": [
+            {
+              "role-id": "provider",
+              "party-uuids": [
+                "ef7c799a-c50e-49ab-83e0-515e989e6df1"
+              ]
+            }
+          ],
+          "protocols": [
+            {
+              "uuid": "603da466-99eb-4a18-912f-b44c4b574fa4",
+              "name": "http",
+              "port-ranges": [
+                {
+                  "start": 8000,
+                  "end": 8000,
+                  "transport": "tcp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "bills-of-material": {
+    "sbom": {
+      "components": [
+        {
+          "bom-ref": "requirements-L1",
+          "description": "requirements line 1: keras==3.6.0",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/keras/"
+            }
+          ],
+          "name": "keras",
+          "purl": "pkg:pypi/keras@3.6.0",
+          "type": "library",
+          "version": "3.6.0"
+        },
+        {
+          "bom-ref": "requirements-L2",
+          "description": "requirements line 2: matplotlib==3.9.2",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/matplotlib/"
+            }
+          ],
+          "name": "matplotlib",
+          "purl": "pkg:pypi/matplotlib@3.9.2",
+          "type": "library",
+          "version": "3.9.2"
+        },
+        {
+          "bom-ref": "requirements-L3",
+          "description": "requirements line 3: matplotlib-inline==0.1.6",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/matplotlib-inline/"
+            }
+          ],
+          "name": "matplotlib-inline",
+          "purl": "pkg:pypi/matplotlib-inline@0.1.6",
+          "type": "library",
+          "version": "0.1.6"
+        },
+        {
+          "bom-ref": "requirements-L4",
+          "description": "requirements line 4: numpy==1.26.4",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/numpy/"
+            }
+          ],
+          "name": "numpy",
+          "purl": "pkg:pypi/numpy@1.26.4",
+          "type": "library",
+          "version": "1.26.4"
+        },
+        {
+          "bom-ref": "requirements-L5",
+          "description": "requirements line 5: pandas==2.2.3",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/pandas/"
+            }
+          ],
+          "name": "pandas",
+          "purl": "pkg:pypi/pandas@2.2.3",
+          "type": "library",
+          "version": "2.2.3"
+        },
+        {
+          "bom-ref": "requirements-L6",
+          "description": "requirements line 6: scikit-learn==1.5.2",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/scikit-learn/"
+            }
+          ],
+          "name": "scikit-learn",
+          "purl": "pkg:pypi/scikit-learn@1.5.2",
+          "type": "library",
+          "version": "1.5.2"
+        },
+        {
+          "bom-ref": "requirements-L7",
+          "description": "requirements line 7: scipy==1.13.1",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/scipy/"
+            }
+          ],
+          "name": "scipy",
+          "purl": "pkg:pypi/scipy@1.13.1",
+          "type": "library",
+          "version": "1.13.1"
+        },
+        {
+          "bom-ref": "requirements-L8",
+          "description": "requirements line 8: tensorflow==2.17.0",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/tensorflow/"
+            }
+          ],
+          "name": "tensorflow",
+          "purl": "pkg:pypi/tensorflow@2.17.0",
+          "type": "library",
+          "version": "2.17.0"
+        },
+        {
+          "bom-ref": "requirements-L9",
+          "description": "requirements line 9: tensorflow-intel==2.17.0",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/tensorflow-intel/"
+            }
+          ],
+          "name": "tensorflow-intel",
+          "purl": "pkg:pypi/tensorflow-intel@2.17.0",
+          "type": "library",
+          "version": "2.17.0"
+        }
+      ],
+      "dependencies": [
+        {
+          "ref": "requirements-L1"
+        },
+        {
+          "ref": "requirements-L2"
+        },
+        {
+          "ref": "requirements-L3"
+        },
+        {
+          "ref": "requirements-L4"
+        },
+        {
+          "ref": "requirements-L5"
+        },
+        {
+          "ref": "requirements-L6"
+        },
+        {
+          "ref": "requirements-L7"
+        },
+        {
+          "ref": "requirements-L8"
+        },
+        {
+          "ref": "requirements-L9"
+        }
+      ],
+      "metadata": {
+        "timestamp": "2026-06-10T13:41:14.872042+00:00",
+        "tools": [
+          {
+            "externalReferences": [
+              {
+                "type": "build-system",
+                "url": "https://github.com/CycloneDX/cyclonedx-python/actions"
+              },
+              {
+                "type": "distribution",
+                "url": "https://pypi.org/project/cyclonedx-bom/"
+              },
+              {
+                "type": "documentation",
+                "url": "https://cyclonedx-bom-tool.readthedocs.io/"
+              },
+              {
+                "type": "issue-tracker",
+                "url": "https://github.com/CycloneDX/cyclonedx-python/issues"
+              },
+              {
+                "type": "license",
+                "url": "https://github.com/CycloneDX/cyclonedx-python/blob/main/LICENSE"
+              },
+              {
+                "type": "release-notes",
+                "url": "https://github.com/CycloneDX/cyclonedx-python/blob/main/CHANGELOG.md"
+              },
+              {
+                "type": "vcs",
+                "url": "https://github.com/CycloneDX/cyclonedx-python/"
+              },
+              {
+                "type": "website",
+                "url": "https://github.com/CycloneDX/cyclonedx-python/#readme"
+              }
+            ],
+            "name": "cyclonedx-bom",
+            "vendor": "CycloneDX",
+            "version": "4.6.1"
+          },
+          {
+            "externalReferences": [
+              {
+                "type": "build-system",
+                "url": "https://github.com/CycloneDX/cyclonedx-python-lib/actions"
+              },
+              {
+                "type": "distribution",
+                "url": "https://pypi.org/project/cyclonedx-python-lib/"
+              },
+              {
+                "type": "documentation",
+                "url": "https://cyclonedx-python-library.readthedocs.io/"
+              },
+              {
+                "type": "issue-tracker",
+                "url": "https://github.com/CycloneDX/cyclonedx-python-lib/issues"
+              },
+              {
+                "type": "license",
+                "url": "https://github.com/CycloneDX/cyclonedx-python-lib/blob/main/LICENSE"
+              },
+              {
+                "type": "release-notes",
+                "url": "https://github.com/CycloneDX/cyclonedx-python-lib/blob/main/CHANGELOG.md"
+              },
+              {
+                "type": "vcs",
+                "url": "https://github.com/CycloneDX/cyclonedx-python-lib"
+              },
+              {
+                "type": "website",
+                "url": "https://github.com/CycloneDX/cyclonedx-python-lib/#readme"
+              }
+            ],
+            "name": "cyclonedx-python-lib",
+            "vendor": "CycloneDX",
+            "version": "7.6.2"
+          }
+        ]
+      },
+      "serialNumber": "urn:uuid:b010eda8-5cef-44f8-9cfb-846c5cdab817",
+      "version": 1,
+      "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.5"
+    },
+    "vex": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.5",
+      "serialNumber": "urn:uuid:8aa65db8-265a-4d11-820d-9f1273bbb873",
+      "version": 1,
+      "metadata": {
+        "timestamp": "2026-06-10T13:41:15Z",
+        "tools": [
+          {
+            "vendor": "OWASP",
+            "name": "Dependency-Track",
+            "version": "4.14.1"
+          }
+        ],
+        "component": {
+          "type": "application",
+          "bom-ref": "f74d50ef-df7d-4ea9-abf9-544544cd0782",
+          "name": "test_1781098875",
+          "version": "1.0",
+          "description": "This is an example project."
+        }
+      },
+      "dependencies": [
+        {
+          "ref": "f74d50ef-df7d-4ea9-abf9-544544cd0782",
+          "dependsOn": []
+        }
+      ]
+    },
+    "cbom": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.6",
+      "serialNumber": "urn:uuid:03249a38-8964-4273-aa09-e15b53444fa5",
+      "version": 1,
+      "metadata": {
+        "timestamp": "2026-06-15T11:32:08Z",
+        "component": {
+          "type": "application",
+          "name": "my application",
+          "version": "1.0"
+        }
+      },
+      "components": [
+        {
+          "name": "AESGCM(256)",
+          "type": "cryptographic-asset",
+          "cryptoProperties": {
+            "assetType": "algorithm",
+            "algorithmProperties": {
+              "primitive": "Block-cipher",
+              "executionEnvironment": "software-plain-ram",
+              "implementationPlatform": "x86_64",
+              "certificationLevel": "fips140-2-l1",
+              "cryptoFunctions": [
+                "keygen",
+                "encrypt",
+                "decrypt"
+              ],
+              "classicalSecurityLevel": "128",
+              "nistQuantumSecurityLevel": "2"
+            },
+            "oid": "unknown"
+          }
+        },
+        {
+          "name": "CHACHA20/POLY1305(256)",
+          "type": "cryptographic-asset",
+          "cryptoProperties": {
+            "assetType": "algorithm",
+            "algorithmProperties": {
+              "primitive": "Unknown",
+              "executionEnvironment": "software-plain-ram",
+              "implementationPlatform": "x86_64",
+              "certificationLevel": "Unknown",
+              "cryptoFunctions": "Unknown",
+              "classicalSecurityLevel": "0",
+              "nistQuantumSecurityLevel": "0"
+            },
+            "oid": "unknown"
+          }
+        },
+        {
+          "name": "AESGCM(128)",
+          "type": "cryptographic-asset",
+          "cryptoProperties": {
+            "assetType": "algorithm",
+            "algorithmProperties": {
+              "primitive": "Block-cipher",
+              "executionEnvironment": "software-plain-ram",
+              "implementationPlatform": "x86_64",
+              "certificationLevel": "fips140-2-l1",
+              "cryptoFunctions": [
+                "keygen",
+                "encrypt",
+                "decrypt"
+              ],
+              "classicalSecurityLevel": "128",
+              "nistQuantumSecurityLevel": "2"
+            },
+            "oid": "unknown"
+          }
+        },
+        {
+          "name": "AES(256)",
+          "type": "cryptographic-asset",
+          "cryptoProperties": {
+            "assetType": "algorithm",
+            "algorithmProperties": {
+              "primitive": "Block-cipher",
+              "executionEnvironment": "software-plain-ram",
+              "implementationPlatform": "x86_64",
+              "certificationLevel": "fips140-2-l1",
+              "cryptoFunctions": [
+                "keygen",
+                "encrypt",
+                "decrypt"
+              ],
+              "classicalSecurityLevel": "128",
+              "nistQuantumSecurityLevel": "2"
+            },
+            "oid": "unknown"
+          }
+        },
+        {
+          "name": "AES(128)",
+          "type": "cryptographic-asset",
+          "cryptoProperties": {
+            "assetType": "algorithm",
+            "algorithmProperties": {
+              "primitive": "Block-cipher",
+              "executionEnvironment": "software-plain-ram",
+              "implementationPlatform": "x86_64",
+              "certificationLevel": "fips140-2-l1",
+              "cryptoFunctions": [
+                "keygen",
+                "encrypt",
+                "decrypt"
+              ],
+              "classicalSecurityLevel": "128",
+              "nistQuantumSecurityLevel": "2"
+            },
+            "oid": "unknown"
+          }
+        },
+        {
+          "name": "TLS_AES_256_GCM_SHA384",
+          "type": "cryptographic-asset",
+          "bom-ref": "crypto/protocol/tls@TLSv1.3",
+          "cryptoProperties": {
+            "assetType": "protocol",
+            "protocolProperties": {
+              "type": "tls",
+              "version": "TLSv1.3",
+              "cipherSuites": [
+                {
+                  "name": "TLS_AES_256_GCM_SHA384",
+                  "algorithms": [
+                    "crypto/algorithm/aes-cbc@oid_placeholder",
+                    "crypto/algorithm/aes-128-gcm@oid_placeholder"
+                  ],
+                  "identifiers": [
+                    "0xC0",
+                    "0x30"
+                  ]
+                }
+              ],
+              "cryptoRefArray": [
+                "crypto/certificate/TLSv1.3@oid_placeholder"
+              ]
+            },
+            "oid": "oid_placeholder"
+          }
+        },
+        {
+          "name": "TLS_CHACHA20_POLY1305_SHA256",
+          "type": "cryptographic-asset",
+          "bom-ref": "crypto/protocol/tls@TLSv1.3",
+          "cryptoProperties": {
+            "assetType": "protocol",
+            "protocolProperties": {
+              "type": "tls",
+              "version": "TLSv1.3",
+              "cipherSuites": [
+                {
+                  "name": "TLS_CHACHA20_POLY1305_SHA256",
+                  "algorithms": [
+                    "crypto/algorithm/chacha-cbc@oid_placeholder",
+                    "crypto/algorithm/aes-128-gcm@oid_placeholder"
+                  ],
+                  "identifiers": [
+                    "0xC0",
+                    "0x30"
+                  ]
+                }
+              ],
+              "cryptoRefArray": [
+                "crypto/certificate/TLSv1.3@oid_placeholder"
+              ]
+            },
+            "oid": "oid_placeholder"
+          }
+        },
+        {
+          "name": "TLS_AES_128_GCM_SHA256",
+          "type": "cryptographic-asset",
+          "bom-ref": "crypto/protocol/tls@TLSv1.3",
+          "cryptoProperties": {
+            "assetType": "protocol",
+            "protocolProperties": {
+              "type": "tls",
+              "version": "TLSv1.3",
+              "cipherSuites": [
+                {
+                  "name": "TLS_AES_128_GCM_SHA256",
+                  "algorithms": [
+                    "crypto/algorithm/aes-cbc@oid_placeholder",
+                    "crypto/algorithm/aes-128-gcm@oid_placeholder"
+                  ],
+                  "identifiers": [
+                    "0xC0",
+                    "0x30"
+                  ]
+                }
+              ],
+              "cryptoRefArray": [
+                "crypto/certificate/TLSv1.3@oid_placeholder"
+              ]
+            },
+            "oid": "oid_placeholder"
+          }
+        },
+        {
+          "name": "ECDHE-ECDSA-AES256-SHA384",
+          "type": "cryptographic-asset",
+          "bom-ref": "crypto/protocol/tls@TLSv1.2",
+          "cryptoProperties": {
+            "assetType": "protocol",
+            "protocolProperties": {
+              "type": "tls",
+              "version": "TLSv1.2",
+              "cipherSuites": [
+                {
+                  "name": "ECDHE-ECDSA-AES256-SHA384",
+                  "algorithms": [
+                    "crypto/algorithm/aes-cbc@oid_placeholder",
+                    "crypto/algorithm/aes-128-gcm@oid_placeholder"
+                  ],
+                  "identifiers": [
+                    "0xC0",
+                    "0x30"
+                  ]
+                }
+              ],
+              "cryptoRefArray": [
+                "crypto/certificate/TLSv1.2@oid_placeholder"
+              ]
+            },
+            "oid": "oid_placeholder"
+          }
+        },
+        {
+          "name": "ECDHE-ECDSA-AES128-SHA256",
+          "type": "cryptographic-asset",
+          "bom-ref": "crypto/protocol/tls@TLSv1.2",
+          "cryptoProperties": {
+            "assetType": "protocol",
+            "protocolProperties": {
+              "type": "tls",
+              "version": "TLSv1.2",
+              "cipherSuites": [
+                {
+                  "name": "ECDHE-ECDSA-AES128-SHA256",
+                  "algorithms": [
+                    "crypto/algorithm/aes-cbc@oid_placeholder",
+                    "crypto/algorithm/aes-128-gcm@oid_placeholder"
+                  ],
+                  "identifiers": [
+                    "0xC0",
+                    "0x30"
+                  ]
+                }
+              ],
+              "cryptoRefArray": [
+                "crypto/certificate/TLSv1.2@oid_placeholder"
+              ]
+            },
+            "oid": "oid_placeholder"
+          }
+        }
+      ]
+    },
+    "saasbo": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.4",
+      "serialNumber": "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79",
+      "version": 1,
+      "metadata": {
+        "timestamp": "2021-01-10T10:00:00.000Z",
+        "component": {
+          "bom-ref": "cobalt-uc1-app",
+          "type": "application",
+          "name": "COBALT UC1 Defect Detection",
+          "version": "1.0.0"
+        }
+      },
+      "services": [
+        {
+          "bom-ref": "casting-detection-api",
+          "provider": {
+            "name": "Acme Inc",
+            "url": []
+          },
+          "group": "com.example",
+          "name": "Casting Defect Detection API",
+          "version": "1.0.0",
+          "description": "AIaaS microservice for training and inference of Convolutional Neural Networks on industrial casting data.",
+          "endpoints": [
+            "http://localhost:8000/train",
+            "http://localhost:8000/predict",
+            "http://localhost:8000/docs"
+          ],
+          "authenticated": false,
+          "x-trust-boundary": false,
+          "data": [
+            {
+              "classification": "ProprietaryIndustrialImage",
+              "flow": "inbound"
+            },
+            {
+              "classification": "ClassificationResult",
+              "flow": "outbound"
+            },
+            {
+              "classification": "TrainingMetrics",
+              "flow": "outbound"
+            }
+          ],
+          "externalReferences": [
+            {
+              "type": "documentation",
+              "url": "http://localhost:8000/docs"
+            }
+          ],
+          "services": []
+        }
+      ],
+      "dependencies": [
+        {
+          "ref": "casting-detection-api",
+          "dependsOn": [
+            "fastapi",
+            "uvicorn",
+            "tensorflow",
+            "numpy",
+            "opencv-python-headless",
+            "python-multipart",
+            "pydantic"
+          ]
+        }
+      ]
+    }
+  },
+  "mud": {},
+  "threat-mud": {}
+}

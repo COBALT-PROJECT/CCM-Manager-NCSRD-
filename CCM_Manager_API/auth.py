@@ -41,10 +41,36 @@ def _build_auth_client():
 auth_client = _build_auth_client()
 
 
+AUTH_DISABLED_BY_DEFAULT = {"SDT", "SDTM"}
+
+
 def _service_env_key(service):
     if not service:
         return "DEFAULT"
     return re.sub(r"[^A-Z0-9]+", "_", service.upper()).strip("_")
+
+
+def _env_flag_enabled(value):
+    return str(value).strip().lower() in ("1", "true", "yes", "on")
+
+
+def _env_flag_disabled(value):
+    return str(value).strip().lower() in ("0", "false", "no", "off")
+
+
+def _auth_disabled_for_service(service):
+    service_key = _service_env_key(service)
+    configured = (
+        os.getenv(f"{service_key}_AUTH_DISABLED")
+        or os.getenv(f"CCM_{service_key}_AUTH_DISABLED")
+        or os.getenv(f"{service_key}_SKIP_AUTH")
+        or os.getenv(f"CCM_{service_key}_SKIP_AUTH")
+    )
+    if configured is not None:
+        if _env_flag_disabled(configured):
+            return False
+        return _env_flag_enabled(configured)
+    return service_key in AUTH_DISABLED_BY_DEFAULT
 
 
 def _bearer_token_for_service(service):
@@ -82,10 +108,11 @@ def auth_role_for_service(service=None, scope=None):
 
 def auth_context(service=None, scope=None):
     role = auth_role_for_service(service, scope)
+    service_auth_disabled = _auth_disabled_for_service(service)
     return {
         "service": service or "default",
-        "auth_enabled": auth_client is not None,
-        "auth_role": role if auth_client is not None else "unauthenticated",
+        "auth_enabled": auth_client is not None and not service_auth_disabled,
+        "auth_role": role if auth_client is not None and not service_auth_disabled else "unauthenticated",
         "configured_role": role,
     }
 
@@ -94,6 +121,10 @@ def authed_request(method, url, **kwargs):
     """Route outbound HTTP through ComponentAuthClient when available."""
     service = kwargs.pop("service", None)
     scope = kwargs.pop("scope", None)
+
+    if _auth_disabled_for_service(service):
+        return requests.request(method, url, **kwargs)
+
     if scope is None and service is not None:
         scope = auth_role_for_service(service)
 
@@ -106,6 +137,23 @@ def authed_request(method, url, **kwargs):
             return auth_client.authenticated_request(method, url, **kwargs)
         return auth_client.authenticated_request(method, url, scope=scope, **kwargs)
     return requests.request(method, url, **kwargs)
+
+
+def access_token_for_service(service=None, scope=None):
+    if _auth_disabled_for_service(service):
+        return None
+
+    if scope is None and service is not None:
+        scope = auth_role_for_service(service)
+
+    bearer_token = _bearer_token_for_service(service)
+    if bearer_token:
+        return bearer_token
+
+    if auth_client is None:
+        return None
+
+    return auth_client.get_token(scope=scope)
 
 
 def auth_status_payload():

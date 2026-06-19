@@ -24,11 +24,19 @@ services:
   # MongoDB for CCM Manager
   #####################################################
   mongo:
-    image: mongo:4.4
+    image: percona/percona-server-mongodb:4.4
+    command:
+      - /bin/sh
+      - -lc
+      - |
+        mkdir -p /data/db && chown -R 1001:1001 /data/db &&
+        exec mongod --enableEncryption --encryptionKeyFile /etc/mongo_keyfile --bind_ip_all
     ports:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+      - ./mongo_keyfile:/etc/mongo_keyfile:ro
+    user: "0:0"
     restart: unless-stopped
   #####################################################
   # Temporary MongoDB Browser UI
