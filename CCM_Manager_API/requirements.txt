@@ -52,3 +52,4 @@ Werkzeug==3.0.4
 flasgger
 jsonschema
 PyJWT[crypto]>=2.8.0
+reportlab
