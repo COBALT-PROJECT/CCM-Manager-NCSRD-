@@ -91,7 +91,7 @@ def _build_certificate(data, toe_record, toe_id, scheme_id):
             },
             "certification_decision": {
                 "decision_date": now.strftime("%Y-%m-%d"),
-                "decision_status": "Granted",
+                "decision_status": "INITIATE",
                 "certification_level": "Basic",
                 "validity_period": {
                     "start_date": now.strftime("%Y-%m-%d"),
@@ -105,7 +105,7 @@ def _build_certificate(data, toe_record, toe_id, scheme_id):
             },
             "history": [
                 {
-                    "event": "Certificate Automatically Generated",
+                    "event": "Certificate Automatically Generated with INITIATE status",
                     "date": now.strftime("%Y-%m-%d"),
                 }
             ],

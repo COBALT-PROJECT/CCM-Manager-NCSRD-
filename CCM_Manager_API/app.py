@@ -371,7 +371,15 @@ def upload_certification_scheme():
     if not request.is_json:
         return jsonify({"error": "No JSON data provided"}), 400
 
-    payload, status_code = scheme_service.upload_certification_scheme(request.get_json(silent=True))
+    data = request.get_json(silent=True)
+    sync_drm_on_upload = request.args.get("sync_drm") or request.args.get("drm_sync")
+    if sync_drm_on_upload is None and isinstance(data, dict):
+        sync_drm_on_upload = data.get("sync_drm", data.get("drm_sync"))
+
+    payload, status_code = scheme_service.upload_certification_scheme(
+        data,
+        sync_drm_on_upload=sync_drm_on_upload,
+    )
     return jsonify(payload), status_code
 
 
@@ -797,6 +805,20 @@ def get_certificate(cert_uuid):
 
     except Exception as e:
         logging.error(f"Error retrieving certificate {cert_uuid}: {e}")
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
+
+@app.route('/certificate-evaluation-result', methods=['POST'])
+@app.route('/certificates/evaluation-result', methods=['POST'])
+def post_certificate_evaluation_result():
+    try:
+        payload, status_code = certificate_service.update_certificate_evaluation_result(
+            request.get_json(silent=True),
+        )
+        return jsonify(payload), status_code
+
+    except Exception as e:
+        logging.error(f"Error updating certificate from evaluation result: {e}")
         return jsonify({"error": "Internal server error", "details": str(e)}), 500
 
 

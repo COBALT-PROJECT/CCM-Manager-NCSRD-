@@ -173,7 +173,17 @@ def _scheme_sections(data):
     }
 
 
-def upload_certification_scheme(data):
+def _flag_enabled(value, default=True):
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() not in {"0", "false", "no", "off", "skip"}
+    return bool(value)
+
+
+def upload_certification_scheme(data, sync_drm_on_upload=True):
     if not data:
         return {"error": "No JSON data provided"}, 400
 
@@ -369,13 +379,25 @@ def upload_certification_scheme(data):
             counts["risk_threat_control_mappings"],
         )
 
-        return {
+        response = {
             "message": "Certification Scheme uploaded and all entities populated",
             "uuid": scheme_id,
             "ledger_hash": ledger_hash,
             "populated": counts,
             "outbound_auth": [ledger_auth_context()],
-        }, 200
+        }
+
+        if _flag_enabled(sync_drm_on_upload, default=True):
+            drm_payload, drm_status = sync_drm(scheme_id)
+            response["drm_sync_status"] = "synchronized" if drm_status == 200 else "failed"
+            response["drm_sync_status_code"] = drm_status
+            response["drm_sync_response"] = drm_payload
+            response["outbound_auth"].extend(drm_payload.get("outbound_auth", []))
+        else:
+            response["drm_sync_status"] = "skipped"
+            response["drm_sync_reason"] = "DRM sync disabled for this request."
+
+        return response, 200
 
     except Exception as exc:
         logging.error("Error in upload_certification_scheme: %s", exc)

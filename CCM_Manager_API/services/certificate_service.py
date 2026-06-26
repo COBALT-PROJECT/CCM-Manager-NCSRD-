@@ -1,7 +1,128 @@
 import logging
+import os
+from copy import deepcopy
 from datetime import datetime
 
-from db import certificates_col, schemes_col
+from db import certificates_col, schemes_col, toes_col
+from services.assessment_service import PDF_OUTPUT_DIR, generate_certificate
+from services.ledger import ledger_auth_context, send_to_ledger
+
+
+VALID_EVALUATION_TYPES = {"MANUAL": "Manual", "DYNAMIC": "DYNAMIC"}
+VALID_EVALUATION_RESULTS = {"OK", "NOK"}
+ACTIVE_CERTIFICATE_STATES = {"INITIATE", "VALID", "SUSPENDED"}
+INACTIVE_CERTIFICATE_STATES = {"WITHDRAWN", "ARCHIVED", "EXPIRED", "ARCHIVED/EXPIRED"}
+
+
+def _payload_value(data, *keys):
+    for key in keys:
+        value = data.get(key)
+        if value not in (None, ""):
+            return value
+    return None
+
+
+def _certificate_response_doc(certificate):
+    response_doc = deepcopy(certificate)
+    if "_id" in response_doc:
+        response_doc["_id"] = str(response_doc["_id"])
+    return response_doc
+
+
+def _certificate_ledger_payload(certificate):
+    payload = deepcopy(certificate)
+    payload.pop("_id", None)
+    payload.pop("ledger_hash", None)
+    return payload
+
+
+def _generate_updated_certificate_pdf(certificate):
+    cert_uuid = certificate["certification"]["certification_id"]
+    pdf_filename = f"cobalt_certificate_{cert_uuid}.pdf"
+    pdf_path = os.path.join(PDF_OUTPUT_DIR, pdf_filename)
+    pdf_certificate = _certificate_response_doc(certificate)
+    assessment = pdf_certificate.setdefault("certification", {}).setdefault("assessment", {})
+    if not assessment.get("evidence"):
+        assessment["evidence"] = ["N/A"]
+
+    generate_certificate(
+        {
+            "status": "success",
+            "message": "Certificate updated from evaluation result.",
+            "assessment_hash": certificate.get("assessment_hash", "N/A"),
+            "certificate": pdf_certificate,
+        },
+        pdf_path,
+    )
+    return pdf_path
+
+
+def _parse_date(value):
+    if not value:
+        return None
+    try:
+        return datetime.strptime(str(value)[:10], "%Y-%m-%d").date()
+    except ValueError:
+        return None
+
+
+def _normalized_certificate_state(certificate):
+    raw_status = (
+        certificate.get("certification", {})
+        .get("certification_decision", {})
+        .get("decision_status")
+    )
+    status = str(raw_status or "INITIATE").strip().upper()
+    legacy_map = {
+        "GRANTED": "VALID",
+        "REVOKED": "WITHDRAWN",
+    }
+    return legacy_map.get(status, status)
+
+
+def _certificate_is_non_expired(certificate):
+    end_date = (
+        certificate.get("certification", {})
+        .get("certification_decision", {})
+        .get("validity_period", {})
+        .get("end_date")
+    )
+    parsed_end = _parse_date(end_date)
+    if parsed_end is None:
+        return True
+    return parsed_end >= datetime.utcnow().date()
+
+
+def _active_certificate_for_toe_scheme(toe_id, scheme_id):
+    candidates = certificates_col.find(
+        {
+            "certification.target_of_evaluation.toe_uuid": str(toe_id),
+            "certification.certification_scheme": str(scheme_id),
+        },
+        sort=[("_id", -1)],
+    )
+    for certificate in candidates:
+        state = _normalized_certificate_state(certificate)
+        if state in INACTIVE_CERTIFICATE_STATES:
+            continue
+        if state not in ACTIVE_CERTIFICATE_STATES:
+            continue
+        if not _certificate_is_non_expired(certificate):
+            continue
+        return certificate
+    return None
+
+
+def _next_certificate_state(current_state, evaluation_type_key, result):
+    if result == "NOK":
+        return "SUSPENDED"
+    if current_state == "SUSPENDED":
+        return "VALID"
+    if current_state == "INITIATE" and evaluation_type_key == "DYNAMIC":
+        return "VALID"
+    if current_state == "INITIATE" and evaluation_type_key == "MANUAL":
+        return "INITIATE"
+    return "VALID"
 
 
 def list_certificates():
@@ -71,3 +192,140 @@ def withdraw_certificate(cert_uuid):
 
     logging.error("Failed to update certificate status for %s", cert_uuid)
     return {"error": "Failed to update certificate status"}, 500
+
+
+def update_certificate_evaluation_result(data):
+    if not data:
+        return {"error": "No JSON data provided"}, 400
+
+    toe_id = _payload_value(data, "toe_id", "toe_uuid", "target_of_evaluation_id")
+    scheme_id = _payload_value(data, "scheme_id", "certification_scheme_id", "certification_scheme")
+    evaluation_type_raw = _payload_value(data, "evaluation_type", "evaluationType")
+    result_raw = _payload_value(data, "result", "RESULT", "assessment_result", "assessmentResult")
+
+    missing = [
+        field
+        for field, value in {
+            "toe_id": toe_id,
+            "scheme_id": scheme_id,
+            "evaluation_type": evaluation_type_raw,
+            "result": result_raw,
+        }.items()
+        if value is None
+    ]
+    if missing:
+        return {"error": f"Missing required field(s): {', '.join(missing)}"}, 400
+
+    evaluation_type_key = str(evaluation_type_raw).strip().upper()
+    if evaluation_type_key not in VALID_EVALUATION_TYPES:
+        return {"error": "evaluation_type must be Manual or DYNAMIC"}, 400
+    evaluation_type = VALID_EVALUATION_TYPES[evaluation_type_key]
+
+    result = str(result_raw).strip().upper()
+    if result not in VALID_EVALUATION_RESULTS:
+        return {"error": "result must be OK or NOK"}, 400
+
+    toe_record = toes_col.find_one({"uuid": str(toe_id)})
+    if not toe_record:
+        return {"error": f"ToE {toe_id} is not registered in CCM Manager"}, 404
+
+    scheme_record = schemes_col.find_one({"uuid": str(scheme_id)})
+    if not scheme_record:
+        return {"error": f"Certification Scheme {scheme_id} not found"}, 404
+
+    if toe_record.get("linked_scheme_id") and toe_record.get("linked_scheme_id") != str(scheme_id):
+        return {
+            "error": "ToE is linked to a different certification scheme.",
+            "toe_id": str(toe_id),
+            "linked_scheme_id": toe_record.get("linked_scheme_id"),
+            "requested_scheme_id": str(scheme_id),
+        }, 409
+
+    now = datetime.utcnow()
+    today = now.strftime("%Y-%m-%d")
+    timestamp = now.isoformat()
+    evaluation = {
+        "toe_id": str(toe_id),
+        "scheme_id": str(scheme_id),
+        "evaluation_type": evaluation_type,
+        "result": result,
+        "timestamp": timestamp,
+    }
+    evidence_id = _payload_value(data, "evidence_id", "evidenceId")
+    if evidence_id:
+        evaluation["evidence_id"] = str(evidence_id)
+
+    certificate = _active_certificate_for_toe_scheme(toe_id, scheme_id)
+    if not certificate:
+        return {
+            "error": "No active certificate exists for this ToE and scheme. Submit /assessment-result first to issue the certificate, then use this endpoint for state updates.",
+            "toe_id": str(toe_id),
+            "scheme_id": str(scheme_id),
+            "evaluation_type": evaluation_type,
+            "result": result,
+        }, 404
+
+    previous_state = _normalized_certificate_state(certificate)
+    decision_status = _next_certificate_state(previous_state, evaluation_type_key, result)
+    updated_certificate = deepcopy(certificate)
+    certification = updated_certificate.setdefault("certification", {})
+    decision = certification.setdefault("certification_decision", {})
+    history = certification.setdefault("history", [])
+
+    decision["decision_date"] = today
+    decision["decision_status"] = decision_status
+
+    history.append({
+        "event": f"{evaluation_type} evaluation {result}: {previous_state} -> {decision_status}",
+        "date": today,
+    })
+
+    certification = updated_certificate.setdefault("certification", {})
+    updated_certificate["updated_at"] = timestamp
+    updated_certificate["last_evaluation"] = {
+        **evaluation,
+        "previous_state": previous_state,
+        "decision_status": decision_status,
+    }
+
+    warnings = []
+    try:
+        cert_hash = send_to_ledger(
+            "/v1/certification-authority/certificate",
+            _certificate_ledger_payload(updated_certificate),
+        )
+    except Exception as exc:
+        logging.warning("Ledger unavailable for certificate update, using placeholder hash: %s", exc)
+        cert_hash = "TempHashDueToHotFix"
+        warnings.append(f"Ledger unavailable for certificate update: {exc}")
+
+    updated_certificate["ledger_hash"] = cert_hash
+    certificates_col.replace_one({"_id": certificate["_id"]}, updated_certificate)
+
+    pdf_path = None
+    try:
+        pdf_path = _generate_updated_certificate_pdf(updated_certificate)
+    except Exception as exc:
+        logging.error(
+            "Failed to regenerate PDF for certificate %s: %s",
+            certification.get("certification_id"),
+            exc,
+        )
+        warnings.append(f"Failed to regenerate certificate PDF: {exc}")
+
+    return {
+        "message": "Certificate state updated from evaluation result and uploaded to DLT.",
+        "toe_id": str(toe_id),
+        "scheme_id": str(scheme_id),
+        "evaluation_type": evaluation_type,
+        "result": result,
+        "operation": "updated",
+        "previous_state": previous_state,
+        "decision_status": decision_status,
+        "certificate_id": certification.get("certification_id"),
+        "ledger_hash": cert_hash,
+        "pdf_path": pdf_path,
+        "certificate": _certificate_response_doc(updated_certificate),
+        "outbound_auth": [ledger_auth_context()],
+        "warnings": warnings,
+    }, 200

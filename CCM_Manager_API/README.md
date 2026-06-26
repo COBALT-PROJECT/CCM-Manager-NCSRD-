@@ -3,8 +3,20 @@ Common Certification Model Manager Module for WP2 of COBALT
 
 ## DRM Sync
 
+`POST /upload_certification_scheme` now uploads the certification scheme into CCM and automatically syncs it to DRM.
+The response includes `drm_sync_status`, `drm_sync_status_code`, and `drm_sync_response` so you can see whether DRM accepted it.
+
+To upload only into CCM without calling DRM:
+
+```bash
+curl -X POST "http://localhost:5001/upload_certification_scheme?sync_drm=false" \
+  -H "Content-Type: application/json" \
+  -d @fullCertScheme.json
+```
+
 `POST /schemes/<scheme_id>/sync-drm` sends a CCM certification scheme to the DRM API using the corrected CCM-to-DRM flow:
 metrics and controls, C-M links, scheme, risks and threats, then R-T-C links.
+This manual route is still available if you need to retry a DRM sync for an already uploaded scheme.
 
 Configure the DRM target with:
 
@@ -63,6 +75,82 @@ For SDTM you can configure either a single base URL or explicit endpoint overrid
 
 If `SDTM_BASE_URL` is not set, CCM can derive it from legacy `DEPLOY_SDT`,
 `DEPLOYMENTS_SDT`, `CREATE_SDT`, or `DELETE_SDT` URLs and still call the new SDTM paths.
+
+## Certificate State Updates
+
+`POST /assessment-result` remains the endpoint that processes assessment results and issues the initial certificate.
+When a compliant assessment issues a certificate, CCM creates it with certificate state `INITIATE`.
+
+`POST /certificate-evaluation-result` updates the certificate state for an already generated ToE certificate, reuploads the certificate to the DLT, and stores the new certificate hash.
+`POST /certificates/evaluation-result` is available as an alias for the same workflow.
+
+```bash
+curl -X POST "http://localhost:5001/certificate-evaluation-result" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "toe_id": "3e671687-395b-41f5-a30f-a58921a69b79",
+    "scheme_id": "AI_CLOUD_COMPLEX_DRM_DEMO_v1",
+    "evaluation_type": "Manual",
+    "result": "OK"
+  }'
+```
+
+The payload accepts `evaluation_type` values `Manual` or `DYNAMIC`, and `result` values `OK` or `NOK`.
+If no non-expired, non-withdrawn certificate exists, submit an assessment result first through `/assessment-result`.
+For an existing active certificate, `OK` moves `SUSPENDED` to `VALID`, keeps `VALID` as `VALID`, and moves `INITIATE` to `VALID` only for `DYNAMIC`.
+`NOK` moves `INITIATE` or `VALID` to `SUSPENDED`, and keeps `SUSPENDED` as `SUSPENDED`.
+
+## VM Deployment
+
+The Docker Compose stack uses Percona Server for MongoDB with encryption at rest enabled. Before starting the stack on a VM, create the local Mongo encryption key file in `CCM_Manager_API`.
+
+Recommended:
+
+```bash
+cd CCM_Manager_API
+chmod +x initialize_encryption.sh
+./initialize_encryption.sh
+```
+
+Manual fallback:
+
+```bash
+cd CCM_Manager_API
+openssl rand -base64 32 > mongo_keyfile
+sudo chown 1001:1001 mongo_keyfile
+sudo chmod 400 mongo_keyfile
+```
+
+The key file must exist before `docker compose up`, because `docker-compose.yml` mounts it as:
+
+```yaml
+./mongo_keyfile:/etc/mongo_keyfile:ro
+```
+
+Start or rebuild the CCM stack:
+
+```bash
+docker compose up -d --build
+docker compose ps
+```
+
+Check logs:
+
+```bash
+docker compose logs -f mongo
+docker compose logs -f flask-app
+```
+
+If the Percona Mongo container keeps restarting, first check the key file:
+
+```bash
+ls -l mongo_keyfile
+sudo chown 1001:1001 mongo_keyfile
+sudo chmod 400 mongo_keyfile
+docker compose restart mongo flask-app
+```
+
+Do not commit or copy `mongo_keyfile` between deployments. Each VM should generate its own key before first startup. If the `mongo-data` volume already contains encrypted data, keep the same key file for that VM; replacing it will prevent Mongo from reading the existing encrypted volume.
 
 ## Structure
 

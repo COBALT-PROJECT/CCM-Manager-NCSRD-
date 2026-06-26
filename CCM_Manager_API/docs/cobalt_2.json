@@ -117,6 +117,88 @@
         }
       }
     },
+    "/certificate-evaluation-result": {
+      "post": {
+        "tags": [
+          "Internal Endpoint"
+        ],
+        "summary": "Update Certificate From Evaluation Result",
+        "description": "Receives a compact certificate evaluation result for an already generated certificate, applies the CCM certificate state machine, uploads the updated certificate to the DLT, and stores the new certificate ledger hash. Initial certificate issuance remains handled by POST /assessment-result.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "Evaluation result for a ToE and certification scheme.",
+            "schema": {
+              "type": "object",
+              "required": [
+                "toe_id",
+                "scheme_id",
+                "evaluation_type",
+                "result"
+              ],
+              "properties": {
+                "toe_id": {
+                  "type": "string",
+                  "description": "Target of Evaluation UUID.",
+                  "example": "3e671687-395b-41f5-a30f-a58921a69b79"
+                },
+                "scheme_id": {
+                  "type": "string",
+                  "description": "Certification scheme identifier.",
+                  "example": "AI_CLOUD_COMPLEX_DRM_DEMO_v1"
+                },
+                "evaluation_type": {
+                  "type": "string",
+                  "enum": [
+                    "Manual",
+                    "DYNAMIC"
+                  ],
+                  "example": "Manual"
+                },
+                "result": {
+                  "type": "string",
+                  "enum": [
+                    "OK",
+                    "NOK"
+                  ],
+                  "example": "OK"
+                },
+                "evidence_id": {
+                  "type": "string",
+                  "description": "Optional evidence identifier stored in the last_evaluation metadata.",
+                  "example": "444d2823-e7f2-4c5a-aea6-6d47a11c3481"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Certificate state updated and uploaded to DLT."
+          },
+          "400": {
+            "description": "Invalid or missing request fields."
+          },
+          "404": {
+            "description": "ToE, certification scheme, or active certificate not found."
+          },
+          "409": {
+            "description": "Evaluation result is invalid for the current certificate state."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
     "/certificates/{cert_uuid}/withdraw": {
       "put": {
         "tags": [
