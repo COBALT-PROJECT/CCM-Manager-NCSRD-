@@ -122,8 +122,8 @@
         "tags": [
           "Internal Endpoint"
         ],
-        "summary": "Update Certificate From Evaluation Result",
-        "description": "Receives a compact certificate evaluation result for an already generated certificate, applies the CCM certificate state machine, uploads the updated certificate to the DLT, and stores the new certificate ledger hash. Initial certificate issuance remains handled by POST /assessment-result.",
+        "summary": "Create Initial Certificate From Evaluation Result",
+        "description": "Receives the compact initial certificate evaluation result. A new certificate is created only when evaluation_type is Manual and result is OK. The certificate starts in INITIATE state, is uploaded to the DLT, and stores the returned certificate ledger hash. Later assessment results update the certificate state through POST /assessment-result.",
         "consumes": [
           "application/json"
         ],
@@ -181,17 +181,17 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Certificate state updated and uploaded to DLT."
+          "201": {
+            "description": "Certificate created and uploaded to DLT."
           },
           "400": {
             "description": "Invalid or missing request fields."
           },
           "404": {
-            "description": "ToE, certification scheme, or active certificate not found."
+            "description": "ToE or certification scheme not found."
           },
           "409": {
-            "description": "Evaluation result is invalid for the current certificate state."
+            "description": "A certificate already exists or the initial evaluation is not Manual OK."
           },
           "500": {
             "description": "Internal server error."
@@ -989,6 +989,134 @@
           },
           "404": {
             "description": "Scheme not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/certification_scheme/{scheme_id}/catalog": {
+      "get": {
+        "tags": [
+          "Certification Scheme"
+        ],
+        "summary": "Retrieve Certification Scheme OSCAL Catalog",
+        "description": "Returns the OSCAL catalog embedded in a certification scheme.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "scheme_id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the target certification scheme.",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Catalog retrieved successfully."
+          },
+          "404": {
+            "description": "Scheme or catalog not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/certification_scheme/{scheme_id}/profile": {
+      "get": {
+        "tags": [
+          "Certification Scheme"
+        ],
+        "summary": "Retrieve Certification Scheme OSCAL Profile",
+        "description": "Returns the OSCAL profile embedded in a certification scheme.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "scheme_id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the target certification scheme.",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profile retrieved successfully."
+          },
+          "404": {
+            "description": "Scheme or profile not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/certificates/{cert_uuid}/catalog": {
+      "get": {
+        "tags": [
+          "Internal Endpoint"
+        ],
+        "summary": "Retrieve Certificate Certification Scheme OSCAL Catalog",
+        "description": "Finds the certificate, resolves its certification scheme, and returns that scheme's OSCAL catalog.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cert_uuid",
+            "in": "path",
+            "required": true,
+            "description": "The exact UUID of the target certificate.",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Catalog retrieved successfully."
+          },
+          "404": {
+            "description": "Certificate, scheme, or catalog not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/certificates/{cert_uuid}/profile": {
+      "get": {
+        "tags": [
+          "Internal Endpoint"
+        ],
+        "summary": "Retrieve Certificate Certification Scheme OSCAL Profile",
+        "description": "Finds the certificate, resolves its certification scheme, and returns that scheme's OSCAL profile.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "cert_uuid",
+            "in": "path",
+            "required": true,
+            "description": "The exact UUID of the target certificate.",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profile retrieved successfully."
+          },
+          "404": {
+            "description": "Certificate, scheme, or profile not found."
           },
           "500": {
             "description": "Internal server error."
@@ -2049,8 +2177,8 @@
         "tags": [
           "Internal Endpoint"
         ],
-        "summary": "Upload Assessment Result",
-        "description": "Store compliance assessment result.",
+        "summary": "Upload Assessment Result And Update Certificate State",
+        "description": "Stores a compliance assessment result, uploads it to the DLT, derives OK from compliant=true or NOK from compliant=false, updates the existing active certificate state for the assessment ToE, reuploads the updated certificate to the DLT, and stores the new certificate ledger hash.",
         "consumes": [
           "application/json"
         ],
@@ -2094,16 +2222,16 @@
           }
         ],
         "responses": {
-          "201": {
-            "description": "Assessment result stored successfully",
+          "200": {
+            "description": "Assessment result stored and certificate state updated successfully",
             "schema": {
               "type": "object",
               "properties": {
                 "message": {
                   "type": "string",
-                  "example": "Assessment result stored"
+                  "example": "Assessment processed and Certificate state updated."
                 },
-                "targetId": {
+                "assessment_hash": {
                   "type": "string"
                 }
               }
@@ -2111,6 +2239,12 @@
           },
           "400": {
             "description": "Missing required fields"
+          },
+          "404": {
+            "description": "ToE, certification scheme, or active certificate not found"
+          },
+          "409": {
+            "description": "ToE is not linked to a certification scheme"
           }
         }
       }

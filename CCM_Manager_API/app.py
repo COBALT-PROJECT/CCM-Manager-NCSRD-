@@ -832,6 +832,46 @@ def get_certification_scheme(scheme_id):
         return jsonify({"error": "Internal server error", "details": str(e)}), 500
 
 
+@app.route("/certification_scheme/<scheme_id>/catalog", methods=["GET"])
+def get_certification_scheme_catalog(scheme_id):
+    try:
+        payload, status_code = certificate_service.get_certification_scheme_section(scheme_id, "catalog")
+        return jsonify(payload), status_code
+
+    except Exception as e:
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
+
+@app.route("/certification_scheme/<scheme_id>/profile", methods=["GET"])
+def get_certification_scheme_profile(scheme_id):
+    try:
+        payload, status_code = certificate_service.get_certification_scheme_section(scheme_id, "profile")
+        return jsonify(payload), status_code
+
+    except Exception as e:
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
+
+@app.route("/certificates/<cert_uuid>/catalog", methods=["GET"])
+def get_certificate_catalog(cert_uuid):
+    try:
+        payload, status_code = certificate_service.get_certificate_scheme_section(cert_uuid, "catalog")
+        return jsonify(payload), status_code
+
+    except Exception as e:
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
+
+@app.route("/certificates/<cert_uuid>/profile", methods=["GET"])
+def get_certificate_profile(cert_uuid):
+    try:
+        payload, status_code = certificate_service.get_certificate_scheme_section(cert_uuid, "profile")
+        return jsonify(payload), status_code
+
+    except Exception as e:
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
+
 @app.route("/certification_scheme/<scheme_id>", methods=["DELETE"])
 def delete_certification_scheme(scheme_id):
     try:

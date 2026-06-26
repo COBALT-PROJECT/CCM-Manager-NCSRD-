@@ -78,11 +78,10 @@ If `SDTM_BASE_URL` is not set, CCM can derive it from legacy `DEPLOY_SDT`,
 
 ## Certificate State Updates
 
-`POST /assessment-result` remains the endpoint that processes assessment results and issues the initial certificate.
-When a compliant assessment issues a certificate, CCM creates it with certificate state `INITIATE`.
+`POST /certificate-evaluation-result` creates the initial certificate for a ToE and certification scheme.
+The first request must be `evaluation_type` `Manual` with result `OK`; CCM creates the certificate with state `INITIATE`, uploads it to the DLT, and stores the certificate hash.
 
-`POST /certificate-evaluation-result` updates the certificate state for an already generated ToE certificate, reuploads the certificate to the DLT, and stores the new certificate hash.
-`POST /certificates/evaluation-result` is available as an alias for the same workflow.
+`POST /certificates/evaluation-result` is available as an alias for the same certificate creation workflow.
 
 ```bash
 curl -X POST "http://localhost:5001/certificate-evaluation-result" \
@@ -95,10 +94,29 @@ curl -X POST "http://localhost:5001/certificate-evaluation-result" \
   }'
 ```
 
-The payload accepts `evaluation_type` values `Manual` or `DYNAMIC`, and `result` values `OK` or `NOK`.
-If no non-expired, non-withdrawn certificate exists, submit an assessment result first through `/assessment-result`.
-For an existing active certificate, `OK` moves `SUSPENDED` to `VALID`, keeps `VALID` as `VALID`, and moves `INITIATE` to `VALID` only for `DYNAMIC`.
-`NOK` moves `INITIATE` or `VALID` to `SUSPENDED`, and keeps `SUSPENDED` as `SUSPENDED`.
+After the certificate exists, `POST /assessment-result` updates its certificate state.
+The assessment result remains stored as an assessment result; CCM derives `OK` from `compliant: true` and `NOK` from `compliant: false`, reuploads the updated certificate to the DLT, and stores the new certificate hash.
+By default assessment results are treated as `DYNAMIC`; include `evaluation_type: "Manual"` in the assessment payload if the result should follow the manual transition.
+
+For an existing active certificate, assessment `OK` moves `SUSPENDED` to `VALID`, keeps `VALID` as `VALID`, and moves `INITIATE` to `VALID` for `DYNAMIC`.
+Assessment `NOK` moves `INITIATE` or `VALID` to `SUSPENDED`, and keeps `SUSPENDED` as `SUSPENDED`.
+
+## OSCAL Catalog And Profile Queries
+
+Uploaded certification schemes keep their OSCAL catalog and profile under the scheme content.
+You can query each section directly by certification scheme ID:
+
+```bash
+curl -sS "http://localhost:5001/certification_scheme/<SCHEME_ID>/catalog" | jq
+curl -sS "http://localhost:5001/certification_scheme/<SCHEME_ID>/profile" | jq
+```
+
+You can also query the catalog/profile through a generated certificate ID. CCM resolves the certificate's linked certification scheme and returns the matching section:
+
+```bash
+curl -sS "http://localhost:5001/certificates/<CERTIFICATE_ID>/catalog" | jq
+curl -sS "http://localhost:5001/certificates/<CERTIFICATE_ID>/profile" | jq
+```
 
 ## VM Deployment
 

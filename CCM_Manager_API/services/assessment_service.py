@@ -546,49 +546,27 @@ def process_assessment_result(data):
             "timestamp": datetime.utcnow().isoformat(),
         })
 
-        if data.get("compliant") is True:
-            certificate_data = _build_certificate(data, toe_record, toe_id, scheme_id)
-            try:
-                cert_hash = send_to_ledger(
-                    "/v1/certification-authority/certificate",
-                    certificate_data,
-                )
-            except Exception as exc:
-                logging.warning("Ledger unavailable for certificate, using placeholder hash: %s", exc)
-                cert_hash = "TempHashDueToHotFix"
-            certificate_data["ledger_hash"] = cert_hash
+        from services import certificate_service
 
-            certificates_col.insert_one(certificate_data)
-
-            if "_id" in certificate_data:
-                certificate_data["_id"] = str(certificate_data["_id"])
-
-            response_payload = {
-                "status": "success",
-                "message": "Assessment processed and Certificate ISSUED.",
+        certificate_payload, certificate_status = certificate_service.update_certificate_from_assessment_result(
+            data,
+            assessment_hash=assessment_hash,
+        )
+        if certificate_status != 200:
+            return {
+                "status": "processed",
+                "message": "Assessment processed, but certificate state was not updated.",
                 "assessment_hash": assessment_hash,
-                "certificate": certificate_data,
+                "certificate_update": certificate_payload,
                 "outbound_auth": [ledger_auth_context()],
-            }
-
-            # --- Generate the PDF synchronously ---
-            cert_uuid = certificate_data["certification"]["certification_id"]
-            pdf_filename = f"cobalt_certificate_{cert_uuid}.pdf"
-            pdf_path = os.path.join(PDF_OUTPUT_DIR, pdf_filename)
-            
-            try:
-                generate_certificate(response_payload, pdf_path)
-                logging.info(f"Certificate PDF generated successfully at: {pdf_path}")
-            except Exception as pdf_exc:
-                logging.error("Failed to generate PDF for certificate %s: %s", cert_uuid, pdf_exc)
-                # You might choose to append a warning to the response payload here if you want the client to know
-
-            return response_payload, 201
+            }, certificate_status
 
         return {
-            "status": "processed",
-            "message": "Assessment processed but Non-Compliant. No Certificate issued.",
+            "status": "success",
+            "message": "Assessment processed and Certificate state updated.",
             "assessment_hash": assessment_hash,
+            "certificate_update": certificate_payload,
+            "certificate": certificate_payload.get("certificate"),
             "outbound_auth": [ledger_auth_context()],
         }, 200
 
