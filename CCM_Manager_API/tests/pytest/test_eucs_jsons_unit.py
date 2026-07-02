@@ -132,7 +132,11 @@ def catalog_control_ids():
 def test_fully_mapped_scheme_imports_eucs_relationships(monkeypatch):
     patch_scheme_collections(monkeypatch)
 
-    payload, status_code = scheme_service.upload_certification_scheme(bundled_scheme_payload())
+    payload, status_code = scheme_service.upload_certification_scheme(
+        bundled_scheme_payload(),
+        sync_drm_on_upload=False,
+        sync_scheme_import_on_upload=False,
+    )
 
     assert status_code == 200
     assert payload["populated"] == {

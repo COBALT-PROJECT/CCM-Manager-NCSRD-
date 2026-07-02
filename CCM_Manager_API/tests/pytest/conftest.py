@@ -114,7 +114,7 @@ def scheme_context(http, base_url, api_ready):
     }
 
     response = http.post(
-        f"{base_url}/upload_certification_scheme",
+        f"{base_url}/upload_certification_scheme?sync_drm=false&sync_scheme_import=false",
         json=payload,
         timeout=DEFAULT_TIMEOUT,
     )

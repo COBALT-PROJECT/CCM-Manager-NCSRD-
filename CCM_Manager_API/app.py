@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 from pymongo.errors import PyMongoError
 import os
 import json
@@ -375,10 +375,21 @@ def upload_certification_scheme():
     sync_drm_on_upload = request.args.get("sync_drm") or request.args.get("drm_sync")
     if sync_drm_on_upload is None and isinstance(data, dict):
         sync_drm_on_upload = data.get("sync_drm", data.get("drm_sync"))
+    sync_scheme_import_on_upload = (
+        request.args.get("sync_scheme_import")
+        or request.args.get("scheme_import_sync")
+        or request.args.get("import_scheme")
+    )
+    if sync_scheme_import_on_upload is None and isinstance(data, dict):
+        sync_scheme_import_on_upload = data.get(
+            "sync_scheme_import",
+            data.get("scheme_import_sync", data.get("import_scheme")),
+        )
 
     payload, status_code = scheme_service.upload_certification_scheme(
         data,
         sync_drm_on_upload=sync_drm_on_upload,
+        sync_scheme_import_on_upload=sync_scheme_import_on_upload,
     )
     return jsonify(payload), status_code
 
@@ -805,6 +816,29 @@ def get_certificate(cert_uuid):
 
     except Exception as e:
         logging.error(f"Error retrieving certificate {cert_uuid}: {e}")
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
+
+@app.route('/certificates/<cert_uuid>/pdf', methods=['GET'])
+def download_certificate_pdf(cert_uuid):
+    try:
+        regenerate = str(request.args.get("regenerate", "")).lower() in {"1", "true", "yes"}
+        payload, status_code = certificate_service.get_certificate_pdf(
+            cert_uuid,
+            regenerate=regenerate,
+        )
+        if status_code != 200:
+            return jsonify(payload), status_code
+
+        return send_file(
+            payload["pdf_path"],
+            mimetype="application/pdf",
+            as_attachment=True,
+            download_name=payload["download_name"],
+        )
+
+    except Exception as e:
+        logging.error(f"Error downloading certificate PDF {cert_uuid}: {e}")
         return jsonify({"error": "Internal server error", "details": str(e)}), 500
 
 

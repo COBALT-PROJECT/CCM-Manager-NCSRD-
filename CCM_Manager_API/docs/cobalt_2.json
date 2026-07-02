@@ -117,6 +117,48 @@
         }
       }
     },
+    "/certificates/{cert_uuid}/pdf": {
+      "get": {
+        "tags": [
+          "Internal Endpoint"
+        ],
+        "summary": "Download Certificate PDF",
+        "description": "Downloads the generated certificate PDF by certification_id. If the PDF file is missing, CCM regenerates it from the stored certificate before returning it. Add ?regenerate=true to force regeneration.",
+        "produces": [
+          "application/pdf"
+        ],
+        "parameters": [
+          {
+            "name": "cert_uuid",
+            "in": "path",
+            "required": true,
+            "description": "The exact UUID of the target certificate.",
+            "type": "string"
+          },
+          {
+            "name": "regenerate",
+            "in": "query",
+            "required": false,
+            "description": "Set to true to force PDF regeneration before download.",
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Certificate PDF file.",
+            "schema": {
+              "type": "file"
+            }
+          },
+          "404": {
+            "description": "Certificate not found."
+          },
+          "500": {
+            "description": "PDF generation or internal server error."
+          }
+        }
+      }
+    },
     "/certificate-evaluation-result": {
       "post": {
         "tags": [
@@ -124,6 +166,88 @@
         ],
         "summary": "Create Initial Certificate From Evaluation Result",
         "description": "Receives the compact initial certificate evaluation result. A new certificate is created only when evaluation_type is Manual and result is OK. The certificate starts in INITIATE state, is uploaded to the DLT, and stores the returned certificate ledger hash. Later assessment results update the certificate state through POST /assessment-result.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "Evaluation result for a ToE and certification scheme.",
+            "schema": {
+              "type": "object",
+              "required": [
+                "toe_id",
+                "scheme_id",
+                "evaluation_type",
+                "result"
+              ],
+              "properties": {
+                "toe_id": {
+                  "type": "string",
+                  "description": "Target of Evaluation UUID.",
+                  "example": "3e671687-395b-41f5-a30f-a58921a69b79"
+                },
+                "scheme_id": {
+                  "type": "string",
+                  "description": "Certification scheme identifier.",
+                  "example": "AI_CLOUD_COMPLEX_DRM_DEMO_v1"
+                },
+                "evaluation_type": {
+                  "type": "string",
+                  "enum": [
+                    "Manual",
+                    "DYNAMIC"
+                  ],
+                  "example": "Manual"
+                },
+                "result": {
+                  "type": "string",
+                  "enum": [
+                    "OK",
+                    "NOK"
+                  ],
+                  "example": "OK"
+                },
+                "evidence_id": {
+                  "type": "string",
+                  "description": "Optional evidence identifier stored in the last_evaluation metadata.",
+                  "example": "444d2823-e7f2-4c5a-aea6-6d47a11c3481"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Certificate created and uploaded to DLT."
+          },
+          "400": {
+            "description": "Invalid or missing request fields."
+          },
+          "404": {
+            "description": "ToE or certification scheme not found."
+          },
+          "409": {
+            "description": "A certificate already exists or the initial evaluation is not Manual OK."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/certificates/evaluation-result": {
+      "post": {
+        "tags": [
+          "Internal Endpoint"
+        ],
+        "summary": "Create Initial Certificate From Evaluation Result",
+        "description": "Alias of POST /certificate-evaluation-result. Receives the compact initial certificate evaluation result. A new certificate is created only when evaluation_type is Manual and result is OK. The certificate starts in INITIATE state, is uploaded to the DLT, and stores the returned certificate ledger hash. Later assessment results update the certificate state through POST /assessment-result.",
         "consumes": [
           "application/json"
         ],
@@ -1130,7 +1254,7 @@
           "Certification Scheme"
         ],
         "summary": "Upload Certification Scheme",
-        "description": "Uploads a certification scheme document along with optional profile and catalog data. Updates existing entry if UUID matches. Fully compliant with the Compliance Metrics Model.",
+        "description": "Uploads a certification scheme document along with optional profile and catalog data. Updates existing entry if UUID matches, sends the normalized scheme to the scheme import service (default http://10.163.1.127:8080/scheme/import), and syncs the scheme to DRM unless disabled.",
         "consumes": [
           "application/json"
         ],
@@ -1138,6 +1262,20 @@
           "application/json"
         ],
         "parameters": [
+          {
+            "name": "sync_scheme_import",
+            "in": "query",
+            "required": false,
+            "description": "Set to false to skip POST /scheme/import for this upload.",
+            "type": "boolean"
+          },
+          {
+            "name": "sync_drm",
+            "in": "query",
+            "required": false,
+            "description": "Set to false to skip automatic DRM sync for this upload.",
+            "type": "boolean"
+          },
           {
             "name": "body",
             "in": "body",
@@ -1395,6 +1533,21 @@
                 "uuid": {
                   "type": "string",
                   "example": "scheme-123"
+                },
+                "scheme_import_status": {
+                  "type": "string",
+                  "example": "imported"
+                },
+                "scheme_import_status_code": {
+                  "type": "integer",
+                  "example": 200
+                },
+                "scheme_import_response": {
+                  "type": "object"
+                },
+                "drm_sync_status": {
+                  "type": "string",
+                  "example": "synchronized"
                 }
               }
             }
@@ -2194,28 +2347,110 @@
             "schema": {
               "type": "object",
               "required": [
-                "targetId",
-                "status",
-                "timestamp"
+                "id",
+                "created_at",
+                "metric_id",
+                "metric_configuration",
+                "evidence_id",
+                "resource_id",
+                "resource_types",
+                "compliance_comment",
+                "target_of_evaluation_id",
+                "history_updated_at",
+                "history"
               ],
               "properties": {
-                "targetId": {
+                "id": {
                   "type": "string",
-                  "example": "target-uuid-001"
+                  "format": "uuid",
+                  "example": "8d019c7e-d3e8-4ed6-9f7e-9b89a755b812"
                 },
-                "status": {
-                  "type": "string",
-                  "enum": [
-                    "compliant",
-                    "non-compliant",
-                    "partial"
-                  ],
-                  "example": "compliant"
-                },
-                "timestamp": {
+                "created_at": {
                   "type": "string",
                   "format": "date-time",
-                  "example": "2026-02-03T10:00:00Z"
+                  "example": "2026-06-26T12:00:00Z"
+                },
+                "metric_id": {
+                  "type": "string",
+                  "example": "metric-access-control"
+                },
+                "metric_configuration": {
+                  "type": "object",
+                  "example": {
+                    "threshold": "pass"
+                  }
+                },
+                "compliant": {
+                  "type": "boolean",
+                  "description": "true derives OK; false derives NOK for certificate state updates.",
+                  "example": true
+                },
+                "evidence_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "example": "444d2823-e7f2-4c5a-aea6-6d47a11c3481"
+                },
+                "resource_id": {
+                  "type": "string",
+                  "example": "3e671687-395b-41f5-a30f-a58921a69b79"
+                },
+                "resource_types": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": [
+                    "target_of_evaluation"
+                  ]
+                },
+                "compliance_comment": {
+                  "type": "string",
+                  "example": "Assessment passed."
+                },
+                "target_of_evaluation_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "example": "3e671687-395b-41f5-a30f-a58921a69b79"
+                },
+                "tool_id": {
+                  "type": "string",
+                  "example": "manual-test"
+                },
+                "evaluation_type": {
+                  "type": "string",
+                  "enum": [
+                    "Manual",
+                    "DYNAMIC"
+                  ],
+                  "description": "Optional. Defaults to DYNAMIC when omitted.",
+                  "example": "DYNAMIC"
+                },
+                "history_updated_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "example": "2026-06-26T12:00:00Z"
+                },
+                "history": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "evidence_id",
+                      "evidence_recorded_at"
+                    ],
+                    "properties": {
+                      "evidence_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "444d2823-e7f2-4c5a-aea6-6d47a11c3481"
+                      },
+                      "evidence_recorded_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-06-26T12:00:00Z"
+                      }
+                    }
+                  }
                 }
               }
             }

@@ -37,10 +37,14 @@ def _certificate_ledger_payload(certificate):
     return payload
 
 
+def _certificate_pdf_path(cert_uuid):
+    return os.path.join(PDF_OUTPUT_DIR, f"cobalt_certificate_{cert_uuid}.pdf")
+
+
 def _generate_updated_certificate_pdf(certificate):
     cert_uuid = certificate["certification"]["certification_id"]
-    pdf_filename = f"cobalt_certificate_{cert_uuid}.pdf"
-    pdf_path = os.path.join(PDF_OUTPUT_DIR, pdf_filename)
+    os.makedirs(PDF_OUTPUT_DIR, exist_ok=True)
+    pdf_path = _certificate_pdf_path(cert_uuid)
     pdf_certificate = _certificate_response_doc(certificate)
     assessment = pdf_certificate.setdefault("certification", {}).setdefault("assessment", {})
     if not assessment.get("evidence"):
@@ -56,6 +60,36 @@ def _generate_updated_certificate_pdf(certificate):
         pdf_path,
     )
     return pdf_path
+
+
+def get_certificate_pdf(cert_uuid, regenerate=False):
+    certificate = certificates_col.find_one({"certification.certification_id": cert_uuid})
+    if not certificate:
+        return {"error": "Certificate not found", "cert_uuid": cert_uuid}, 404
+
+    pdf_path = _certificate_pdf_path(cert_uuid)
+    if regenerate or not os.path.exists(pdf_path):
+        try:
+            pdf_path = _generate_updated_certificate_pdf(certificate)
+        except Exception as exc:
+            logging.error("Failed to generate certificate PDF %s: %s", cert_uuid, exc)
+            return {
+                "error": "Failed to generate certificate PDF",
+                "cert_uuid": cert_uuid,
+                "details": str(exc),
+            }, 500
+
+    if not os.path.exists(pdf_path):
+        return {
+            "error": "Certificate PDF was not found after generation",
+            "cert_uuid": cert_uuid,
+        }, 500
+
+    return {
+        "cert_uuid": cert_uuid,
+        "pdf_path": pdf_path,
+        "download_name": os.path.basename(pdf_path),
+    }, 200
 
 
 def _parse_date(value):

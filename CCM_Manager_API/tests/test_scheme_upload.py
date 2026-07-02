@@ -34,7 +34,11 @@ def test():
           f"{len(payload.get('controls', []))} controls ===\n")
 
     # Upload
-    resp = requests.post(f"{BASE_URL}/upload_certification_scheme", json=payload, timeout=30)
+    resp = requests.post(
+        f"{BASE_URL}/upload_certification_scheme?sync_drm=false&sync_scheme_import=false",
+        json=payload,
+        timeout=30,
+    )
     print(f"POST /upload_certification_scheme -> {resp.status_code}")
     result = resp.json()
     print(json.dumps(result, indent=2))
@@ -79,7 +83,11 @@ def test():
 
     # Re-upload to verify no duplicates
     print(f"\n=== Re-uploading to verify no duplicates ===\n")
-    resp2 = requests.post(f"{BASE_URL}/upload_certification_scheme", json=payload, timeout=30)
+    resp2 = requests.post(
+        f"{BASE_URL}/upload_certification_scheme?sync_drm=false&sync_scheme_import=false",
+        json=payload,
+        timeout=30,
+    )
     result2 = resp2.json()
     print(f"POST /upload_certification_scheme -> {resp2.status_code}")
     print(f"Populated: {json.dumps(result2.get('populated', {}), indent=2)}")

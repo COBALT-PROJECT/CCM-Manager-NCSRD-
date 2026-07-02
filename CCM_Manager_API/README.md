@@ -3,13 +3,21 @@ Common Certification Model Manager Module for WP2 of COBALT
 
 ## DRM Sync
 
-`POST /upload_certification_scheme` now uploads the certification scheme into CCM and automatically syncs it to DRM.
-The response includes `drm_sync_status`, `drm_sync_status_code`, and `drm_sync_response` so you can see whether DRM accepted it.
+`POST /upload_certification_scheme` now uploads the certification scheme into CCM, sends it to the scheme import service, and automatically syncs it to DRM.
+The response includes `scheme_import_status`, `scheme_import_status_code`, `scheme_import_response`, `drm_sync_status`, `drm_sync_status_code`, and `drm_sync_response` so you can see whether each external component accepted it.
 
-To upload only into CCM without calling DRM:
+By default the scheme import service is `http://10.163.1.127:8080/scheme/import`.
+You can override it with:
+
+- `SCHEME_IMPORT_URL`, full URL override
+- `SCHEME_IMPORT_BASE_URL`, base URL used with `/scheme/import`
+- `SCHEME_IMPORT_TIMEOUT`, defaults to `10`
+- `SCHEME_IMPORT_PAYLOAD_MODE`, defaults to `scheme_content`; use `uploaded`, `wrapper`, or `auto` if the receiver expects a different JSON shape
+
+To upload only into CCM without calling DRM or the scheme import service:
 
 ```bash
-curl -X POST "http://localhost:5001/upload_certification_scheme?sync_drm=false" \
+curl -X POST "http://localhost:5001/upload_certification_scheme?sync_drm=false&sync_scheme_import=false" \
   -H "Content-Type: application/json" \
   -d @fullCertScheme.json
 ```
@@ -100,6 +108,15 @@ By default assessment results are treated as `DYNAMIC`; include `evaluation_type
 
 For an existing active certificate, assessment `OK` moves `SUSPENDED` to `VALID`, keeps `VALID` as `VALID`, and moves `INITIATE` to `VALID` for `DYNAMIC`.
 Assessment `NOK` moves `INITIATE` or `VALID` to `SUSPENDED`, and keeps `SUSPENDED` as `SUSPENDED`.
+
+The generated certificate PDF can be downloaded by another component, such as the UI, through the certificate ID:
+
+```bash
+curl -L -o certificate.pdf "http://localhost:5001/certificates/<CERTIFICATE_ID>/pdf"
+```
+
+If the PDF file needs to be rebuilt from the latest certificate document, add `?regenerate=true`.
+Set `PDF_OUTPUT_DIR` to a mounted folder such as `/app/tmp` so PDFs remain downloadable after container restarts.
 
 ## OSCAL Catalog And Profile Queries
 

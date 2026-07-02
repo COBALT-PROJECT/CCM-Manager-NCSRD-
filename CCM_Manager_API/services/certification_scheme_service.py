@@ -3,7 +3,10 @@ import os
 from datetime import datetime
 from uuid import uuid4
 
+import requests
+
 from auth import auth_context, authed_request
+from config import SCHEME_IMPORT_PAYLOAD_MODE, SCHEME_IMPORT_TIMEOUT, SCHEME_IMPORT_URL
 from db import cm_col, controls_col, metrics_col, risks_col, rtc_col, schemes_col, threats_col
 from services.ledger import ledger_auth_context, send_to_ledger
 
@@ -183,7 +186,109 @@ def _flag_enabled(value, default=True):
     return bool(value)
 
 
-def upload_certification_scheme(data, sync_drm_on_upload=True):
+def _response_body(response):
+    try:
+        return response.json()
+    except ValueError:
+        return response.text
+
+
+def _scheme_import_payload(data, scheme_content, mode):
+    if mode == "uploaded":
+        return data
+    if mode == "wrapper":
+        return {"certificationScheme": scheme_content}
+    return scheme_content
+
+
+def import_scheme_to_orchestrator(data, scheme_content, scheme_id, payload_mode=None):
+    if not SCHEME_IMPORT_URL:
+        return {
+            "scheme_import_status": "skipped",
+            "scheme_import_reason": "SCHEME_IMPORT_URL is not configured.",
+            "outbound_auth": [auth_context("scheme_import")],
+        }, 200
+
+    requested_mode = (payload_mode or SCHEME_IMPORT_PAYLOAD_MODE or "scheme_content").strip().lower()
+    if requested_mode == "auto":
+        modes = ["scheme_content", "uploaded"]
+    else:
+        modes = [requested_mode]
+
+    correlation_id = str(uuid4())
+    attempts = []
+
+    for mode in modes:
+        payload = _scheme_import_payload(data, scheme_content, mode)
+        headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "X-Correlation-ID": correlation_id,
+        }
+
+        try:
+            response = authed_request(
+                "POST",
+                SCHEME_IMPORT_URL,
+                json=payload,
+                headers=headers,
+                timeout=SCHEME_IMPORT_TIMEOUT,
+                service="scheme_import",
+            )
+        except requests.RequestException as exc:
+            logging.warning("Scheme import request failed for %s: %s", scheme_id, exc)
+            return {
+                "scheme_import_status": "failed",
+                "scheme_import_url": SCHEME_IMPORT_URL,
+                "scheme_import_payload_mode": mode,
+                "scheme_import_correlation_id": correlation_id,
+                "scheme_import_error": str(exc),
+                "outbound_auth": [auth_context("scheme_import")],
+            }, 502
+
+        body = _response_body(response)
+        attempt = {
+            "payload_mode": mode,
+            "status_code": response.status_code,
+            "response": body,
+        }
+        attempts.append(attempt)
+
+        if response.status_code < 400:
+            return {
+                "scheme_import_status": "imported",
+                "scheme_import_url": SCHEME_IMPORT_URL,
+                "scheme_import_payload_mode": mode,
+                "scheme_import_correlation_id": correlation_id,
+                "scheme_import_status_code": response.status_code,
+                "scheme_import_response": body,
+                "outbound_auth": [auth_context("scheme_import")],
+            }, response.status_code
+
+        body_text = str(body).lower()
+        should_try_next_mode = (
+            requested_mode == "auto"
+            and mode != modes[-1]
+            and response.status_code == 400
+            and ("invalid scheme json" in body_text or "unknown field" in body_text)
+        )
+        if not should_try_next_mode:
+            break
+
+    last_attempt = attempts[-1] if attempts else {}
+    return {
+        "scheme_import_status": "failed",
+        "scheme_import_url": SCHEME_IMPORT_URL,
+        "scheme_import_payload_mode": last_attempt.get("payload_mode"),
+        "scheme_import_correlation_id": correlation_id,
+        "scheme_import_status_code": last_attempt.get("status_code"),
+        "scheme_import_response": last_attempt.get("response"),
+        "scheme_import_attempts": attempts,
+        "outbound_auth": [auth_context("scheme_import")],
+    }, last_attempt.get("status_code") or 502
+
+
+def upload_certification_scheme(data, sync_drm_on_upload=True, sync_scheme_import_on_upload=True):
     if not data:
         return {"error": "No JSON data provided"}, 400
 
@@ -387,6 +492,20 @@ def upload_certification_scheme(data, sync_drm_on_upload=True):
             "outbound_auth": [ledger_auth_context()],
         }
 
+        if _flag_enabled(sync_scheme_import_on_upload, default=True):
+            scheme_import_payload, scheme_import_status = import_scheme_to_orchestrator(
+                data,
+                scheme_content,
+                scheme_id,
+            )
+            response["scheme_import_status"] = scheme_import_payload.get("scheme_import_status")
+            response["scheme_import_status_code"] = scheme_import_status
+            response["scheme_import_response"] = scheme_import_payload
+            response["outbound_auth"].extend(scheme_import_payload.get("outbound_auth", []))
+        else:
+            response["scheme_import_status"] = "skipped"
+            response["scheme_import_reason"] = "Scheme import disabled for this request."
+
         if _flag_enabled(sync_drm_on_upload, default=True):
             drm_payload, drm_status = sync_drm(scheme_id)
             response["drm_sync_status"] = "synchronized" if drm_status == 200 else "failed"
@@ -482,13 +601,6 @@ def _drm_api_base(drm_base):
     if base.endswith(prefix):
         return base
     return f"{base}{prefix}"
-
-
-def _response_body(response):
-    try:
-        return response.json()
-    except ValueError:
-        return response.text
 
 
 def _response_object(body, entity_name):

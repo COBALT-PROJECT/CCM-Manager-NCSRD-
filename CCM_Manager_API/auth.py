@@ -41,7 +41,7 @@ def _build_auth_client():
 auth_client = _build_auth_client()
 
 
-AUTH_DISABLED_BY_DEFAULT = {"SDT", "SDTM"}
+AUTH_DISABLED_BY_DEFAULT = {"SDT", "SDTM", "SCHEME_IMPORT"}
 
 
 def _service_env_key(service):

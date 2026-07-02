@@ -169,7 +169,7 @@ def test_delete_certification_scheme(http, base_url):
     payload = _scheme_payload(scheme_id)
 
     response = http.post(
-        f"{base_url}/upload_certification_scheme",
+        f"{base_url}/upload_certification_scheme?sync_drm=false&sync_scheme_import=false",
         json=payload,
     )
     assert response.status_code == 200

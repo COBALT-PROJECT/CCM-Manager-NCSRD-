@@ -63,7 +63,11 @@ class TestCobaltDetailedWorkflows(unittest.TestCase):
             }
         }
         
-        resp = requests.post(f"{BASE_URL}/upload_certification_scheme", json=scheme_payload, headers=HEADERS)
+        resp = requests.post(
+            f"{BASE_URL}/upload_certification_scheme?sync_drm=false&sync_scheme_import=false",
+            json=scheme_payload,
+            headers=HEADERS,
+        )
         data = resp.json()
         log_api_call(step_1, "POST", "/upload_certification_scheme", scheme_payload, data, resp.status_code)
         

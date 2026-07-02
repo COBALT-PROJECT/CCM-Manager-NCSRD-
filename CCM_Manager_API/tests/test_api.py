@@ -580,7 +580,7 @@ class CCMAPITester:
             "JSON body: {certificationScheme: {id, complianceMetrics, controls, ...}}",
             "HTTP 200 with {message, uuid}"
         )
-        response, elapsed = self.make_request("POST", "/upload_certification_scheme", 
+        response, elapsed = self.make_request("POST", "/upload_certification_scheme?sync_drm=false&sync_scheme_import=false",
             json=self.sample_data["certification_scheme"])
         
         if response is None:
