@@ -27,6 +27,13 @@ def _origin_from_url(url):
     return f"{parsed.scheme}://{parsed.netloc}"
 
 
+def _env_bool(name, default=False):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
 class Config:
     UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "./sboms")
     TMP_FOLDER = os.getenv("TMP_FOLDER", "./tmp")
@@ -43,6 +50,31 @@ SCHEME_IMPORT_BASE_URL = _env_url("SCHEME_IMPORT_BASE_URL") or "http://10.163.1.
 SCHEME_IMPORT_URL = _env_url("SCHEME_IMPORT_URL") or _join_url(SCHEME_IMPORT_BASE_URL, "/scheme/import")
 SCHEME_IMPORT_TIMEOUT = float(os.getenv("SCHEME_IMPORT_TIMEOUT", "10"))
 SCHEME_IMPORT_PAYLOAD_MODE = os.getenv("SCHEME_IMPORT_PAYLOAD_MODE", "scheme_content").strip().lower()
+
+CCM_INBOUND_AUTH_ENABLED = _env_bool("CCM_INBOUND_AUTH_ENABLED", False)
+CCM_INBOUND_ISSUER = _env_url("CCM_INBOUND_ISSUER") or _env_url("AM_BASE_URL")
+CCM_INBOUND_OPENID_CONFIG_URL = (
+    _env_url("CCM_INBOUND_OPENID_CONFIG_URL")
+    or _join_url(CCM_INBOUND_ISSUER, "/.well-known/openid-configuration")
+)
+CCM_INBOUND_JWKS_URL = (
+    _env_url("CCM_INBOUND_JWKS_URL")
+    or _join_url(CCM_INBOUND_ISSUER, "/oauth/jwks")
+)
+CCM_INBOUND_USERINFO_URL = (
+    _env_url("CCM_INBOUND_USERINFO_URL")
+    or _join_url(CCM_INBOUND_ISSUER, "/oauth/userinfo?schema=openid")
+)
+CCM_INBOUND_AUDIENCE = os.getenv("CCM_INBOUND_AUDIENCE", "").strip()
+CCM_INBOUND_REQUIRED_SCOPE = os.getenv("CCM_INBOUND_REQUIRED_SCOPE", "").strip()
+CCM_INBOUND_REQUIRE_TYPE = os.getenv("CCM_INBOUND_REQUIRE_TYPE", "").strip()
+CCM_INBOUND_ALLOWED_CLIENT_IDS = os.getenv("CCM_INBOUND_ALLOWED_CLIENT_IDS", "").strip()
+CCM_INBOUND_ALLOWED_ALGS = os.getenv("CCM_INBOUND_ALLOWED_ALGS", "RS256").strip()
+CCM_INBOUND_VERIFY_TLS = _env_bool("CCM_INBOUND_VERIFY_TLS", _env_bool("AM_VERIFY_TLS", True))
+CCM_INBOUND_TIMEOUT = float(os.getenv("CCM_INBOUND_TIMEOUT", "5"))
+CCM_INBOUND_JWKS_TTL = float(os.getenv("CCM_INBOUND_JWKS_TTL", "3600"))
+CCM_INBOUND_LEEWAY = int(os.getenv("CCM_INBOUND_LEEWAY", "30"))
+CCM_INBOUND_PUBLIC_PATHS = os.getenv("CCM_INBOUND_PUBLIC_PATHS", "").strip()
 
 DRM_BASE_URL = os.getenv("DRM_BASE_URL", "")
 DEPLOY_SDT_URL = _env_url("DEPLOY_SDT")

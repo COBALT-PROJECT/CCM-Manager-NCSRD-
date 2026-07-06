@@ -9,6 +9,19 @@
   "schemes": [
     "http"
   ],
+  "securityDefinitions": {
+    "BearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "Bearer token issued by the COBALT Authentication Manager. Use: Bearer <token>"
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
   "tags": [
     {
       "name": "Internal Endpoint"

@@ -24,6 +24,7 @@ from db import (
     rtc_col,
     threats_col,
 )
+from inbound_auth import inbound_auth_status, require_inbound_auth
 from services import assessment_service
 from services import artifact_service
 from services import catalogue_service
@@ -54,10 +55,19 @@ os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 os.makedirs(app.config["TMP_FOLDER"], exist_ok=True)
 
 
+@app.before_request
+def authenticate_inbound_request():
+    payload, status_code = require_inbound_auth(request)
+    if status_code:
+        return jsonify(payload), status_code
+
+
 @app.route('/auth/status', methods=['GET'])
 def auth_status():
     """Diagnostic endpoint — reports whether component auth is enabled and functional."""
-    return jsonify(auth_status_payload()), 200
+    payload = auth_status_payload()
+    payload["inbound"] = inbound_auth_status()
+    return jsonify(payload), 200
 
 
 @app.route('/')

@@ -1,6 +1,34 @@
 # CCM-Manager
 Common Certification Model Manager Module for WP2 of COBALT
 
+## Incoming Authentication
+
+Incoming bearer-token authentication is available but disabled by default so local deployments keep working until explicitly protected.
+
+To require callers to authenticate through the COBALT Authentication Manager, configure:
+
+- `CCM_INBOUND_AUTH_ENABLED=true`
+- `CCM_INBOUND_ISSUER`, defaults to `AM_BASE_URL`
+- `CCM_INBOUND_JWKS_URL`, defaults to `<CCM_INBOUND_ISSUER>/oauth/jwks`
+- `CCM_INBOUND_USERINFO_URL`, defaults to `<CCM_INBOUND_ISSUER>/oauth/userinfo?schema=openid`
+- `CCM_INBOUND_AUDIENCE`, optional JWT audience, for component tokens usually `components`
+- `CCM_INBOUND_REQUIRED_SCOPE`, optional required scope, for current AM component tokens usually `profile`
+- `CCM_INBOUND_REQUIRE_TYPE`, optional token subject type, for component-only access use `component`
+- `CCM_INBOUND_ALLOWED_CLIENT_IDS`, optional comma/space separated allowlist
+- `CCM_INBOUND_VERIFY_TLS`, defaults to `AM_VERIFY_TLS`
+
+Public endpoints remain available without a bearer token: `/`, `/auth/status`, `/apidocs/`, `/apispec_1.json`, and Swagger static assets.
+
+Protected calls must send:
+
+```bash
+curl -sS "http://localhost:5001/certification_schemes" \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Accept: application/json" | jq
+```
+
+See `docs/CCM_MANAGER_PARTNER_INTEGRATION.md` for partner-facing instructions and example flows.
+
 ## DRM Sync
 
 `POST /upload_certification_scheme` now uploads the certification scheme into CCM, sends it to the scheme import service, and automatically syncs it to DRM.
