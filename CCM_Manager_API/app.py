@@ -951,8 +951,12 @@ if __name__ == '__main__':
         "AI_CATALOGUE_PATH",
         os.path.join(data_dir, "eucs", "global_certification_scheme_fully_mapped.json"),
     )
+    controls_catalogue_path = os.getenv(
+        "EUCS_CONTROLS_CATALOGUE_PATH",
+        os.path.join(data_dir, "eucs", "EUCS_controls_version_1.1_catalog_master.json"),
+    )
     try:
-        catalogue_service.initialize_ai_catalogue(catalogue_path)
+        catalogue_service.initialize_ai_catalogue(catalogue_path, controls_catalogue_path)
     except Exception as e:
         logging.error(f"Failed to auto-initialize AI catalogue from JSON: {e}")
 

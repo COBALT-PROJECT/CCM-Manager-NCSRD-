@@ -2,6 +2,53 @@ import json
 import os
 import requests
 
+
+def control_statement(control):
+    for part in control.get("parts", []) or []:
+        if part.get("name") == "statement" and part.get("prose"):
+            return part["prose"]
+    for part in control.get("parts", []) or []:
+        if part.get("prose"):
+            return part["prose"]
+    return ""
+
+
+def flatten_oscal_controls(catalogue):
+    catalog = catalogue.get("catalog", catalogue)
+    controls = []
+
+    def walk(node, parent_groups=None):
+        parent_groups = parent_groups or []
+
+        for control in node.get("controls", []) or []:
+            control_id = control.get("id")
+            if not control_id:
+                continue
+
+            statement = control_statement(control)
+            controls.append({
+                "control_id": control_id,
+                "oscal_id": control_id,
+                "title": control.get("title", ""),
+                "class": control.get("class", ""),
+                "description": statement,
+                "prose": statement,
+                "parts": control.get("parts", []),
+                "groups": parent_groups,
+            })
+
+        for group in node.get("groups", []) or []:
+            group_ref = {
+                "id": group.get("id", ""),
+                "title": group.get("title", ""),
+                "class": group.get("class", ""),
+            }
+            walk(group, parent_groups + [group_ref])
+
+    walk(catalog)
+    return controls
+
+
 def init_catalogue():
     filename = os.path.abspath(
         os.getenv(
@@ -12,6 +59,18 @@ def init_catalogue():
                 "data",
                 "eucs",
                 "global_certification_scheme_fully_mapped.json",
+            ),
+        )
+    )
+    controls_filename = os.path.abspath(
+        os.getenv(
+            "EUCS_CONTROLS_CATALOGUE_PATH",
+            os.path.join(
+                os.path.dirname(__file__),
+                "..",
+                "data",
+                "eucs",
+                "EUCS_controls_version_1.1_catalog_master.json",
             ),
         )
     )
@@ -41,7 +100,12 @@ def init_catalogue():
                 print(f"Metrics Response ({res.status_code}): {res.text}")
                 
             # 2. Post Controls
-            controls = data.get("certifiable_standards_mapping", [])
+            controls = []
+            if os.path.exists(controls_filename):
+                with open(controls_filename, 'r') as controls_file:
+                    controls = flatten_oscal_controls(json.load(controls_file))
+            if not controls:
+                controls = data.get("certifiable_standards_mapping", [])
             if controls:
                 print(f"Uploading {len(controls)} controls...")
                 res = requests.post(controls_url, json=controls, headers=headers)
