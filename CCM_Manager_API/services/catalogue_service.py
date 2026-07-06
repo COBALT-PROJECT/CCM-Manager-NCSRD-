@@ -59,6 +59,7 @@ def initialize_ai_catalogue(catalogue_path):
 
     with open(catalogue_path, "r") as catalogue_file:
         cat_data = json.load(catalogue_file)
+    cat_data = cat_data.get("certificationScheme", cat_data)
 
     initialized = {
         "metrics": 0,
@@ -86,10 +87,10 @@ def initialize_ai_catalogue(catalogue_path):
         threats_list = []
 
         for risk in risks_list:
-            mapped_threats = risk.pop("mapped_threats", [])
+            mapped_threats = risk.get("mapped_threats", []) or []
             for threat in mapped_threats:
-                threat["associated_risk_id"] = risk.get("risk_id")
-                threats_list.append(threat)
+                threat_doc = {**threat, "associated_risk_id": risk.get("risk_id")}
+                threats_list.append(threat_doc)
 
         if risks_list:
             risks_col.insert_many(risks_list)

@@ -947,7 +947,10 @@ def withdraw_certificate(cert_uuid):
 
 if __name__ == '__main__':
     data_dir = os.path.join(os.path.dirname(__file__), "data")
-    catalogue_path = os.path.join(data_dir, "ai_catalogue.json")
+    catalogue_path = os.getenv(
+        "AI_CATALOGUE_PATH",
+        os.path.join(data_dir, "eucs", "global_certification_scheme_fully_mapped.json"),
+    )
     try:
         catalogue_service.initialize_ai_catalogue(catalogue_path)
     except Exception as e:

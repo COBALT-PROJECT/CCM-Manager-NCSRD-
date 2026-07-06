@@ -4,7 +4,16 @@ import requests
 
 def init_catalogue():
     filename = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "data", "ai_catalogue.json")
+        os.getenv(
+            "AI_CATALOGUE_PATH",
+            os.path.join(
+                os.path.dirname(__file__),
+                "..",
+                "data",
+                "eucs",
+                "global_certification_scheme_fully_mapped.json",
+            ),
+        )
     )
     headers = {'Content-Type': 'application/json'}
     
@@ -22,6 +31,7 @@ def init_catalogue():
     with open(filename, 'r') as f:
         try:
             data = json.load(f)
+            data = data.get("certificationScheme", data)
             
             # 1. Post Metrics
             metrics = data.get("compliance_metrics", [])
@@ -43,10 +53,10 @@ def init_catalogue():
             
             for risk in risks:
                 # Extract threats
-                mapped_threats = risk.pop("mapped_threats", [])
+                mapped_threats = risk.get("mapped_threats", []) or []
                 for threat in mapped_threats:
-                    threat["associated_risk_id"] = risk["risk_id"]
-                    threats.append(threat)
+                    threat_doc = {**threat, "associated_risk_id": risk["risk_id"]}
+                    threats.append(threat_doc)
             
             if risks:
                 print(f"Uploading {len(risks)} risks...")
