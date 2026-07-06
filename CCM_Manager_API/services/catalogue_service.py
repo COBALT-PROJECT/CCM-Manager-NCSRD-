@@ -109,7 +109,27 @@ def _load_oscal_controls(controls_catalogue_path):
     return _flatten_oscal_controls(controls_catalogue)
 
 
-def initialize_ai_catalogue(catalogue_path, controls_catalogue_path=None):
+def _save_documents(collection, docs, key_getter, force_upsert=False, query_builder=None):
+    if not docs:
+        return 0
+
+    if force_upsert:
+        saved = 0
+        for doc in docs:
+            key = key_getter(doc)
+            if not key:
+                continue
+
+            query = query_builder(doc, key) if query_builder else {key_getter.__name__: key}
+            collection.update_one(query, {"$set": doc}, upsert=True)
+            saved += 1
+        return saved
+
+    collection.insert_many(docs)
+    return len(docs)
+
+
+def initialize_ai_catalogue(catalogue_path, controls_catalogue_path=None, force_upsert=False):
     if not os.path.exists(catalogue_path):
         return {"initialized": False, "reason": "catalogue file not found"}
 
@@ -124,23 +144,33 @@ def initialize_ai_catalogue(catalogue_path, controls_catalogue_path=None):
         "threats": 0,
     }
 
-    if metrics_col.count_documents({}) == 0:
+    if force_upsert or metrics_col.count_documents({}) == 0:
         metrics_list = cat_data.get("compliance_metrics", [])
         if metrics_list:
-            metrics_col.insert_many(metrics_list)
-            initialized["metrics"] = len(metrics_list)
+            initialized["metrics"] = _save_documents(
+                metrics_col,
+                metrics_list,
+                metric_key,
+                force_upsert,
+                lambda _doc, key: {"id": key},
+            )
             logging.info("Initialized %s AI compliance metrics into MongoDB.", len(metrics_list))
 
-    if controls_col.count_documents({}) == 0:
+    if force_upsert or controls_col.count_documents({}) == 0:
         controls_list = _load_oscal_controls(controls_catalogue_path)
         if not controls_list:
             controls_list = cat_data.get("certifiable_standards_mapping", [])
         if controls_list:
-            controls_col.insert_many(controls_list)
-            initialized["controls"] = len(controls_list)
+            initialized["controls"] = _save_documents(
+                controls_col,
+                controls_list,
+                control_key,
+                force_upsert,
+                lambda _doc, key: {"control_id": key},
+            )
             logging.info("Initialized %s AI controls into MongoDB.", len(controls_list))
 
-    if risks_col.count_documents({}) == 0 and threats_col.count_documents({}) == 0:
+    if force_upsert or (risks_col.count_documents({}) == 0 and threats_col.count_documents({}) == 0):
         risks_list = cat_data.get("risk_catalogue", [])
         threats_list = []
 
@@ -151,13 +181,26 @@ def initialize_ai_catalogue(catalogue_path, controls_catalogue_path=None):
                 threats_list.append(threat_doc)
 
         if risks_list:
-            risks_col.insert_many(risks_list)
-            initialized["risks"] = len(risks_list)
+            initialized["risks"] = _save_documents(
+                risks_col,
+                risks_list,
+                risk_key,
+                force_upsert,
+                lambda _doc, key: {"risk_id": key},
+            )
             logging.info("Initialized %s AI risks into MongoDB.", len(risks_list))
 
         if threats_list:
-            threats_col.insert_many(threats_list)
-            initialized["threats"] = len(threats_list)
+            initialized["threats"] = _save_documents(
+                threats_col,
+                threats_list,
+                threat_key,
+                force_upsert,
+                lambda doc, key: {
+                    "threat_id": key,
+                    "associated_risk_id": doc.get("associated_risk_id"),
+                },
+            )
             logging.info("Initialized %s AI threats into MongoDB.", len(threats_list))
 
     return {"initialized": True, "counts": initialized}

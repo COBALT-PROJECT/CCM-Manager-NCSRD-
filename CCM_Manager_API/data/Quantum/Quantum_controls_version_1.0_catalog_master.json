@@ -1,0 +1,396 @@
+{
+  "catalog": {
+    "uuid": "7ad9f46f-0000-4000-8000-quantumcat01",
+    "metadata": {
+      "title": "Quantum Controls Catalog (QPU Security & Integrity)",
+      "published": "2026-06-29T00:00:00+00:00",
+      "last-modified": "2026-06-29T00:00:00+00:00",
+      "version": "1.0",
+      "oscal-version": "1.1.2",
+      "props": [
+        {
+          "name": "keywords",
+          "value": "quantum, QPU, quantum computing, error correction, coherence, OSCAL"
+        }
+      ],
+      "links": [
+        {
+          "href": "qc-pdf-resource",
+          "rel": "alternate"
+        }
+      ],
+      "roles": [
+        {
+          "id": "publisher",
+          "title": "Source document converter to OSCAL."
+        },
+        {
+          "id": "author",
+          "title": "Source document author."
+        },
+        {
+          "id": "contact",
+          "title": "Contact."
+        }
+      ],
+      "parties": [
+        {
+          "uuid": "b1d4a0c2-0000-4000-8000-000000000001",
+          "type": "organization",
+          "name": "COBALT-Quantum",
+          "email-addresses": [
+            "name@domain.eu"
+          ],
+          "addresses": [
+            {
+              "addr-lines": [
+                "COBALT",
+                "Attn: Somebody",
+                "1 Some Street"
+              ],
+              "city": "City",
+              "country": "EU"
+            }
+          ]
+        }
+      ],
+      "responsible-parties": [
+        {
+          "role-id": "publisher",
+          "party-uuids": [
+            "b1d4a0c2-0000-4000-8000-000000000001"
+          ]
+        },
+        {
+          "role-id": "author",
+          "party-uuids": [
+            "b1d4a0c2-0000-4000-8000-000000000001"
+          ]
+        },
+        {
+          "role-id": "contact",
+          "party-uuids": [
+            "b1d4a0c2-0000-4000-8000-000000000001"
+          ]
+        }
+      ],
+      "remarks": "Quantum-only control set. Mirrors the EUCS OSCAL structure but scoped exclusively to Quantum Processing Unit (QPU) security and integrity. AI and Cloud controls are excluded."
+    },
+    "groups": [
+      {
+        "id": "quantum-1",
+        "title": "Quantum Error Correction",
+        "props": [
+          {
+            "name": "label",
+            "value": "1."
+          }
+        ],
+        "controls": [
+          {
+            "id": "quantum-1.QEC-01_req.1",
+            "class": "Quantum",
+            "title": "QEC-01.1",
+            "parts": [
+              {
+                "id": "quantum-1.QEC-01_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall enable an active error-correction scheme on the QPU before exposing it for production workloads."
+              }
+            ]
+          },
+          {
+            "id": "quantum-1.QEC-02_req.1",
+            "class": "Quantum",
+            "title": "QEC-02.1",
+            "parts": [
+              {
+                "id": "quantum-1.QEC-02_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall implement a quantum error-correcting code whose code distance meets or exceeds the value required for the target logical error rate."
+              }
+            ]
+          },
+          {
+            "id": "quantum-1.QEC-03_req.1",
+            "class": "Quantum",
+            "title": "QEC-03.1",
+            "parts": [
+              {
+                "id": "quantum-1.QEC-03_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall measure and report the logical (post-correction) error rate and verify it remains below the defined threshold."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "quantum-2",
+        "title": "Gate Operation Integrity",
+        "props": [
+          {
+            "name": "label",
+            "value": "2."
+          }
+        ],
+        "controls": [
+          {
+            "id": "quantum-2.QGT-01_req.1",
+            "class": "Quantum",
+            "title": "QGT-01.1",
+            "parts": [
+              {
+                "id": "quantum-2.QGT-01_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall characterise and bound the one-qubit gate error rate below the specified threshold."
+              }
+            ]
+          },
+          {
+            "id": "quantum-2.QGT-02_req.1",
+            "class": "Quantum",
+            "title": "QGT-02.1",
+            "parts": [
+              {
+                "id": "quantum-2.QGT-02_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall characterise and bound the two-qubit gate error rate below the specified threshold."
+              }
+            ]
+          },
+          {
+            "id": "quantum-2.QGT-03_req.1",
+            "class": "Quantum",
+            "title": "QGT-03.1",
+            "parts": [
+              {
+                "id": "quantum-2.QGT-03_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall verify that the QPU supports a universal gate set (e.g., Clifford + T) sufficient to execute arbitrary quantum programs."
+              }
+            ]
+          },
+          {
+            "id": "quantum-2.QGT-04_req.1",
+            "class": "Quantum",
+            "title": "QGT-04.1",
+            "parts": [
+              {
+                "id": "quantum-2.QGT-04_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall bound gate execution time so that operations complete within the device coherence window."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "quantum-3",
+        "title": "State Preparation and Measurement",
+        "props": [
+          {
+            "name": "label",
+            "value": "3."
+          }
+        ],
+        "controls": [
+          {
+            "id": "quantum-3.QSM-01_req.1",
+            "class": "Quantum",
+            "title": "QSM-01.1",
+            "parts": [
+              {
+                "id": "quantum-3.QSM-01_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall bound the State Preparation And Measurement (SPAM) error rate below the specified threshold."
+              }
+            ]
+          },
+          {
+            "id": "quantum-3.QSM-02_req.1",
+            "class": "Quantum",
+            "title": "QSM-02.1",
+            "parts": [
+              {
+                "id": "quantum-3.QSM-02_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall bound the readout (measurement) error rate below the specified threshold."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "quantum-4",
+        "title": "Coherence and Noise Management",
+        "props": [
+          {
+            "name": "label",
+            "value": "4."
+          }
+        ],
+        "controls": [
+          {
+            "id": "quantum-4.QCO-01_req.1",
+            "class": "Quantum",
+            "title": "QCO-01.1",
+            "parts": [
+              {
+                "id": "quantum-4.QCO-01_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall maintain the T1 (energy relaxation) coherence time at or above the specified threshold."
+              }
+            ]
+          },
+          {
+            "id": "quantum-4.QCO-02_req.1",
+            "class": "Quantum",
+            "title": "QCO-02.1",
+            "parts": [
+              {
+                "id": "quantum-4.QCO-02_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall maintain the T2 (dephasing) coherence time at or above the specified threshold."
+              }
+            ]
+          },
+          {
+            "id": "quantum-4.QCO-03_req.1",
+            "class": "Quantum",
+            "title": "QCO-03.1",
+            "parts": [
+              {
+                "id": "quantum-4.QCO-03_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall bound inter-qubit crosstalk error below the specified threshold."
+              }
+            ]
+          },
+          {
+            "id": "quantum-4.QCO-04_req.1",
+            "class": "Quantum",
+            "title": "QCO-04.1",
+            "parts": [
+              {
+                "id": "quantum-4.QCO-04_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall enable continuous monitoring of decoherence parameters (T1/T2) and alert on drift beyond tolerance."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "quantum-5",
+        "title": "Capacity, Connectivity and Performance",
+        "props": [
+          {
+            "name": "label",
+            "value": "5."
+          }
+        ],
+        "controls": [
+          {
+            "id": "quantum-5.QCP-01_req.1",
+            "class": "Quantum",
+            "title": "QCP-01.1",
+            "parts": [
+              {
+                "id": "quantum-5.QCP-01_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall expose at least the specified number of physical qubits."
+              }
+            ]
+          },
+          {
+            "id": "quantum-5.QCP-02_req.1",
+            "class": "Quantum",
+            "title": "QCP-02.1",
+            "parts": [
+              {
+                "id": "quantum-5.QCP-02_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall provide qubit connectivity at or above the specified average degree to limit routing-induced error."
+              }
+            ]
+          },
+          {
+            "id": "quantum-5.QCP-03_req.1",
+            "class": "Quantum",
+            "title": "QCP-03.1",
+            "parts": [
+              {
+                "id": "quantum-5.QCP-03_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall support a circuit depth at or above the specified threshold before decoherence dominates."
+              }
+            ]
+          },
+          {
+            "id": "quantum-5.QCP-04_req.1",
+            "class": "Quantum",
+            "title": "QCP-04.1",
+            "parts": [
+              {
+                "id": "quantum-5.QCP-04_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall achieve a Quantum Volume at or above the specified threshold."
+              }
+            ]
+          },
+          {
+            "id": "quantum-5.QCP-05_req.1",
+            "class": "Quantum",
+            "title": "QCP-05.1",
+            "parts": [
+              {
+                "id": "quantum-5.QCP-05_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall achieve Circuit Layer Operations Per Second (CLOPS) at or above the specified threshold."
+              }
+            ]
+          },
+          {
+            "id": "quantum-5.QCP-06_req.1",
+            "class": "Quantum",
+            "title": "QCP-06.1",
+            "parts": [
+              {
+                "id": "quantum-5.QCP-06_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall achieve a randomized-benchmarking fidelity at or above the specified threshold."
+              }
+            ]
+          },
+          {
+            "id": "quantum-5.QCP-07_req.1",
+            "class": "Quantum",
+            "title": "QCP-07.1",
+            "parts": [
+              {
+                "id": "quantum-5.QCP-07_req.1_stmt",
+                "name": "statement",
+                "prose": "The quantum service provider shall achieve a Bell-state (entanglement) fidelity at or above the specified threshold."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "back-matter": {
+      "resources": [
+        {
+          "uuid": "qc-pdf-resource",
+          "title": "COBALT-Quantum Control Reference",
+          "rlinks": [
+            {
+              "href": "https://example.org/cobalt-quantum.pdf",
+              "media-type": "application/pdf"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

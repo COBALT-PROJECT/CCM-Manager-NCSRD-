@@ -1,0 +1,1199 @@
+{
+  "certificationScheme": {
+    "id": "urn:uuid:7ad9f46f-0000-4000-8000-quantumsch01",
+    "name": "Quantum Certification Scheme (Fully Mapped)",
+    "short_name": "COBALT-Q",
+    "description": "Quantum-only certification scheme covering QPU metrics, threats, risks and controls.",
+    "version": "1.0",
+    "status": "draft",
+    "validity_period_months": 36,
+    "assurance_levels": [
+      "Basic",
+      "Substantial",
+      "High"
+    ],
+    "authority": {
+      "name": "COBALT-Quantum",
+      "region": "EU"
+    },
+    "compliance_metrics": [
+      {
+        "id": "ErrorCorrectionEnabled_QPU_1.0",
+        "name": "Error correction enabled",
+        "description": "This metric is used to assess whether a QPU has error correction enabled and correctly configured.",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU has error correction enabled and correctly configured.",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "True"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "Quantum Error Correction",
+          "associated_control_requirement": "quantum-1.QEC-01_req.1",
+          "control_description": "QEC-01.1 Active error-correction scheme enabled on the QPU."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          },
+          {
+            "threat_id": "GATE_ERROR",
+            "name": "Gate Error",
+            "threat_description": "Imperfect gate operations inject errors into the quantum state and corrupt the result."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_ErrorCorrection_NotPresent"
+        ]
+      },
+      {
+        "id": "OneQubitGateErrorRate_QPU_1.0",
+        "name": "One-qubit gate error rate",
+        "description": "This metric is used to assess whether a QPU has a one-qubit gate error rate below a specified threshold.",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU has a one-qubit gate error rate below a specified threshold.",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Float",
+        "target_values": {
+          "target_value_scale": "[0,1]",
+          "target_value": "0.0001"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "Gate Operation Integrity",
+          "associated_control_requirement": "quantum-2.QGT-01_req.1",
+          "control_description": "QGT-01.1 One-qubit gate error rate bounded below threshold."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "GATE_ERROR",
+            "name": "Gate Error",
+            "threat_description": "Imperfect gate operations inject errors into the quantum state and corrupt the result."
+          },
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_OutputDataIntegrity",
+          "#QuantumRisk_GateInfidelity"
+        ]
+      },
+      {
+        "id": "TwoQubitGateErrorRate_QPU_1.0",
+        "name": "Two-qubit gate error rate",
+        "description": "This metric is used to assess whether a QPU has a two-qubit gate error rate below a specified threshold.",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU has a two-qubit gate error rate below a specified threshold.",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Float",
+        "target_values": {
+          "target_value_scale": "[0,1]",
+          "target_value": "0.0001"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "Gate Operation Integrity",
+          "associated_control_requirement": "quantum-2.QGT-02_req.1",
+          "control_description": "QGT-02.1 Two-qubit gate error rate bounded below threshold."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "GATE_ERROR",
+            "name": "Gate Error",
+            "threat_description": "Imperfect gate operations inject errors into the quantum state and corrupt the result."
+          },
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_OutputDataIntegrity",
+          "#QuantumRisk_GateInfidelity"
+        ]
+      },
+      {
+        "id": "SPAMErrorRate_QPU_1.0",
+        "name": "SPAM error rate",
+        "description": "This metric is used to assess whether a QPU has a State Preparation And Measurement (SPAM) error rate below a specified threshold.",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU has a State Preparation And Measurement (SPAM) error rate below a specified threshold.",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Float",
+        "target_values": {
+          "target_value_scale": "[0,1]",
+          "target_value": "0.0001"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "State Preparation and Measurement",
+          "associated_control_requirement": "quantum-3.QSM-01_req.1",
+          "control_description": "QSM-01.1 SPAM error rate bounded below threshold."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "READOUT_ERROR",
+            "name": "Readout Error",
+            "threat_description": "Errors during state preparation or measurement misreport the qubit state."
+          },
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_OutputDataIntegrity",
+          "#QuantumRisk_ReadoutError"
+        ]
+      },
+      {
+        "id": "ReadoutErrorRate_QPU_1.0",
+        "name": "Readout error rate",
+        "description": "This metric is used to assess whether a QPU has a readout (measurement) error rate below a specified threshold.",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU has a readout (measurement) error rate below a specified threshold.",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Float",
+        "target_values": {
+          "target_value_scale": "[0,1]",
+          "target_value": "0.01"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "State Preparation and Measurement",
+          "associated_control_requirement": "quantum-3.QSM-02_req.1",
+          "control_description": "QSM-02.1 Readout error rate bounded below threshold."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "READOUT_ERROR",
+            "name": "Readout Error",
+            "threat_description": "Errors during state preparation or measurement misreport the qubit state."
+          },
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_ReadoutError",
+          "#QuantumRisk_OutputDataIntegrity"
+        ]
+      },
+      {
+        "id": "CrosstalkErrorRate_QPU_1.0",
+        "name": "Crosstalk error rate",
+        "description": "This metric is used to assess whether a QPU has a crosstalk error rate below a specified threshold.",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU has a crosstalk error rate below a specified threshold.",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Float",
+        "target_values": {
+          "target_value_scale": "[0,1]",
+          "target_value": "0.001"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "Coherence and Noise Management",
+          "associated_control_requirement": "quantum-4.QCO-03_req.1",
+          "control_description": "QCO-03.1 Inter-qubit crosstalk error bounded below threshold."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "CROSSTALK",
+            "name": "Crosstalk",
+            "threat_description": "Unintended coupling between qubits introduces correlated errors during parallel operations."
+          },
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_Crosstalk",
+          "#QuantumRisk_OutputDataIntegrity"
+        ]
+      },
+      {
+        "id": "T1CoherenceTime_QPU_1.0",
+        "name": "T1 coherence time",
+        "description": "This metric is used to assess whether a QPU maintains a T1 (energy relaxation) coherence time at or above a specified threshold.",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU maintains a T1 (energy relaxation) coherence time at or above a specified threshold.",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Float",
+        "target_values": {
+          "target_value_scale": "[0,infinity)",
+          "target_value": "0.001"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "Coherence and Noise Management",
+          "associated_control_requirement": "quantum-4.QCO-01_req.1",
+          "control_description": "QCO-01.1 T1 coherence time maintained at or above threshold."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DECOHERENCE",
+            "name": "Decoherence",
+            "threat_description": "Loss of quantum coherence (T1/T2 decay) destroys stored quantum information before the circuit completes."
+          },
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_Decoherence",
+          "#QuantumRisk_OutputDataIntegrity"
+        ]
+      },
+      {
+        "id": "T2CoherenceTime_QPU_1.0",
+        "name": "T2 coherence time",
+        "description": "This metric is used to assess whether a QPU maintains a T2 (dephasing) coherence time at or above a specified threshold.",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU maintains a T2 (dephasing) coherence time at or above a specified threshold.",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Float",
+        "target_values": {
+          "target_value_scale": "[0,infinity)",
+          "target_value": "0.001"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "Coherence and Noise Management",
+          "associated_control_requirement": "quantum-4.QCO-02_req.1",
+          "control_description": "QCO-02.1 T2 coherence time maintained at or above threshold."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DECOHERENCE",
+            "name": "Decoherence",
+            "threat_description": "Loss of quantum coherence (T1/T2 decay) destroys stored quantum information before the circuit completes."
+          },
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_Decoherence",
+          "#QuantumRisk_OutputDataIntegrity"
+        ]
+      },
+      {
+        "id": "GateExecutionTime_QPU_1.0",
+        "name": "Gate execution time",
+        "description": "This metric is used to assess whether a QPU executes gates within a specified maximum time so operations complete within the coherence window.",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU executes gates within a specified maximum time so operations complete within the coherence window.",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Float",
+        "target_values": {
+          "target_value_scale": "[0,infinity)",
+          "target_value": "0.000001"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "Gate Operation Integrity",
+          "associated_control_requirement": "quantum-2.QGT-04_req.1",
+          "control_description": "QGT-04.1 Gate execution time bounded within coherence window."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DECOHERENCE",
+            "name": "Decoherence",
+            "threat_description": "Loss of quantum coherence (T1/T2 decay) destroys stored quantum information before the circuit completes."
+          },
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_Decoherence"
+        ]
+      },
+      {
+        "id": "UniversalGateSetEnabled_QPU_1.0",
+        "name": "Universal gate set enabled",
+        "description": "This metric is used to assess whether a QPU supports a universal gate set (e.g., Clifford + T).",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU supports a universal gate set (e.g., Clifford + T).",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "True"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "Gate Operation Integrity",
+          "associated_control_requirement": "quantum-2.QGT-03_req.1",
+          "control_description": "QGT-03.1 Universal gate set supported."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "PROGRAM_EXECUTION_FAILURE",
+            "name": "Program Execution Failure",
+            "threat_description": "The QPU cannot execute the requested program (e.g., non-universal gate set or insufficient capacity)."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_NonUniversalGateSet"
+        ]
+      },
+      {
+        "id": "QubitCount_QPU_1.0",
+        "name": "Qubit count",
+        "description": "This metric is used to assess whether a QPU exposes at least a specified number of physical qubits.",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU exposes at least a specified number of physical qubits.",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Integer",
+        "target_values": {
+          "target_value_scale": "[0,infinity)",
+          "target_value": "50"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "Capacity, Connectivity and Performance",
+          "associated_control_requirement": "quantum-5.QCP-01_req.1",
+          "control_description": "QCP-01.1 Minimum number of physical qubits exposed."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "INSUFFICIENT_CAPACITY",
+            "name": "Insufficient Capacity",
+            "threat_description": "Insufficient qubit count, connectivity or circuit depth prevents the target workload from running correctly."
+          },
+          {
+            "threat_id": "PROGRAM_EXECUTION_FAILURE",
+            "name": "Program Execution Failure",
+            "threat_description": "The QPU cannot execute the requested program (e.g., non-universal gate set or insufficient capacity)."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_InsufficientCapacity"
+        ]
+      },
+      {
+        "id": "QubitConnectivity_QPU_1.0",
+        "name": "Qubit connectivity",
+        "description": "This metric is used to assess whether a QPU provides an average qubit connectivity at or above a specified threshold.",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU provides an average qubit connectivity at or above a specified threshold.",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Float",
+        "target_values": {
+          "target_value_scale": "[0,infinity)",
+          "target_value": "2"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "Capacity, Connectivity and Performance",
+          "associated_control_requirement": "quantum-5.QCP-02_req.1",
+          "control_description": "QCP-02.1 Average qubit connectivity at or above threshold."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "INSUFFICIENT_CAPACITY",
+            "name": "Insufficient Capacity",
+            "threat_description": "Insufficient qubit count, connectivity or circuit depth prevents the target workload from running correctly."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_InsufficientCapacity"
+        ]
+      },
+      {
+        "id": "MaxCircuitDepth_QPU_1.0",
+        "name": "Maximum circuit depth",
+        "description": "This metric is used to assess whether a QPU supports a circuit depth at or above a specified threshold before decoherence dominates.",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU supports a circuit depth at or above a specified threshold before decoherence dominates.",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Integer",
+        "target_values": {
+          "target_value_scale": "[0,infinity)",
+          "target_value": "100"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "Capacity, Connectivity and Performance",
+          "associated_control_requirement": "quantum-5.QCP-03_req.1",
+          "control_description": "QCP-03.1 Supported circuit depth at or above threshold."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "INSUFFICIENT_CAPACITY",
+            "name": "Insufficient Capacity",
+            "threat_description": "Insufficient qubit count, connectivity or circuit depth prevents the target workload from running correctly."
+          },
+          {
+            "threat_id": "DECOHERENCE",
+            "name": "Decoherence",
+            "threat_description": "Loss of quantum coherence (T1/T2 decay) destroys stored quantum information before the circuit completes."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_InsufficientCapacity"
+        ]
+      },
+      {
+        "id": "QuantumVolume_QPU_1.0",
+        "name": "Quantum volume",
+        "description": "This metric is used to assess whether a QPU achieves a Quantum Volume at or above a specified threshold.",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU achieves a Quantum Volume at or above a specified threshold.",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Integer",
+        "target_values": {
+          "target_value_scale": "[0,infinity)",
+          "target_value": "64"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "Capacity, Connectivity and Performance",
+          "associated_control_requirement": "quantum-5.QCP-04_req.1",
+          "control_description": "QCP-04.1 Quantum Volume at or above threshold."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          },
+          {
+            "threat_id": "INSUFFICIENT_CAPACITY",
+            "name": "Insufficient Capacity",
+            "threat_description": "Insufficient qubit count, connectivity or circuit depth prevents the target workload from running correctly."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_OutputDataIntegrity"
+        ]
+      },
+      {
+        "id": "CLOPS_QPU_1.0",
+        "name": "Circuit layer operations per second",
+        "description": "This metric is used to assess whether a QPU achieves Circuit Layer Operations Per Second (CLOPS) at or above a specified threshold.",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU achieves Circuit Layer Operations Per Second (CLOPS) at or above a specified threshold.",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Float",
+        "target_values": {
+          "target_value_scale": "[0,infinity)",
+          "target_value": "1000"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "Capacity, Connectivity and Performance",
+          "associated_control_requirement": "quantum-5.QCP-05_req.1",
+          "control_description": "QCP-05.1 CLOPS at or above threshold."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "INSUFFICIENT_CAPACITY",
+            "name": "Insufficient Capacity",
+            "threat_description": "Insufficient qubit count, connectivity or circuit depth prevents the target workload from running correctly."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_InsufficientCapacity"
+        ]
+      },
+      {
+        "id": "RandomizedBenchmarkingFidelity_QPU_1.0",
+        "name": "Randomized benchmarking fidelity",
+        "description": "This metric is used to assess whether a QPU achieves a randomized-benchmarking fidelity at or above a specified threshold.",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU achieves a randomized-benchmarking fidelity at or above a specified threshold.",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Float",
+        "target_values": {
+          "target_value_scale": "[0,1]",
+          "target_value": "0.999"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "Capacity, Connectivity and Performance",
+          "associated_control_requirement": "quantum-5.QCP-06_req.1",
+          "control_description": "QCP-06.1 Randomized-benchmarking fidelity at or above threshold."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "GATE_ERROR",
+            "name": "Gate Error",
+            "threat_description": "Imperfect gate operations inject errors into the quantum state and corrupt the result."
+          },
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_GateInfidelity",
+          "#QuantumRisk_OutputDataIntegrity"
+        ]
+      },
+      {
+        "id": "BellStateFidelity_QPU_1.0",
+        "name": "Bell-state fidelity",
+        "description": "This metric is used to assess whether a QPU achieves a Bell-state (entanglement) fidelity at or above a specified threshold.",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU achieves a Bell-state (entanglement) fidelity at or above a specified threshold.",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Float",
+        "target_values": {
+          "target_value_scale": "[0,1]",
+          "target_value": "0.95"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "Capacity, Connectivity and Performance",
+          "associated_control_requirement": "quantum-5.QCP-07_req.1",
+          "control_description": "QCP-07.1 Bell-state fidelity at or above threshold."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "GATE_ERROR",
+            "name": "Gate Error",
+            "threat_description": "Imperfect gate operations inject errors into the quantum state and corrupt the result."
+          },
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_GateInfidelity"
+        ]
+      },
+      {
+        "id": "ErrorCorrectionCodeDistance_QPU_1.0",
+        "name": "Error-correction code distance",
+        "description": "This metric is used to assess whether a QPU implements a quantum error-correcting code with a code distance at or above a specified threshold.",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU implements a quantum error-correcting code with a code distance at or above a specified threshold.",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Integer",
+        "target_values": {
+          "target_value_scale": "[0,infinity)",
+          "target_value": "3"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "Quantum Error Correction",
+          "associated_control_requirement": "quantum-1.QEC-02_req.1",
+          "control_description": "QEC-02.1 Code distance meets target logical error rate."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          },
+          {
+            "threat_id": "GATE_ERROR",
+            "name": "Gate Error",
+            "threat_description": "Imperfect gate operations inject errors into the quantum state and corrupt the result."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_ErrorCorrection_NotPresent",
+          "#QuantumRisk_OutputDataIntegrity"
+        ]
+      },
+      {
+        "id": "LogicalErrorRate_QPU_1.0",
+        "name": "Logical error rate",
+        "description": "This metric is used to assess whether a QPU has a logical (post error-correction) error rate below a specified threshold.",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU has a logical (post error-correction) error rate below a specified threshold.",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Float",
+        "target_values": {
+          "target_value_scale": "[0,1]",
+          "target_value": "0.0001"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "Quantum Error Correction",
+          "associated_control_requirement": "quantum-1.QEC-03_req.1",
+          "control_description": "QEC-03.1 Logical error rate measured and bounded."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_OutputDataIntegrity",
+          "#QuantumRisk_ErrorCorrection_NotPresent"
+        ]
+      },
+      {
+        "id": "DecoherenceMonitoringEnabled_QPU_1.0",
+        "name": "Decoherence monitoring enabled",
+        "description": "This metric is used to assess whether a QPU has continuous decoherence (T1/T2) monitoring enabled.",
+        "version": "V1.0",
+        "information_need": "This metric is used to assess whether a QPU has continuous decoherence (T1/T2) monitoring enabled.",
+        "implementation_evidence": "JSON file",
+        "frequency": 1,
+        "data_source_type": "QPU",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value_scale": "[true, false]",
+          "target_value": "True"
+        },
+        "associated_control": {
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_category": "Coherence and Noise Management",
+          "associated_control_requirement": "quantum-4.QCO-04_req.1",
+          "control_description": "QCO-04.1 Continuous decoherence monitoring enabled."
+        },
+        "mapped_threats": [
+          {
+            "threat_id": "UNDETECTED_DRIFT",
+            "name": "Undetected Drift",
+            "threat_description": "Calibration drift goes undetected, silently degrading result fidelity over time."
+          },
+          {
+            "threat_id": "DECOHERENCE",
+            "name": "Decoherence",
+            "threat_description": "Loss of quantum coherence (T1/T2 decay) destroys stored quantum information before the circuit completes."
+          }
+        ],
+        "mapped_risks": [
+          "#QuantumRisk_Decoherence"
+        ]
+      }
+    ],
+    "certifiable_standards_mapping": [
+      {
+        "metric_id": "ErrorCorrectionEnabled_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-1.QEC-01_req.1",
+        "description": "This metric is used to assess whether a QPU has error correction enabled and correctly configured."
+      },
+      {
+        "metric_id": "OneQubitGateErrorRate_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-2.QGT-01_req.1",
+        "description": "This metric is used to assess whether a QPU has a one-qubit gate error rate below a specified threshold."
+      },
+      {
+        "metric_id": "TwoQubitGateErrorRate_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-2.QGT-02_req.1",
+        "description": "This metric is used to assess whether a QPU has a two-qubit gate error rate below a specified threshold."
+      },
+      {
+        "metric_id": "SPAMErrorRate_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-3.QSM-01_req.1",
+        "description": "This metric is used to assess whether a QPU has a State Preparation And Measurement (SPAM) error rate below a specified threshold."
+      },
+      {
+        "metric_id": "ReadoutErrorRate_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-3.QSM-02_req.1",
+        "description": "This metric is used to assess whether a QPU has a readout (measurement) error rate below a specified threshold."
+      },
+      {
+        "metric_id": "CrosstalkErrorRate_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-4.QCO-03_req.1",
+        "description": "This metric is used to assess whether a QPU has a crosstalk error rate below a specified threshold."
+      },
+      {
+        "metric_id": "T1CoherenceTime_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-4.QCO-01_req.1",
+        "description": "This metric is used to assess whether a QPU maintains a T1 (energy relaxation) coherence time at or above a specified threshold."
+      },
+      {
+        "metric_id": "T2CoherenceTime_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-4.QCO-02_req.1",
+        "description": "This metric is used to assess whether a QPU maintains a T2 (dephasing) coherence time at or above a specified threshold."
+      },
+      {
+        "metric_id": "GateExecutionTime_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-2.QGT-04_req.1",
+        "description": "This metric is used to assess whether a QPU executes gates within a specified maximum time so operations complete within the coherence window."
+      },
+      {
+        "metric_id": "UniversalGateSetEnabled_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-2.QGT-03_req.1",
+        "description": "This metric is used to assess whether a QPU supports a universal gate set (e.g., Clifford + T)."
+      },
+      {
+        "metric_id": "QubitCount_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-5.QCP-01_req.1",
+        "description": "This metric is used to assess whether a QPU exposes at least a specified number of physical qubits."
+      },
+      {
+        "metric_id": "QubitConnectivity_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-5.QCP-02_req.1",
+        "description": "This metric is used to assess whether a QPU provides an average qubit connectivity at or above a specified threshold."
+      },
+      {
+        "metric_id": "MaxCircuitDepth_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-5.QCP-03_req.1",
+        "description": "This metric is used to assess whether a QPU supports a circuit depth at or above a specified threshold before decoherence dominates."
+      },
+      {
+        "metric_id": "QuantumVolume_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-5.QCP-04_req.1",
+        "description": "This metric is used to assess whether a QPU achieves a Quantum Volume at or above a specified threshold."
+      },
+      {
+        "metric_id": "CLOPS_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-5.QCP-05_req.1",
+        "description": "This metric is used to assess whether a QPU achieves Circuit Layer Operations Per Second (CLOPS) at or above a specified threshold."
+      },
+      {
+        "metric_id": "RandomizedBenchmarkingFidelity_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-5.QCP-06_req.1",
+        "description": "This metric is used to assess whether a QPU achieves a randomized-benchmarking fidelity at or above a specified threshold."
+      },
+      {
+        "metric_id": "BellStateFidelity_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-5.QCP-07_req.1",
+        "description": "This metric is used to assess whether a QPU achieves a Bell-state (entanglement) fidelity at or above a specified threshold."
+      },
+      {
+        "metric_id": "ErrorCorrectionCodeDistance_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-1.QEC-02_req.1",
+        "description": "This metric is used to assess whether a QPU implements a quantum error-correcting code with a code distance at or above a specified threshold."
+      },
+      {
+        "metric_id": "LogicalErrorRate_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-1.QEC-03_req.1",
+        "description": "This metric is used to assess whether a QPU has a logical (post error-correction) error rate below a specified threshold."
+      },
+      {
+        "metric_id": "DecoherenceMonitoringEnabled_QPU_1.0",
+        "standard": "COBALT-Quantum",
+        "control_id": "quantum-4.QCO-04_req.1",
+        "description": "This metric is used to assess whether a QPU has continuous decoherence (T1/T2) monitoring enabled."
+      }
+    ],
+    "boundary_conditions": {
+      "environment": "Quantum Computing System",
+      "scope": "QPU; Quantum Processing Unit; Qubit; Quantum circuit; Repository; Calibration data",
+      "associated_component": "QPU",
+      "dependencies": [
+        "COBALT-Quantum",
+        "NIST quantum benchmarking guidance"
+      ]
+    },
+    "risk_catalogue": [
+      {
+        "risk_id": "#QuantumRisk_ErrorCorrection_NotPresent",
+        "risk_name": "Error correction not present",
+        "risk_details": "No active quantum error-correction scheme is configured on the QPU, so physical errors accumulate uncorrected and corrupt computation results.",
+        "risk_category": "Quantum hardware integrity risks",
+        "associated_framework": "COBALT-Quantum",
+        "mapped_threats": [
+          {
+            "threat_id": "GATE_ERROR",
+            "name": "Gate Error",
+            "threat_description": "Imperfect gate operations inject errors into the quantum state and corrupt the result."
+          },
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          }
+        ],
+        "mapped_metrics": [
+          {
+            "metric_id": "ErrorCorrectionEnabled_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "ErrorCorrectionCodeDistance_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "LogicalErrorRate_QPU_1.0",
+            "impact": "Unspecified"
+          }
+        ],
+        "mapped_controls": [
+          "quantum-1.QEC-01_req.1",
+          "quantum-1.QEC-02_req.1",
+          "quantum-1.QEC-03_req.1"
+        ]
+      },
+      {
+        "risk_id": "#QuantumRisk_OutputDataIntegrity",
+        "risk_name": "Output data integrity compromise",
+        "risk_details": "Cumulative hardware error (gate, readout, decoherence) drives the result distribution away from the ideal, producing inaccurate output and a data-integrity compromise.",
+        "risk_category": "Output data integrity risks",
+        "associated_framework": "COBALT-Quantum",
+        "mapped_threats": [
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          },
+          {
+            "threat_id": "GATE_ERROR",
+            "name": "Gate Error",
+            "threat_description": "Imperfect gate operations inject errors into the quantum state and corrupt the result."
+          },
+          {
+            "threat_id": "READOUT_ERROR",
+            "name": "Readout Error",
+            "threat_description": "Errors during state preparation or measurement misreport the qubit state."
+          }
+        ],
+        "mapped_metrics": [
+          {
+            "metric_id": "OneQubitGateErrorRate_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "TwoQubitGateErrorRate_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "SPAMErrorRate_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "ReadoutErrorRate_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "CrosstalkErrorRate_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "T1CoherenceTime_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "T2CoherenceTime_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "QuantumVolume_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "RandomizedBenchmarkingFidelity_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "ErrorCorrectionCodeDistance_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "LogicalErrorRate_QPU_1.0",
+            "impact": "Unspecified"
+          }
+        ],
+        "mapped_controls": [
+          "quantum-2.QGT-01_req.1",
+          "quantum-2.QGT-02_req.1",
+          "quantum-3.QSM-01_req.1",
+          "quantum-3.QSM-02_req.1",
+          "quantum-4.QCO-03_req.1",
+          "quantum-4.QCO-01_req.1",
+          "quantum-4.QCO-02_req.1",
+          "quantum-5.QCP-04_req.1",
+          "quantum-5.QCP-06_req.1",
+          "quantum-1.QEC-02_req.1",
+          "quantum-1.QEC-03_req.1"
+        ]
+      },
+      {
+        "risk_id": "#QuantumRisk_Decoherence",
+        "risk_name": "Decoherence / coherence loss",
+        "risk_details": "Insufficient T1/T2 coherence relative to circuit duration destroys quantum information before measurement.",
+        "risk_category": "Coherence risks",
+        "associated_framework": "COBALT-Quantum",
+        "mapped_threats": [
+          {
+            "threat_id": "DECOHERENCE",
+            "name": "Decoherence",
+            "threat_description": "Loss of quantum coherence (T1/T2 decay) destroys stored quantum information before the circuit completes."
+          },
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          }
+        ],
+        "mapped_metrics": [
+          {
+            "metric_id": "T1CoherenceTime_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "T2CoherenceTime_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "GateExecutionTime_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "DecoherenceMonitoringEnabled_QPU_1.0",
+            "impact": "Unspecified"
+          }
+        ],
+        "mapped_controls": [
+          "quantum-4.QCO-01_req.1",
+          "quantum-4.QCO-02_req.1",
+          "quantum-2.QGT-04_req.1",
+          "quantum-4.QCO-04_req.1"
+        ]
+      },
+      {
+        "risk_id": "#QuantumRisk_GateInfidelity",
+        "risk_name": "Gate infidelity",
+        "risk_details": "One- or two-qubit gate error rates exceed thresholds, lowering circuit fidelity and corrupting results.",
+        "risk_category": "Gate operation risks",
+        "associated_framework": "COBALT-Quantum",
+        "mapped_threats": [
+          {
+            "threat_id": "GATE_ERROR",
+            "name": "Gate Error",
+            "threat_description": "Imperfect gate operations inject errors into the quantum state and corrupt the result."
+          },
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          }
+        ],
+        "mapped_metrics": [
+          {
+            "metric_id": "OneQubitGateErrorRate_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "TwoQubitGateErrorRate_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "RandomizedBenchmarkingFidelity_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "BellStateFidelity_QPU_1.0",
+            "impact": "Unspecified"
+          }
+        ],
+        "mapped_controls": [
+          "quantum-2.QGT-01_req.1",
+          "quantum-2.QGT-02_req.1",
+          "quantum-5.QCP-06_req.1",
+          "quantum-5.QCP-07_req.1"
+        ]
+      },
+      {
+        "risk_id": "#QuantumRisk_ReadoutError",
+        "risk_name": "Readout / SPAM error",
+        "risk_details": "State-preparation and measurement errors misreport qubit states, biasing the measured output distribution.",
+        "risk_category": "Measurement risks",
+        "associated_framework": "COBALT-Quantum",
+        "mapped_threats": [
+          {
+            "threat_id": "READOUT_ERROR",
+            "name": "Readout Error",
+            "threat_description": "Errors during state preparation or measurement misreport the qubit state."
+          },
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          }
+        ],
+        "mapped_metrics": [
+          {
+            "metric_id": "SPAMErrorRate_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "ReadoutErrorRate_QPU_1.0",
+            "impact": "Unspecified"
+          }
+        ],
+        "mapped_controls": [
+          "quantum-3.QSM-01_req.1",
+          "quantum-3.QSM-02_req.1"
+        ]
+      },
+      {
+        "risk_id": "#QuantumRisk_Crosstalk",
+        "risk_name": "Qubit crosstalk",
+        "risk_details": "Unintended coupling between qubits during parallel operations introduces correlated errors.",
+        "risk_category": "Noise risks",
+        "associated_framework": "COBALT-Quantum",
+        "mapped_threats": [
+          {
+            "threat_id": "CROSSTALK",
+            "name": "Crosstalk",
+            "threat_description": "Unintended coupling between qubits introduces correlated errors during parallel operations."
+          },
+          {
+            "threat_id": "DATA_INTEGRITY_COMPROMISE",
+            "name": "Data Integrity Compromise",
+            "threat_description": "Computation results are inaccurate, leading to a compromise of output data integrity."
+          }
+        ],
+        "mapped_metrics": [
+          {
+            "metric_id": "CrosstalkErrorRate_QPU_1.0",
+            "impact": "Unspecified"
+          }
+        ],
+        "mapped_controls": [
+          "quantum-4.QCO-03_req.1"
+        ]
+      },
+      {
+        "risk_id": "#QuantumRisk_InsufficientCapacity",
+        "risk_name": "Insufficient capacity",
+        "risk_details": "Inadequate qubit count, connectivity, circuit depth or throughput prevents the target workload from executing correctly.",
+        "risk_category": "Capacity risks",
+        "associated_framework": "COBALT-Quantum",
+        "mapped_threats": [
+          {
+            "threat_id": "INSUFFICIENT_CAPACITY",
+            "name": "Insufficient Capacity",
+            "threat_description": "Insufficient qubit count, connectivity or circuit depth prevents the target workload from running correctly."
+          },
+          {
+            "threat_id": "PROGRAM_EXECUTION_FAILURE",
+            "name": "Program Execution Failure",
+            "threat_description": "The QPU cannot execute the requested program (e.g., non-universal gate set or insufficient capacity)."
+          }
+        ],
+        "mapped_metrics": [
+          {
+            "metric_id": "QubitCount_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "QubitConnectivity_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "MaxCircuitDepth_QPU_1.0",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "CLOPS_QPU_1.0",
+            "impact": "Unspecified"
+          }
+        ],
+        "mapped_controls": [
+          "quantum-5.QCP-01_req.1",
+          "quantum-5.QCP-02_req.1",
+          "quantum-5.QCP-03_req.1",
+          "quantum-5.QCP-05_req.1"
+        ]
+      },
+      {
+        "risk_id": "#QuantumRisk_NonUniversalGateSet",
+        "risk_name": "Non-universal gate set",
+        "risk_details": "The QPU does not expose a universal gate set, so arbitrary quantum programs cannot be compiled or executed.",
+        "risk_category": "Capability risks",
+        "associated_framework": "COBALT-Quantum",
+        "mapped_threats": [
+          {
+            "threat_id": "PROGRAM_EXECUTION_FAILURE",
+            "name": "Program Execution Failure",
+            "threat_description": "The QPU cannot execute the requested program (e.g., non-universal gate set or insufficient capacity)."
+          }
+        ],
+        "mapped_metrics": [
+          {
+            "metric_id": "UniversalGateSetEnabled_QPU_1.0",
+            "impact": "Unspecified"
+          }
+        ],
+        "mapped_controls": [
+          "quantum-2.QGT-03_req.1"
+        ]
+      }
+    ]
+  }
+}

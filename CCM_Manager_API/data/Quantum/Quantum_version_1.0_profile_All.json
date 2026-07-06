@@ -1,0 +1,111 @@
+{
+  "profile": {
+    "uuid": "7ad9f46f-0000-4000-8000-quantumcat01",
+    "metadata": {
+      "title": "Quantum Profile - All QPU Controls",
+      "published": "2026-06-29T00:00:00+00:00",
+      "last-modified": "2026-06-29T00:00:00+00:00",
+      "version": "1.0",
+      "oscal-version": "1.1.2",
+      "props": [
+        {
+          "name": "keywords",
+          "value": "quantum, QPU, quantum computing, error correction, coherence, OSCAL"
+        }
+      ],
+      "links": [
+        {
+          "href": "qc-pdf-resource",
+          "rel": "alternate"
+        }
+      ],
+      "roles": [
+        {
+          "id": "publisher",
+          "title": "Source document converter to OSCAL."
+        },
+        {
+          "id": "author",
+          "title": "Source document author."
+        },
+        {
+          "id": "contact",
+          "title": "Contact."
+        }
+      ],
+      "parties": [
+        {
+          "uuid": "b1d4a0c2-0000-4000-8000-000000000001",
+          "type": "organization",
+          "name": "COBALT-Quantum",
+          "email-addresses": [
+            "name@domain.eu"
+          ],
+          "addresses": [
+            {
+              "addr-lines": [
+                "COBALT",
+                "Attn: Somebody",
+                "1 Some Street"
+              ],
+              "city": "City",
+              "country": "EU"
+            }
+          ]
+        }
+      ],
+      "responsible-parties": [
+        {
+          "role-id": "publisher",
+          "party-uuids": [
+            "b1d4a0c2-0000-4000-8000-000000000001"
+          ]
+        },
+        {
+          "role-id": "author",
+          "party-uuids": [
+            "b1d4a0c2-0000-4000-8000-000000000001"
+          ]
+        },
+        {
+          "role-id": "contact",
+          "party-uuids": [
+            "b1d4a0c2-0000-4000-8000-000000000001"
+          ]
+        }
+      ],
+      "remarks": "Quantum-only control set. Mirrors the EUCS OSCAL structure but scoped exclusively to Quantum Processing Unit (QPU) security and integrity. AI and Cloud controls are excluded."
+    },
+    "imports": [
+      {
+        "href": "Quantum_controls_version_1.0_catalog_master.json",
+        "include-controls": [
+          {
+            "with-ids": [
+              "quantum-1.QEC-01_req.1",
+              "quantum-1.QEC-02_req.1",
+              "quantum-1.QEC-03_req.1",
+              "quantum-2.QGT-01_req.1",
+              "quantum-2.QGT-02_req.1",
+              "quantum-2.QGT-03_req.1",
+              "quantum-2.QGT-04_req.1",
+              "quantum-3.QSM-01_req.1",
+              "quantum-3.QSM-02_req.1",
+              "quantum-4.QCO-01_req.1",
+              "quantum-4.QCO-02_req.1",
+              "quantum-4.QCO-03_req.1",
+              "quantum-4.QCO-04_req.1",
+              "quantum-5.QCP-01_req.1",
+              "quantum-5.QCP-02_req.1",
+              "quantum-5.QCP-03_req.1",
+              "quantum-5.QCP-04_req.1",
+              "quantum-5.QCP-05_req.1",
+              "quantum-5.QCP-06_req.1",
+              "quantum-5.QCP-07_req.1"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

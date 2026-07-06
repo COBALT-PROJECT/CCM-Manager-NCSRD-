@@ -947,18 +947,37 @@ def withdraw_certificate(cert_uuid):
 
 if __name__ == '__main__':
     data_dir = os.path.join(os.path.dirname(__file__), "data")
-    catalogue_path = os.getenv(
-        "AI_CATALOGUE_PATH",
-        os.path.join(data_dir, "eucs", "global_certification_scheme_fully_mapped.json"),
-    )
-    controls_catalogue_path = os.getenv(
-        "EUCS_CONTROLS_CATALOGUE_PATH",
-        os.path.join(data_dir, "eucs", "EUCS_controls_version_1.1_catalog_master.json"),
-    )
-    try:
-        catalogue_service.initialize_ai_catalogue(catalogue_path, controls_catalogue_path)
-    except Exception as e:
-        logging.error(f"Failed to auto-initialize AI catalogue from JSON: {e}")
+    catalogue_sources = [
+        (
+            os.getenv(
+                "AI_CATALOGUE_PATH",
+                os.path.join(data_dir, "eucs", "global_certification_scheme_fully_mapped.json"),
+            ),
+            os.getenv(
+                "EUCS_CONTROLS_CATALOGUE_PATH",
+                os.path.join(data_dir, "eucs", "EUCS_controls_version_1.1_catalog_master.json"),
+            ),
+        ),
+        (
+            os.getenv(
+                "QUANTUM_CATALOGUE_PATH",
+                os.path.join(data_dir, "Quantum", "global_certification_scheme_quantum_fully_mapped.json"),
+            ),
+            os.getenv(
+                "QUANTUM_CONTROLS_CATALOGUE_PATH",
+                os.path.join(data_dir, "Quantum", "Quantum_controls_version_1.0_catalog_master.json"),
+            ),
+        ),
+    ]
+    for catalogue_path, controls_catalogue_path in catalogue_sources:
+        try:
+            catalogue_service.initialize_ai_catalogue(
+                catalogue_path,
+                controls_catalogue_path,
+                force_upsert=True,
+            )
+        except Exception as e:
+            logging.error(f"Failed to auto-initialize catalogue from {catalogue_path}: {e}")
 
     app.run(host='0.0.0.0', port=5001, debug=True)
     # DEV CCM MANAGER CODE BELOW THIS LINE IS FOR TESTING PURPOSES ONLY - NOT FOR PRODUCTION USE YET

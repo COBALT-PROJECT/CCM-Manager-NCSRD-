@@ -29,6 +29,30 @@ curl -sS "http://localhost:5001/certification_schemes" \
 
 See `docs/CCM_MANAGER_PARTNER_INTEGRATION.md` for partner-facing instructions and example flows.
 
+## Startup Catalogue Seeding
+
+When the Flask app starts, CCM seeds the global catalogue collections from the bundled EUCS and Quantum data files.
+
+Default EUCS sources:
+
+- `data/eucs/global_certification_scheme_fully_mapped.json`
+- `data/eucs/EUCS_controls_version_1.1_catalog_master.json`
+
+Default Quantum sources:
+
+- `data/Quantum/global_certification_scheme_quantum_fully_mapped.json`
+- `data/Quantum/Quantum_controls_version_1.0_catalog_master.json`
+
+Optional path overrides:
+
+- `AI_CATALOGUE_PATH`
+- `EUCS_CONTROLS_CATALOGUE_PATH`
+- `QUANTUM_CATALOGUE_PATH`
+- `QUANTUM_CONTROLS_CATALOGUE_PATH`
+
+The startup loader upserts catalogue records so EUCS and Quantum metrics, risks, threats, and controls can coexist in MongoDB.
+If old seed data should be removed, clear the affected collections once before restarting the app.
+
 ## DRM Sync
 
 `POST /upload_certification_scheme` now uploads the certification scheme into CCM, sends it to the scheme import service, and automatically syncs it to DRM.
