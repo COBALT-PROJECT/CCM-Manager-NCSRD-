@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, send_file
+from flask import Flask, g, jsonify, request, send_file
 from pymongo.errors import PyMongoError
 import os
 import json
@@ -6,6 +6,7 @@ import logging
 import time
 import hashlib
 import requests
+from uuid import uuid4
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
@@ -37,6 +38,144 @@ from services import sdt_sender
 from services import toe_service
 from utils import hash_ip, is_valid_urn_uuid
 
+
+def _env_bool(name, default=False):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _env_int(name, default):
+    try:
+        return int(os.getenv(name, str(default)))
+    except (TypeError, ValueError):
+        return default
+
+
+HTTP_LOGGING_ENABLED = _env_bool("CCM_HTTP_LOGGING_ENABLED", True)
+HTTP_LOG_HEADERS_ENABLED = _env_bool("CCM_HTTP_LOG_HEADERS_ENABLED", True)
+HTTP_LOG_BODY_ENABLED = _env_bool("CCM_HTTP_LOG_BODY_ENABLED", True)
+HTTP_LOG_MAX_BODY_CHARS = _env_int("CCM_HTTP_LOG_MAX_BODY_CHARS", 4000)
+SENSITIVE_HEADER_NAMES = {
+    "authorization",
+    "cookie",
+    "set-cookie",
+    "x-api-key",
+    "api-key",
+}
+SENSITIVE_FIELD_MARKERS = (
+    "authorization",
+    "access_token",
+    "refresh_token",
+    "bearer",
+    "client_secret",
+    "password",
+    "secret",
+    "token",
+    "api_key",
+    "apikey",
+)
+
+
+logging.basicConfig(
+    level=os.getenv("CCM_LOG_LEVEL", "INFO").upper(),
+    format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
+)
+logger = logging.getLogger("ccm.http")
+
+
+def _is_sensitive_key(key):
+    normalized = str(key or "").strip().lower()
+    return any(marker in normalized for marker in SENSITIVE_FIELD_MARKERS)
+
+
+def _redact_payload(value):
+    if isinstance(value, dict):
+        return {
+            key: "[REDACTED]" if _is_sensitive_key(key) else _redact_payload(item)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_redact_payload(item) for item in value]
+    return value
+
+
+def _truncate_text(text, limit=HTTP_LOG_MAX_BODY_CHARS):
+    text = str(text)
+    if len(text) <= limit:
+        return text
+    return f"{text[:limit]}... [truncated {len(text) - limit} chars]"
+
+
+def _compact_json(value):
+    try:
+        return json.dumps(value, default=str, ensure_ascii=False, separators=(",", ":"))
+    except TypeError:
+        return str(value)
+
+
+def _selected_headers(headers):
+    if not HTTP_LOG_HEADERS_ENABLED:
+        return {}
+
+    result = {}
+    for key, value in headers.items():
+        key_lower = key.lower()
+        if key_lower in SENSITIVE_HEADER_NAMES:
+            result[key] = "[REDACTED]"
+        elif key_lower in {"accept", "content-type", "user-agent", "x-correlation-id", "x-request-id"}:
+            result[key] = value
+    return result
+
+
+def _request_body_preview():
+    if not HTTP_LOG_BODY_ENABLED:
+        return None
+    if request.content_length and request.content_length > HTTP_LOG_MAX_BODY_CHARS * 10:
+        return f"[body omitted: {request.content_length} bytes]"
+    if request.files:
+        return {
+            "form": dict(request.form),
+            "files": {
+                name: {
+                    "filename": file.filename,
+                    "content_type": file.content_type,
+                }
+                for name, file in request.files.items()
+            },
+        }
+    if request.is_json:
+        payload = request.get_json(silent=True)
+        return _redact_payload(payload)
+    if request.form:
+        return _redact_payload(dict(request.form))
+    raw_body = request.get_data(cache=True, as_text=True)
+    if raw_body:
+        return _truncate_text(raw_body)
+    return None
+
+
+def _response_body_preview(response):
+    if not HTTP_LOG_BODY_ENABLED:
+        return None
+    if response.direct_passthrough:
+        return "[streamed response]"
+    content_length = response.calculate_content_length()
+    if content_length and content_length > HTTP_LOG_MAX_BODY_CHARS * 10:
+        return f"[body omitted: {content_length} bytes]"
+
+    body = response.get_data(as_text=True)
+    if not body:
+        return None
+    if response.is_json:
+        try:
+            return _redact_payload(json.loads(body))
+        except ValueError:
+            return _truncate_text(body)
+    return _truncate_text(body)
+
+
 app = Flask(__name__)
 CORS(app)
 app.config.from_object(Config)
@@ -56,10 +195,63 @@ os.makedirs(app.config["TMP_FOLDER"], exist_ok=True)
 
 
 @app.before_request
+def log_http_request():
+    if not HTTP_LOGGING_ENABLED:
+        return None
+
+    g.request_started_at = time.perf_counter()
+    g.request_id = (
+        request.headers.get("X-Request-ID")
+        or request.headers.get("X-Correlation-ID")
+        or str(uuid4())
+    )
+    body_preview = _request_body_preview()
+    logger.info(
+        "request id=%s method=%s path=%s query=%s remote=%s content_length=%s headers=%s body=%s",
+        g.request_id,
+        request.method,
+        request.path,
+        request.query_string.decode("utf-8", errors="replace"),
+        request.remote_addr,
+        request.content_length,
+        _selected_headers(request.headers),
+        _truncate_text(_compact_json(body_preview)) if body_preview is not None else None,
+    )
+    return None
+
+
+@app.before_request
 def authenticate_inbound_request():
     payload, status_code = require_inbound_auth(request)
     if status_code:
         return jsonify(payload), status_code
+
+
+@app.after_request
+def log_http_response(response):
+    if not HTTP_LOGGING_ENABLED:
+        return response
+
+    request_id = getattr(g, "request_id", None) or str(uuid4())
+    started_at = getattr(g, "request_started_at", None)
+    duration_ms = None
+    if started_at is not None:
+        duration_ms = round((time.perf_counter() - started_at) * 1000, 2)
+
+    body_preview = _response_body_preview(response)
+    logger.info(
+        "response id=%s method=%s path=%s status=%s duration_ms=%s content_length=%s headers=%s body=%s",
+        request_id,
+        request.method,
+        request.path,
+        response.status_code,
+        duration_ms,
+        response.calculate_content_length(),
+        _selected_headers(response.headers),
+        _truncate_text(_compact_json(body_preview)) if body_preview is not None else None,
+    )
+    response.headers.setdefault("X-Request-ID", request_id)
+    return response
 
 
 @app.route('/auth/status', methods=['GET'])

@@ -29,6 +29,22 @@ curl -sS "http://localhost:5001/certification_schemes" \
 
 See `docs/CCM_MANAGER_PARTNER_INTEGRATION.md` for partner-facing instructions and example flows.
 
+## HTTP Request And Response Logging
+
+Flask logs incoming requests and outgoing responses with a generated or forwarded request ID, status code, duration, selected headers, and redacted/truncated body previews. These logs are visible through `docker logs`.
+
+Useful `.env` settings:
+
+```env
+CCM_LOG_LEVEL=INFO
+CCM_HTTP_LOGGING_ENABLED=true
+CCM_HTTP_LOG_HEADERS_ENABLED=true
+CCM_HTTP_LOG_BODY_ENABLED=true
+CCM_HTTP_LOG_MAX_BODY_CHARS=4000
+```
+
+Sensitive headers and payload fields such as `Authorization`, tokens, passwords, and client secrets are redacted before logging.
+
 ## Startup Catalogue Seeding
 
 When the Flask app starts, CCM seeds the global catalogue collections from the bundled EUCS and Quantum data files.

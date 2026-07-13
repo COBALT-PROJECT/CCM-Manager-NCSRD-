@@ -1,0 +1,352 @@
+{
+  "component": {
+    "component-definition": {
+      "uuid": "78c9f848-36dc-4445-811b-26f29a9b1d37",
+      "metadata": {
+        "title": "Quantum ToE Component Definition",
+        "version": "1.0"
+      },
+      "components": [
+        {
+          "uuid": "33333333-4444-4555-8666-777777777777",
+          "type": "software",
+          "title": "Quantum ToE",
+          "description": "Quantum target of evaluation with embedded CycloneDX SBOM.",
+          "links": []
+        }
+      ]
+    }
+  },
+  "bills-of-material": {
+    "sbom": {
+      "components": [
+        {
+          "bom-ref": "requirements-L8",
+          "description": "requirements line 8: dill==0.3.8",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/dill/"
+            }
+          ],
+          "name": "dill",
+          "purl": "pkg:pypi/dill@0.3.8",
+          "type": "library",
+          "version": "0.3.8"
+        },
+        {
+          "bom-ref": "requirements-L11",
+          "description": "requirements line 11: flask==3.0.2",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/flask/"
+            }
+          ],
+          "name": "flask",
+          "purl": "pkg:pypi/flask@3.0.2",
+          "type": "library",
+          "version": "3.0.2"
+        },
+        {
+          "bom-ref": "requirements-L9",
+          "description": "requirements line 9: flask==3.0.2",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/flask/"
+            }
+          ],
+          "name": "flask",
+          "purl": "pkg:pypi/flask@3.0.2",
+          "type": "library",
+          "version": "3.0.2"
+        },
+        {
+          "bom-ref": "requirements-L10",
+          "description": "requirements line 10: jax==0.4.28",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/jax/"
+            }
+          ],
+          "name": "jax",
+          "purl": "pkg:pypi/jax@0.4.28",
+          "type": "library",
+          "version": "0.4.28"
+        },
+        {
+          "bom-ref": "requirements-L2",
+          "description": "requirements line 2: matplotlib>=3.5.1",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/matplotlib/"
+            }
+          ],
+          "name": "matplotlib",
+          "purl": "pkg:pypi/matplotlib@3.8.3",
+          "type": "library",
+          "version": "3.8.3"
+        },
+        {
+          "bom-ref": "requirements-L6",
+          "description": "requirements line 6: networkx==3.2.1",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/networkx/"
+            }
+          ],
+          "name": "networkx",
+          "purl": "pkg:pypi/networkx@3.2.1",
+          "type": "library",
+          "version": "3.2.1"
+        },
+        {
+          "bom-ref": "requirements-L5",
+          "description": "requirements line 5: numba==0.59.0",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/numba/"
+            }
+          ],
+          "name": "numba",
+          "purl": "pkg:pypi/numba@0.59.0",
+          "type": "library",
+          "version": "0.59.0"
+        },
+        {
+          "bom-ref": "requirements-L12",
+          "description": "requirements line 12: psutil==5.9.8",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/psutil/"
+            }
+          ],
+          "name": "psutil",
+          "purl": "pkg:pypi/psutil@5.9.8",
+          "type": "library",
+          "version": "5.9.8"
+        },
+        {
+          "bom-ref": "requirements-L1",
+          "description": "requirements line 1: qiskit>=0.44.0",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/qiskit/"
+            }
+          ],
+          "name": "qiskit",
+          "purl": "pkg:pypi/qiskit@1.0.2",
+          "type": "library",
+          "version": "1.0.2"
+        },
+        {
+          "bom-ref": "requirements-L4",
+          "description": "requirements line 4: scipy>=1.10.0",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/scipy/"
+            }
+          ],
+          "name": "scipy",
+          "purl": "pkg:pypi/scipy@1.12.0",
+          "type": "library",
+          "version": "1.12.0"
+        },
+        {
+          "bom-ref": "requirements-L7",
+          "description": "requirements line 7: tdqm==4.66.2",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/tdqm/"
+            }
+          ],
+          "name": "tdqm",
+          "purl": "pkg:pypi/tdqm@4.66.2",
+          "type": "library",
+          "version": "4.66.2"
+        },
+        {
+          "bom-ref": "requirements-L3",
+          "description": "requirements line 3: waitress>=2.1.1",
+          "externalReferences": [
+            {
+              "comment": "implicit dist url",
+              "type": "distribution",
+              "url": "https://pypi.org/simple/waitress/"
+            }
+          ],
+          "name": "waitress",
+          "purl": "pkg:pypi/waitress@3.0.0",
+          "type": "library",
+          "version": "3.0.0"
+        }
+      ],
+      "dependencies": [
+        {
+          "ref": "requirements-L1"
+        },
+        {
+          "ref": "requirements-L10"
+        },
+        {
+          "ref": "requirements-L11"
+        },
+        {
+          "ref": "requirements-L12"
+        },
+        {
+          "ref": "requirements-L2"
+        },
+        {
+          "ref": "requirements-L3"
+        },
+        {
+          "ref": "requirements-L4"
+        },
+        {
+          "ref": "requirements-L5"
+        },
+        {
+          "ref": "requirements-L6"
+        },
+        {
+          "ref": "requirements-L7"
+        },
+        {
+          "ref": "requirements-L8"
+        },
+        {
+          "ref": "requirements-L9"
+        }
+      ],
+      "metadata": {
+        "timestamp": "2025-03-28T11:57:55.806505+00:00",
+        "tools": {
+          "components": [
+            {
+              "description": "CycloneDX Software Bill of Materials (SBOM) generator for Python projects and environments",
+              "externalReferences": [
+                {
+                  "type": "build-system",
+                  "url": "https://github.com/CycloneDX/cyclonedx-python/actions"
+                },
+                {
+                  "type": "distribution",
+                  "url": "https://pypi.org/project/cyclonedx-bom/"
+                },
+                {
+                  "type": "documentation",
+                  "url": "https://cyclonedx-bom-tool.readthedocs.io/"
+                },
+                {
+                  "type": "issue-tracker",
+                  "url": "https://github.com/CycloneDX/cyclonedx-python/issues"
+                },
+                {
+                  "type": "license",
+                  "url": "https://github.com/CycloneDX/cyclonedx-python/blob/main/LICENSE"
+                },
+                {
+                  "type": "release-notes",
+                  "url": "https://github.com/CycloneDX/cyclonedx-python/blob/main/CHANGELOG.md"
+                },
+                {
+                  "type": "vcs",
+                  "url": "https://github.com/CycloneDX/cyclonedx-python/"
+                },
+                {
+                  "type": "website",
+                  "url": "https://github.com/CycloneDX/cyclonedx-python/#readme"
+                }
+              ],
+              "group": "CycloneDX",
+              "licenses": [
+                {
+                  "license": {
+                    "id": "Apache-2.0"
+                  }
+                }
+              ],
+              "name": "cyclonedx-py",
+              "type": "application",
+              "version": "5.3.0"
+            },
+            {
+              "description": "Python library for CycloneDX",
+              "externalReferences": [
+                {
+                  "type": "build-system",
+                  "url": "https://github.com/CycloneDX/cyclonedx-python-lib/actions"
+                },
+                {
+                  "type": "distribution",
+                  "url": "https://pypi.org/project/cyclonedx-python-lib/"
+                },
+                {
+                  "type": "documentation",
+                  "url": "https://cyclonedx-python-library.readthedocs.io/"
+                },
+                {
+                  "type": "issue-tracker",
+                  "url": "https://github.com/CycloneDX/cyclonedx-python-lib/issues"
+                },
+                {
+                  "type": "license",
+                  "url": "https://github.com/CycloneDX/cyclonedx-python-lib/blob/main/LICENSE"
+                },
+                {
+                  "type": "release-notes",
+                  "url": "https://github.com/CycloneDX/cyclonedx-python-lib/blob/main/CHANGELOG.md"
+                },
+                {
+                  "type": "vcs",
+                  "url": "https://github.com/CycloneDX/cyclonedx-python-lib"
+                },
+                {
+                  "type": "website",
+                  "url": "https://github.com/CycloneDX/cyclonedx-python-lib/#readme"
+                }
+              ],
+              "group": "CycloneDX",
+              "licenses": [
+                {
+                  "license": {
+                    "id": "Apache-2.0"
+                  }
+                }
+              ],
+              "name": "cyclonedx-python-lib",
+              "type": "library",
+              "version": "9.1.0"
+            }
+          ]
+        }
+      },
+      "serialNumber": "urn:uuid:02c115b4-fe47-41e0-aee3-59960280696f",
+      "version": 1,
+      "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.5"
+    }
+  }
+}
