@@ -46,14 +46,10 @@ MONGO_DB_NAME = os.getenv("MONGO_DB", "mydatabase")
 LEDGER_BASE_URL = os.getenv("LEDGER_BASE_URL", "http://10.163.1.211:3000").rstrip("/")
 FORWARD_URL = os.getenv("FORWARD_URL", "http://orchestrator:3000/toe/register")
 LEDGER_SUBMIT_URL = f"{LEDGER_BASE_URL}/submit"
-SCHEME_IMPORT_BASE_URL = _env_url("SCHEME_IMPORT_BASE_URL") or "http://10.163.1.127:8092"
+SCHEME_IMPORT_BASE_URL = _env_url("SCHEME_IMPORT_BASE_URL") or "http://10.163.1.127:8080"
 SCHEME_IMPORT_URL = _env_url("SCHEME_IMPORT_URL") or _join_url(SCHEME_IMPORT_BASE_URL, "/scheme/import")
 SCHEME_IMPORT_TIMEOUT = float(os.getenv("SCHEME_IMPORT_TIMEOUT", "10"))
-SCHEME_IMPORT_PAYLOAD_MODE = os.getenv("SCHEME_IMPORT_PAYLOAD_MODE", "clouditor").strip().lower()
-SCHEME_IMPORT_TARGET_OF_EVALUATION_ID = (
-    os.getenv("SCHEME_IMPORT_TARGET_OF_EVALUATION_ID", "").strip()
-    or "00000000-0000-0000-0000-000000000000"
-)
+SCHEME_IMPORT_PAYLOAD_MODE = os.getenv("SCHEME_IMPORT_PAYLOAD_MODE", "scheme_content").strip().lower()
 
 CCM_INBOUND_AUTH_ENABLED = _env_bool("CCM_INBOUND_AUTH_ENABLED", False)
 CCM_INBOUND_ISSUER = _env_url("CCM_INBOUND_ISSUER") or _env_url("AM_BASE_URL")
