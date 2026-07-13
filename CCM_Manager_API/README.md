@@ -93,7 +93,7 @@ SCHEME_IMPORT_TARGET_OF_EVALUATION_ID=00000000-0000-0000-0000-000000000000
 SCHEME_IMPORT_PAYLOAD_MODE=clouditor
 ```
 
-The `clouditor` payload mode keeps CCM's full scheme in MongoDB, but sends only the fields currently accepted by Clouditor and converts known metric identifiers to Clouditor metric UUIDs.
+The `clouditor` payload mode keeps CCM's full scheme in MongoDB, but sends only the fields currently accepted by Clouditor and converts known metric identifiers to Clouditor metric UUIDs. Metrics that are not present in Clouditor's metric UUID table are omitted from the outbound Clouditor import payload with warnings, while remaining stored in CCM.
 
 To upload only into CCM without calling DRM or the scheme import service:
 

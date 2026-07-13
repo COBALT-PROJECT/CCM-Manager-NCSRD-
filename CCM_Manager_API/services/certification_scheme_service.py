@@ -314,15 +314,16 @@ def _clouditor_scheme_import_payload(scheme_content):
         }
         original_metric_id = metric_copy.get("id")
         mapped_metric_id = _resolve_clouditor_metric_uuid(metric_copy, lookup)
-        if original_metric_id and mapped_metric_id:
-            metric_id_map[str(original_metric_id)] = mapped_metric_id
-            metric_copy["id"] = mapped_metric_id
-
         if original_metric_id == mapped_metric_id and not _is_uuid(mapped_metric_id):
             warnings.append(
                 f"No Clouditor UUID mapping found for metric {original_metric_id}; "
-                "leaving the original metric id in the scheme import payload."
+                "omitting it from the scheme import payload while keeping it in CCM."
             )
+            continue
+
+        if original_metric_id and mapped_metric_id:
+            metric_id_map[str(original_metric_id)] = mapped_metric_id
+            metric_copy["id"] = mapped_metric_id
 
         clouditor_metrics.append(metric_copy)
 
@@ -350,8 +351,9 @@ def _clouditor_scheme_import_payload(scheme_content):
         if original_metric_id == mapped_metric_id and not _is_uuid(mapped_metric_id):
             warnings.append(
                 f"No Clouditor UUID mapping found for mapping metric {original_metric_id}; "
-                "leaving the original metric id in the scheme import payload."
+                "omitting the mapping from the scheme import payload while keeping it in CCM."
             )
+            continue
 
         clouditor_mappings.append(mapping_copy)
 

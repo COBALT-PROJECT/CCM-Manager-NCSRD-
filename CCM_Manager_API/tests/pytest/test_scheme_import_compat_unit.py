@@ -80,7 +80,7 @@ def _scheme_content():
     }
 
 
-def test_clouditor_payload_strips_unsupported_fields_and_maps_metric_uuids():
+def test_clouditor_payload_strips_unsupported_fields_maps_metric_uuids_and_omits_unknowns():
     scheme_content = _scheme_content()
     original = copy.deepcopy(scheme_content)
 
@@ -94,11 +94,17 @@ def test_clouditor_payload_strips_unsupported_fields_and_maps_metric_uuids():
     }
     assert payload["compliance_metrics"][0]["id"] == "16c8ec2b-325e-492f-b2c3-fd9ef48ebd90"
     assert payload["compliance_metrics"][1]["id"] == "58d9a281-0f05-4a49-a1ef-df5013cc901e"
+    assert len(payload["compliance_metrics"]) == 2
     assert payload["certifiable_standards_mapping"][0]["metric_id"] == "16c8ec2b-325e-492f-b2c3-fd9ef48ebd90"
     assert payload["certifiable_standards_mapping"][1]["metric_id"] == "58d9a281-0f05-4a49-a1ef-df5013cc901e"
+    assert len(payload["certifiable_standards_mapping"]) == 2
     assert "mapped_risks" not in payload["compliance_metrics"][0]
     assert "extra" not in payload["certifiable_standards_mapping"][0]
-    assert any("UnknownMetric_QPU_1.0" in warning for warning in warnings)
+    assert "UnknownMetric_QPU_1.0" not in {
+        metric["id"] for metric in payload["compliance_metrics"]
+    }
+    assert any("omitting it" in warning and "UnknownMetric_QPU_1.0" in warning for warning in warnings)
+    assert any("omitting the mapping" in warning and "UnknownMetric_QPU_1.0" in warning for warning in warnings)
 
 
 def test_scheme_import_adds_default_target_of_evaluation_id(monkeypatch):
