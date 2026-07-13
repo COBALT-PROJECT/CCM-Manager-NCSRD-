@@ -78,11 +78,15 @@ SENSITIVE_FIELD_MARKERS = (
 )
 
 
+LOG_LEVEL = getattr(logging, os.getenv("CCM_LOG_LEVEL", "INFO").upper(), logging.INFO)
 logging.basicConfig(
-    level=os.getenv("CCM_LOG_LEVEL", "INFO").upper(),
+    level=LOG_LEVEL,
     format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
+    force=True,
 )
+logging.getLogger().setLevel(LOG_LEVEL)
 logger = logging.getLogger("ccm.http")
+logger.setLevel(LOG_LEVEL)
 
 
 def _is_sensitive_key(key):
