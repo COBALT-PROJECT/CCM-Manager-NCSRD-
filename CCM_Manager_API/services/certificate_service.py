@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from copy import deepcopy
 from datetime import datetime, timedelta
 from uuid import uuid4
@@ -319,6 +320,45 @@ def list_certification_schemes():
     return {"count": len(schemes), "schemes": schemes}, 200
 
 
+def _scheme_candidate_payload(scheme):
+    content = scheme.get("content", {}) if isinstance(scheme, dict) else {}
+    return {
+        "uuid": scheme.get("uuid"),
+        "id": content.get("id"),
+        "name": content.get("name"),
+    }
+
+
+def _resolve_certification_scheme_reference(value):
+    if value is None:
+        return None, {
+            "error": "Missing required field(s): scheme_id",
+        }, 400
+
+    reference = str(value).strip()
+    scheme = schemes_col.find_one({"uuid": reference})
+    if not scheme:
+        scheme = schemes_col.find_one({"content.id": reference})
+    if scheme:
+        return scheme, None, None
+
+    escaped = re.escape(reference)
+    matches = list(schemes_col.find({"content.name": {"$regex": f"^{escaped}$", "$options": "i"}}))
+    if len(matches) == 1:
+        return matches[0], None, None
+    if len(matches) > 1:
+        return None, {
+            "error": "Multiple certification schemes match the provided name.",
+            "scheme_reference": reference,
+            "candidates": [_scheme_candidate_payload(match) for match in matches],
+        }, 409
+
+    return None, {
+        "error": f"Certification Scheme {reference} not found",
+        "scheme_reference": reference,
+    }, 404
+
+
 def withdraw_certificate(cert_uuid):
     cert = certificates_col.find_one({"certification.certification_id": cert_uuid})
     if not cert:
@@ -355,7 +395,14 @@ def update_certificate_evaluation_result(data):
         return {"error": "No JSON data provided"}, 400
 
     toe_id = _payload_value(data, "toe_id", "toe_uuid", "target_of_evaluation_id")
-    scheme_id = _payload_value(data, "scheme_id", "certification_scheme_id", "certification_scheme")
+    scheme_reference = _payload_value(
+        data,
+        "scheme_id",
+        "scheme_name",
+        "certification_scheme_name",
+        "certification_scheme_id",
+        "certification_scheme",
+    )
     evaluation_type_raw = _payload_value(data, "evaluation_type", "evaluationType")
     result_raw = _payload_value(data, "result", "RESULT", "assessment_result", "assessmentResult")
 
@@ -363,7 +410,7 @@ def update_certificate_evaluation_result(data):
         field
         for field, value in {
             "toe_id": toe_id,
-            "scheme_id": scheme_id,
+            "scheme_id": scheme_reference,
             "evaluation_type": evaluation_type_raw,
             "result": result_raw,
         }.items()
@@ -385,9 +432,10 @@ def update_certificate_evaluation_result(data):
     if not toe_record:
         return {"error": f"ToE {toe_id} is not registered in CCM Manager"}, 404
 
-    scheme_record = schemes_col.find_one({"uuid": str(scheme_id)})
-    if not scheme_record:
-        return {"error": f"Certification Scheme {scheme_id} not found"}, 404
+    scheme_record, scheme_error, scheme_status = _resolve_certification_scheme_reference(scheme_reference)
+    if scheme_error:
+        return scheme_error, scheme_status
+    scheme_id = str(scheme_record.get("uuid") or scheme_record.get("content", {}).get("id"))
 
     if toe_record.get("linked_scheme_id") and toe_record.get("linked_scheme_id") != str(scheme_id):
         return {
@@ -398,7 +446,6 @@ def update_certificate_evaluation_result(data):
         }, 409
 
     now = datetime.utcnow()
-    today = now.strftime("%Y-%m-%d")
     timestamp = now.isoformat()
     evaluation = {
         "toe_id": str(toe_id),

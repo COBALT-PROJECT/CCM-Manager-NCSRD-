@@ -177,7 +177,7 @@
           "Internal Endpoint"
         ],
         "summary": "Create Initial Certificate From Evaluation Result",
-        "description": "Receives the compact initial certificate evaluation result. A new certificate is created only when evaluation_type is Manual and result is OK. The certificate starts in INITIATE state, is uploaded to the DLT, and stores the returned certificate ledger hash. Later assessment results update the certificate state through POST /assessment-result.",
+        "description": "Receives the compact initial certificate evaluation result. A new certificate is created only when evaluation_type is Manual and result is OK. The certificate starts in INITIATE state, is uploaded to the DLT, and stores the returned certificate ledger hash. Later assessment results update the certificate state through POST /assessment-result. The scheme_id can be either the CCM scheme UUID or the exact human-readable scheme name. evidence_id is optional.",
         "consumes": [
           "application/json"
         ],
@@ -206,8 +206,18 @@
                 },
                 "scheme_id": {
                   "type": "string",
-                  "description": "Certification scheme identifier.",
-                  "example": "AI_CLOUD_COMPLEX_DRM_DEMO_v1"
+                  "description": "Certification scheme UUID or exact human-readable scheme name.",
+                  "example": "QUANTUM Scheme Reupload Test"
+                },
+                "scheme_name": {
+                  "type": "string",
+                  "description": "Optional explicit scheme name alias. Use instead of scheme_id when the caller does not know the CCM UUID.",
+                  "example": "QUANTUM Scheme Reupload Test"
+                },
+                "certification_scheme_name": {
+                  "type": "string",
+                  "description": "Optional explicit scheme name alias. Use instead of scheme_id when the caller does not know the CCM UUID.",
+                  "example": "QUANTUM Scheme Reupload Test"
                 },
                 "evaluation_type": {
                   "type": "string",
@@ -259,7 +269,7 @@
           "Internal Endpoint"
         ],
         "summary": "Create Initial Certificate From Evaluation Result",
-        "description": "Alias of POST /certificate-evaluation-result. Receives the compact initial certificate evaluation result. A new certificate is created only when evaluation_type is Manual and result is OK. The certificate starts in INITIATE state, is uploaded to the DLT, and stores the returned certificate ledger hash. Later assessment results update the certificate state through POST /assessment-result.",
+        "description": "Alias of POST /certificate-evaluation-result. Receives the compact initial certificate evaluation result. A new certificate is created only when evaluation_type is Manual and result is OK. The certificate starts in INITIATE state, is uploaded to the DLT, and stores the returned certificate ledger hash. Later assessment results update the certificate state through POST /assessment-result. The scheme_id can be either the CCM scheme UUID or the exact human-readable scheme name. evidence_id is optional.",
         "consumes": [
           "application/json"
         ],
@@ -288,8 +298,18 @@
                 },
                 "scheme_id": {
                   "type": "string",
-                  "description": "Certification scheme identifier.",
-                  "example": "AI_CLOUD_COMPLEX_DRM_DEMO_v1"
+                  "description": "Certification scheme UUID or exact human-readable scheme name.",
+                  "example": "QUANTUM Scheme Reupload Test"
+                },
+                "scheme_name": {
+                  "type": "string",
+                  "description": "Optional explicit scheme name alias. Use instead of scheme_id when the caller does not know the CCM UUID.",
+                  "example": "QUANTUM Scheme Reupload Test"
+                },
+                "certification_scheme_name": {
+                  "type": "string",
+                  "description": "Optional explicit scheme name alias. Use instead of scheme_id when the caller does not know the CCM UUID.",
+                  "example": "QUANTUM Scheme Reupload Test"
                 },
                 "evaluation_type": {
                   "type": "string",

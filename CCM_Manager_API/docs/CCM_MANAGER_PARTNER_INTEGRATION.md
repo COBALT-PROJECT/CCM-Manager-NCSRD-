@@ -146,7 +146,7 @@ Create the initial certificate from a manual OK evaluation:
 
 ```bash
 TOE_ID="<toe-id>"
-SCHEME_ID="<scheme-id>"
+SCHEME_ID="<scheme-id-or-scheme-name>"
 
 curl -sS -X POST "$CCM_BASE_URL/certificate-evaluation-result" \
   -H "Authorization: Bearer $TOKEN" \
@@ -159,6 +159,8 @@ curl -sS -X POST "$CCM_BASE_URL/certificate-evaluation-result" \
     \"evidence_id\": \"manual-evidence-001\"
   }" | jq
 ```
+
+For this endpoint, `scheme_id` may be the CCM scheme UUID or the exact scheme name, for example `QUANTUM Scheme Reupload Test`. You can also send `scheme_name` or `certification_scheme_name` instead of `scheme_id`. The `evidence_id` field is optional; if it is omitted CCM stores `N/A` as the certificate evidence reference.
 
 ## Assessment Result State Updates
 
@@ -271,3 +273,17 @@ Use `CCM_INBOUND_ALLOWED_CLIENT_IDS` when CCM should only accept specific compon
 ```env
 CCM_INBOUND_ALLOWED_CLIENT_IDS=orchestrator-component,ui-component,assessment-component
 ```
+
+## Scheme Import Settings
+
+For authenticated Clouditor scheme import from CCM:
+
+```env
+SCHEME_IMPORT_URL=http://10.163.1.127:8092/scheme/import
+SCHEME_IMPORT_AUTH_DISABLED=false
+SCHEME_IMPORT_AUTH_ROLE=profile
+SCHEME_IMPORT_TARGET_OF_EVALUATION_ID=00000000-0000-0000-0000-000000000000
+SCHEME_IMPORT_PAYLOAD_MODE=clouditor
+```
+
+CCM sends the IAM bearer token automatically and appends `targetOfEvaluationId` to the import request unless it is already present in `SCHEME_IMPORT_URL`.

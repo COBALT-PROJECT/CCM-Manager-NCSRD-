@@ -58,13 +58,26 @@ If old seed data should be removed, clear the affected collections once before r
 `POST /upload_certification_scheme` now uploads the certification scheme into CCM, sends it to the scheme import service, and automatically syncs it to DRM.
 The response includes `scheme_import_status`, `scheme_import_status_code`, `scheme_import_response`, `drm_sync_status`, `drm_sync_status_code`, and `drm_sync_response` so you can see whether each external component accepted it.
 
-By default the scheme import service is `http://10.163.1.127:8080/scheme/import`.
+By default the scheme import service is `http://10.163.1.127:8092/scheme/import`.
 You can override it with:
 
 - `SCHEME_IMPORT_URL`, full URL override
 - `SCHEME_IMPORT_BASE_URL`, base URL used with `/scheme/import`
 - `SCHEME_IMPORT_TIMEOUT`, defaults to `10`
-- `SCHEME_IMPORT_PAYLOAD_MODE`, defaults to `scheme_content`; use `uploaded`, `wrapper`, or `auto` if the receiver expects a different JSON shape
+- `SCHEME_IMPORT_PAYLOAD_MODE`, defaults to `clouditor`; use `scheme_content`, `uploaded`, `wrapper`, or `auto` if the receiver expects a different JSON shape
+- `SCHEME_IMPORT_TARGET_OF_EVALUATION_ID`, defaults to `00000000-0000-0000-0000-000000000000` and is sent as the `targetOfEvaluationId` query parameter
+
+For authenticated Clouditor scheme import, set:
+
+```env
+SCHEME_IMPORT_URL=http://10.163.1.127:8092/scheme/import
+SCHEME_IMPORT_AUTH_DISABLED=false
+SCHEME_IMPORT_AUTH_ROLE=profile
+SCHEME_IMPORT_TARGET_OF_EVALUATION_ID=00000000-0000-0000-0000-000000000000
+SCHEME_IMPORT_PAYLOAD_MODE=clouditor
+```
+
+The `clouditor` payload mode keeps CCM's full scheme in MongoDB, but sends only the fields currently accepted by Clouditor and converts known metric identifiers to Clouditor metric UUIDs.
 
 To upload only into CCM without calling DRM or the scheme import service:
 
@@ -140,6 +153,8 @@ If `SDTM_BASE_URL` is not set, CCM can derive it from legacy `DEPLOY_SDT`,
 
 `POST /certificate-evaluation-result` creates the initial certificate for a ToE and certification scheme.
 The first request must be `evaluation_type` `Manual` with result `OK`; CCM creates the certificate with state `INITIATE`, uploads it to the DLT, and stores the certificate hash.
+The `scheme_id` value can be either the CCM scheme UUID or the exact human-readable scheme name. You can also send `scheme_name` or `certification_scheme_name`.
+The `evidence_id` field is optional for this endpoint; if omitted, CCM stores `N/A` as the evidence reference.
 
 `POST /certificates/evaluation-result` is available as an alias for the same certificate creation workflow.
 

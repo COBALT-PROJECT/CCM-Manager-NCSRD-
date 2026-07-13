@@ -1,17 +1,103 @@
+import json
 import logging
 import os
+import re
+from copy import deepcopy
 from datetime import datetime
+from urllib.parse import parse_qs, urlsplit
 from uuid import uuid4
 
 import requests
 
 from auth import auth_context, authed_request
-from config import SCHEME_IMPORT_PAYLOAD_MODE, SCHEME_IMPORT_TIMEOUT, SCHEME_IMPORT_URL
+from config import (
+    SCHEME_IMPORT_PAYLOAD_MODE,
+    SCHEME_IMPORT_TARGET_OF_EVALUATION_ID,
+    SCHEME_IMPORT_TIMEOUT,
+    SCHEME_IMPORT_URL,
+)
 from db import cm_col, controls_col, metrics_col, risks_col, rtc_col, schemes_col, threats_col
 from services.ledger import ledger_auth_context, send_to_ledger
 
 
 INVALID_REFERENCE_VALUES = {"", "N/A", "NA", "NONE", "NULL"}
+UUID_PATTERN = re.compile(
+    r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
+    r"[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+)
+CLOUDITOR_METRIC_UUIDS_PATH = os.getenv(
+    "CLOUDITOR_METRIC_UUIDS_PATH",
+    os.path.join(os.path.dirname(__file__), "..", "data", "clouditor_metric_uuids.json"),
+)
+CLOUDITOR_METRIC_ALIASES = {
+    "dataanomalyidentification": "AnomalyDetectionEnabled",
+}
+CLOUDITOR_METRIC_FIELDS = {
+    "associated_control",
+    "data_source_type",
+    "description",
+    "frequency",
+    "id",
+    "implementation_evidence",
+    "information_need",
+    "name",
+    "reporting_format",
+    "target_values",
+    "version",
+}
+CLOUDITOR_STANDARD_MAPPING_FIELDS = {
+    "control_id",
+    "description",
+    "metric_id",
+    "standard",
+}
+
+
+def _load_clouditor_metric_uuids():
+    try:
+        with open(CLOUDITOR_METRIC_UUIDS_PATH) as mapping_file:
+            mapping = json.load(mapping_file)
+    except (OSError, ValueError) as exc:
+        logging.warning("Could not load Clouditor metric UUID mapping: %s", exc)
+        return {}
+
+    if not isinstance(mapping, dict):
+        logging.warning("Clouditor metric UUID mapping must be a JSON object")
+        return {}
+    return mapping
+
+
+def _normalize_metric_lookup_key(value):
+    return re.sub(r"[^a-z0-9]", "", str(value or "").lower())
+
+
+def _metric_lookup_keys(value):
+    text = str(value or "").strip()
+    if not text:
+        return []
+
+    keys = [_normalize_metric_lookup_key(text)]
+    if "_" in text:
+        keys.append(_normalize_metric_lookup_key(text.split("_", 1)[0]))
+    return _ordered_unique(keys)
+
+
+def _clouditor_metric_lookup():
+    mapping = _load_clouditor_metric_uuids()
+    lookup = {}
+
+    for name, metric_uuid in mapping.items():
+        if not metric_uuid:
+            continue
+        lookup[_normalize_metric_lookup_key(name)] = metric_uuid
+        lookup[_normalize_metric_lookup_key(metric_uuid)] = metric_uuid
+
+    for alias, target_name in CLOUDITOR_METRIC_ALIASES.items():
+        target_uuid = mapping.get(target_name)
+        if target_uuid:
+            lookup[_normalize_metric_lookup_key(alias)] = target_uuid
+
+    return lookup
 
 
 def _is_real_reference(value):
@@ -193,12 +279,108 @@ def _response_body(response):
         return response.text
 
 
+def _is_uuid(value):
+    return isinstance(value, str) and UUID_PATTERN.match(value.strip()) is not None
+
+
+def _resolve_clouditor_metric_uuid(metric, lookup):
+    metric_id = metric.get("id")
+    if _is_uuid(metric_id):
+        return metric_id
+
+    for candidate in (metric_id, metric.get("name")):
+        for key in _metric_lookup_keys(candidate):
+            mapped_uuid = lookup.get(key)
+            if mapped_uuid:
+                return mapped_uuid
+
+    return metric_id
+
+
+def _clouditor_scheme_import_payload(scheme_content):
+    lookup = _clouditor_metric_lookup()
+    warnings = []
+    metric_id_map = {}
+    clouditor_metrics = []
+
+    for metric in scheme_content.get("compliance_metrics", []) or []:
+        if not isinstance(metric, dict):
+            continue
+
+        metric_copy = {
+            field: deepcopy(metric[field])
+            for field in CLOUDITOR_METRIC_FIELDS
+            if field in metric
+        }
+        original_metric_id = metric_copy.get("id")
+        mapped_metric_id = _resolve_clouditor_metric_uuid(metric_copy, lookup)
+        if original_metric_id and mapped_metric_id:
+            metric_id_map[str(original_metric_id)] = mapped_metric_id
+            metric_copy["id"] = mapped_metric_id
+
+        if original_metric_id == mapped_metric_id and not _is_uuid(mapped_metric_id):
+            warnings.append(
+                f"No Clouditor UUID mapping found for metric {original_metric_id}; "
+                "leaving the original metric id in the scheme import payload."
+            )
+
+        clouditor_metrics.append(metric_copy)
+
+    clouditor_mappings = []
+    for mapping in scheme_content.get("certifiable_standards_mapping", []) or []:
+        if not isinstance(mapping, dict):
+            continue
+
+        mapping_copy = {
+            field: deepcopy(mapping[field])
+            for field in CLOUDITOR_STANDARD_MAPPING_FIELDS
+            if field in mapping
+        }
+        original_metric_id = mapping_copy.get("metric_id")
+        mapped_metric_id = metric_id_map.get(str(original_metric_id))
+        if not mapped_metric_id:
+            mapped_metric_id = _resolve_clouditor_metric_uuid(
+                {"id": original_metric_id},
+                lookup,
+            )
+
+        if mapped_metric_id:
+            mapping_copy["metric_id"] = mapped_metric_id
+
+        if original_metric_id == mapped_metric_id and not _is_uuid(mapped_metric_id):
+            warnings.append(
+                f"No Clouditor UUID mapping found for mapping metric {original_metric_id}; "
+                "leaving the original metric id in the scheme import payload."
+            )
+
+        clouditor_mappings.append(mapping_copy)
+
+    return {
+        "boundary_conditions": deepcopy(scheme_content.get("boundary_conditions", {}) or {}),
+        "certifiable_standards_mapping": clouditor_mappings,
+        "compliance_metrics": clouditor_metrics,
+    }, _ordered_unique(warnings)
+
+
 def _scheme_import_payload(data, scheme_content, mode):
     if mode == "uploaded":
-        return data
+        return data, []
     if mode == "wrapper":
-        return {"certificationScheme": scheme_content}
-    return scheme_content
+        return {"certificationScheme": scheme_content}, []
+    if mode == "clouditor":
+        return _clouditor_scheme_import_payload(scheme_content)
+    return scheme_content, []
+
+
+def _scheme_import_params():
+    if not SCHEME_IMPORT_TARGET_OF_EVALUATION_ID:
+        return None
+
+    query = parse_qs(urlsplit(SCHEME_IMPORT_URL).query)
+    if "targetOfEvaluationId" in query:
+        return None
+
+    return {"targetOfEvaluationId": SCHEME_IMPORT_TARGET_OF_EVALUATION_ID}
 
 
 def import_scheme_to_orchestrator(data, scheme_content, scheme_id, payload_mode=None):
@@ -211,7 +393,7 @@ def import_scheme_to_orchestrator(data, scheme_content, scheme_id, payload_mode=
 
     requested_mode = (payload_mode or SCHEME_IMPORT_PAYLOAD_MODE or "scheme_content").strip().lower()
     if requested_mode == "auto":
-        modes = ["scheme_content", "uploaded"]
+        modes = ["clouditor", "scheme_content", "uploaded"]
     else:
         modes = [requested_mode]
 
@@ -219,21 +401,27 @@ def import_scheme_to_orchestrator(data, scheme_content, scheme_id, payload_mode=
     attempts = []
 
     for mode in modes:
-        payload = _scheme_import_payload(data, scheme_content, mode)
+        payload, payload_warnings = _scheme_import_payload(data, scheme_content, mode)
         headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
             "X-Correlation-ID": correlation_id,
         }
+        request_kwargs = {
+            "json": payload,
+            "headers": headers,
+            "timeout": SCHEME_IMPORT_TIMEOUT,
+            "service": "scheme_import",
+        }
+        params = _scheme_import_params()
+        if params:
+            request_kwargs["params"] = params
 
         try:
             response = authed_request(
                 "POST",
                 SCHEME_IMPORT_URL,
-                json=payload,
-                headers=headers,
-                timeout=SCHEME_IMPORT_TIMEOUT,
-                service="scheme_import",
+                **request_kwargs,
             )
         except requests.RequestException as exc:
             logging.warning("Scheme import request failed for %s: %s", scheme_id, exc)
@@ -242,7 +430,11 @@ def import_scheme_to_orchestrator(data, scheme_content, scheme_id, payload_mode=
                 "scheme_import_url": SCHEME_IMPORT_URL,
                 "scheme_import_payload_mode": mode,
                 "scheme_import_correlation_id": correlation_id,
+                "scheme_import_target_of_evaluation_id": (
+                    params or {}
+                ).get("targetOfEvaluationId"),
                 "scheme_import_error": str(exc),
+                "warnings": payload_warnings,
                 "outbound_auth": [auth_context("scheme_import")],
             }, 502
 
@@ -251,6 +443,7 @@ def import_scheme_to_orchestrator(data, scheme_content, scheme_id, payload_mode=
             "payload_mode": mode,
             "status_code": response.status_code,
             "response": body,
+            "warnings": payload_warnings,
         }
         attempts.append(attempt)
 
@@ -260,8 +453,12 @@ def import_scheme_to_orchestrator(data, scheme_content, scheme_id, payload_mode=
                 "scheme_import_url": SCHEME_IMPORT_URL,
                 "scheme_import_payload_mode": mode,
                 "scheme_import_correlation_id": correlation_id,
+                "scheme_import_target_of_evaluation_id": (
+                    params or {}
+                ).get("targetOfEvaluationId"),
                 "scheme_import_status_code": response.status_code,
                 "scheme_import_response": body,
+                "warnings": payload_warnings,
                 "outbound_auth": [auth_context("scheme_import")],
             }, response.status_code
 
@@ -284,6 +481,7 @@ def import_scheme_to_orchestrator(data, scheme_content, scheme_id, payload_mode=
         "scheme_import_status_code": last_attempt.get("status_code"),
         "scheme_import_response": last_attempt.get("response"),
         "scheme_import_attempts": attempts,
+        "warnings": last_attempt.get("warnings", []),
         "outbound_auth": [auth_context("scheme_import")],
     }, last_attempt.get("status_code") or 502
 
