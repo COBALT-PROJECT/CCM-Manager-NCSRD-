@@ -21,6 +21,22 @@ services:
     restart: unless-stopped
 
   #####################################################
+  # ToE ID handoff and periodic SDTM ID synchronization
+  #####################################################
+  toe-workflow-worker:
+    build: .
+    command: ["python", "-m", "workers.toe_workflow_worker"]
+    volumes:
+      - .:/app
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  #####################################################
   # MongoDB for CCM Manager
   #####################################################
   mongo:

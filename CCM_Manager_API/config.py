@@ -34,6 +34,26 @@ def _env_bool(name, default=False):
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
+def _env_float(name, default):
+    value = os.getenv(name)
+    if value is None:
+        return float(default)
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return float(default)
+
+
+def _env_int(name, default):
+    value = os.getenv(name)
+    if value is None:
+        return int(default)
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return int(default)
+
+
 class Config:
     UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "./sboms")
     TMP_FOLDER = os.getenv("TMP_FOLDER", "./tmp")
@@ -104,3 +124,35 @@ SDT_ID = os.getenv("SDT_ID", "").strip()
 LEDGER_HASH_URL = os.getenv("LEDGER_HASH")
 SEND_SDT_URL = os.getenv("SEND_SDT")
 ENDPOINTS = [url for url in [os.getenv("ENDPOINTS")] if url]
+
+TOE_ID_HANDOFF_ENABLED = _env_bool("TOE_ID_HANDOFF_ENABLED", False)
+TOE_CONNECTOR_BASE_URL = (
+    _env_url("TOE_CONNECTOR_BASE_URL")
+    or "http://ai-target-of-evaluation.cobalt.local:8005"
+)
+TOE_CONNECTOR_HEALTH_URL = (
+    _env_url("TOE_CONNECTOR_HEALTH_URL")
+    or _join_url(TOE_CONNECTOR_BASE_URL, "/health")
+)
+TOE_CONNECTOR_ID_URL = (
+    _env_url("TOE_CONNECTOR_ID_URL")
+    or _join_url(TOE_CONNECTOR_BASE_URL, "/api/IDSconnector/TOE/id")
+)
+TOE_CONNECTOR_ID_FIELD = os.getenv("TOE_CONNECTOR_ID_FIELD", "toe_id").strip() or "toe_id"
+TOE_CONNECTOR_TIMEOUT_SECONDS = _env_float("TOE_CONNECTOR_TIMEOUT_SECONDS", 15)
+TOE_CONNECTOR_RETRY_SECONDS = _env_float("TOE_CONNECTOR_RETRY_SECONDS", 30)
+TOE_CONNECTOR_RETRY_MAX_SECONDS = _env_float("TOE_CONNECTOR_RETRY_MAX_SECONDS", 600)
+
+SDT_ID_SYNC_ENABLED = _env_bool("SDT_ID_SYNC_ENABLED", False)
+SDT_ID_SYNC_URL = (
+    _env_url("SDT_ID_SYNC_URL")
+    or "http://sdtm.cobalt.local:30008/api/SDT/sync/ids"
+)
+SDT_ID_SYNC_INTERVAL_SECONDS = _env_float("SDT_ID_SYNC_INTERVAL_SECONDS", 300)
+SDT_ID_SYNC_CATEGORY = os.getenv("SDT_ID_SYNC_CATEGORY", "AI").strip() or "AI"
+SDT_ID_SYNC_DATA_PATH = os.getenv("SDT_ID_SYNC_DATA_PATH", "all").strip() or "all"
+SDT_ID_SYNC_TIMEOUT_SECONDS = _env_float("SDT_ID_SYNC_TIMEOUT_SECONDS", 15)
+
+TOE_WORKFLOW_POLL_SECONDS = _env_float("TOE_WORKFLOW_POLL_SECONDS", 5)
+TOE_WORKFLOW_LEASE_SECONDS = _env_float("TOE_WORKFLOW_LEASE_SECONDS", 90)
+TOE_WORKFLOW_RESPONSE_MAX_CHARS = _env_int("TOE_WORKFLOW_RESPONSE_MAX_CHARS", 4000)

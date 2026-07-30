@@ -4,7 +4,7 @@ from datetime import datetime
 from auth import auth_context, authed_request
 from config import FORWARD_URL
 from db import certificates_col, collection, schemes_col, toes_col
-from services import sdt_sender
+from services import sdt_sender, toe_workflow_service
 from utils import mongo_safe_document
 
 
@@ -128,6 +128,7 @@ def _sync_to_sdtm(data, toe_uuid, toe_name, scheme_id=None, bom_path=None, paylo
     if not bom_path and inline_bom is None:
         return {
             "sdtm_status": "skipped",
+            "sdtm_attempted": False,
             "sdtm_reason": "No BOM content or BOM path was available for SDTM adapt.",
         }, 200
 
@@ -142,6 +143,7 @@ def _sync_to_sdtm(data, toe_uuid, toe_name, scheme_id=None, bom_path=None, paylo
 
     return {
         "sdtm_status": "deployed" if sdt_status == 200 else "failed",
+        "sdtm_attempted": True,
         "sdtm_status_code": sdt_status,
         "sdtm_response": sdt_payload,
     }, sdt_status
@@ -207,6 +209,7 @@ def upload_toe_descriptor(
             "outbound_auth": outbound_auth,
         }
 
+        sdtm_attempted = False
         if _flag_enabled(deploy_sdt, default=True):
             try:
                 sdtm_payload, _ = _sync_to_sdtm(
@@ -218,19 +221,42 @@ def upload_toe_descriptor(
                     payload_type=sdt_payload_type,
                 )
                 response.update(sdtm_payload)
+                sdtm_attempted = bool(sdtm_payload.get("sdtm_attempted"))
                 sdt_auth = sdtm_payload.get("sdtm_response", {}).get("outbound_auth")
                 if sdt_auth:
                     response["outbound_auth"].extend(sdt_auth)
             except Exception as exc:
+                sdtm_attempted = True
                 logging.warning("Failed to sync ToE %s to SDTM: %s", toe_uuid, exc)
                 response.update({
                     "sdtm_status": "failed",
+                    "sdtm_attempted": True,
                     "sdtm_error": str(exc),
                 })
                 response["outbound_auth"].append(auth_context("sdt"))
         else:
             response["sdtm_status"] = "skipped"
+            response["sdtm_attempted"] = False
             response["sdtm_reason"] = "SDTM sync disabled for this request."
+
+        if sdtm_attempted:
+            try:
+                handoff_result = toe_workflow_service.schedule_toe_workflow(
+                    toe_uuid,
+                    sdt_attempt_status=response.get("sdtm_status"),
+                    sdt_attempt_status_code=response.get("sdtm_status_code"),
+                )
+                response["toe_id_handoff"] = handoff_result
+            except Exception as exc:
+                logging.warning(
+                    "Failed to schedule ToE ID handoff for %s: %s",
+                    toe_uuid,
+                    exc,
+                )
+                response["toe_id_handoff"] = {
+                    "status": "scheduling_failed",
+                    "error": str(exc),
+                }
 
         return response, 200
 

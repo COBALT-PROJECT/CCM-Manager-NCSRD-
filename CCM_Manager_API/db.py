@@ -12,6 +12,7 @@ collection = db.mycollection
 certificates_col = db.certificates
 schemes_col = db.schemes
 toes_col = db.toes
+toe_workflow_jobs_col = db.toe_workflow_jobs
 risks_col = db.risks
 threats_col = db.threats
 metrics_col = db.metrics

@@ -152,6 +152,73 @@ For SDTM you can configure either a single base URL or explicit endpoint overrid
 If `SDTM_BASE_URL` is not set, CCM can derive it from legacy `DEPLOY_SDT`,
 `DEPLOYMENTS_SDT`, `CREATE_SDT`, or `DELETE_SDT` URLs and still call the new SDTM paths.
 
+### ToE ID handoff and periodic ID sync
+
+CCM can start a restart-safe background workflow after an attempted Digital Twin deployment:
+
+1. Poll `GET http://ai-target-of-evaluation.cobalt.local:8005/health`.
+2. Only after the health endpoint returns exactly `200`, send the uploaded ToE UUID to
+   `POST /api/IDSconnector/TOE/id`.
+3. After the ToE ID is accepted, periodically call the SDTM
+   `GET /api/SDT/sync/ids` endpoint with the real ToE UUID.
+
+A failed SDTM response does not prevent the handoff from being scheduled because SDTM can return
+an error after the Digital Twin was created. An intentional `deploy_sdt=false` request or a
+pre-deployment skip caused by missing BOM data does not schedule the workflow.
+
+The worker persists its state in MongoDB collection `toe_workflow_jobs`, uses a lease to avoid
+duplicate processing, and does not make an otherwise successful ToE upload fail.
+
+The workflow is disabled by default. Configure and enable it with:
+
+```env
+TOE_ID_HANDOFF_ENABLED=true
+TOE_CONNECTOR_BASE_URL=http://ai-target-of-evaluation.cobalt.local:8005
+TOE_CONNECTOR_HEALTH_URL=http://ai-target-of-evaluation.cobalt.local:8005/health
+TOE_CONNECTOR_ID_URL=http://ai-target-of-evaluation.cobalt.local:8005/api/IDSconnector/TOE/id
+TOE_CONNECTOR_ID_FIELD=toe_id
+TOE_CONNECTOR_TIMEOUT_SECONDS=15
+TOE_CONNECTOR_RETRY_SECONDS=30
+TOE_CONNECTOR_RETRY_MAX_SECONDS=600
+TOE_CONNECTOR_AUTH_DISABLED=true
+
+SDT_ID_SYNC_ENABLED=true
+SDT_ID_SYNC_URL=http://sdtm.cobalt.local:30008/api/SDT/sync/ids
+SDT_ID_SYNC_INTERVAL_SECONDS=300
+SDT_ID_SYNC_CATEGORY=AI
+SDT_ID_SYNC_DATA_PATH=all
+SDT_ID_SYNC_TIMEOUT_SECONDS=15
+
+TOE_WORKFLOW_POLL_SECONDS=5
+TOE_WORKFLOW_LEASE_SECONDS=90
+TOE_WORKFLOW_RESPONSE_MAX_CHARS=4000
+```
+
+`TOE_CONNECTOR_AUTH_DISABLED=true` and the existing default `SDT_AUTH_DISABLED=true` reproduce
+the unauthenticated curl contracts. Set either value to `false` and configure its corresponding
+auth role or bearer token when those services require IAM authentication.
+
+The worker runs as the Compose service `toe-workflow-worker`. Inspect it with:
+
+```bash
+sudo docker compose up -d --build --force-recreate flask-app toe-workflow-worker
+sudo docker compose logs -f toe-workflow-worker
+```
+
+To disable the feature immediately without deleting ToEs or workflow state:
+
+```env
+TOE_ID_HANDOFF_ENABLED=false
+SDT_ID_SYNC_ENABLED=false
+```
+
+Then recreate Flask and stop the worker:
+
+```bash
+sudo docker compose up -d --force-recreate flask-app
+sudo docker compose stop toe-workflow-worker
+```
+
 ## Certificate State Updates
 
 `POST /certificate-evaluation-result` creates the initial certificate for a ToE and certification scheme.
