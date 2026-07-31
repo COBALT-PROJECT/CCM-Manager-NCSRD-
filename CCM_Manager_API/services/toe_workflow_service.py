@@ -80,8 +80,9 @@ def activate_completed_handoffs_for_sync(now=None):
                 "enabled": True,
                 "handoff_status": {"$ne": "sent"},
                 "$or": [
-                    {"next_run_at": None},
-                    {"next_run_at": {"$exists": False}},
+                    {"lease_until": None},
+                    {"lease_until": {"$exists": False}},
+                    {"lease_until": {"$lte": current_time}},
                 ],
             },
             {
@@ -304,7 +305,7 @@ def _process_handoff(job, now):
             "GET",
             TOE_CONNECTOR_HEALTH_URL,
             timeout=_positive_seconds(TOE_CONNECTOR_TIMEOUT_SECONDS),
-            service="toe_connector",
+            service="toe_connector_health",
         )
     except Exception as exc:
         return _retry_handoff(job, "health", exc, now)

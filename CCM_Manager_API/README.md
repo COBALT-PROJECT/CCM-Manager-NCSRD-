@@ -154,9 +154,9 @@ If `SDTM_BASE_URL` is not set, CCM can derive it from legacy `DEPLOY_SDT`,
 
 ### ToE ID handoff and periodic ID sync
 
-CCM can start a restart-safe background workflow after an attempted Digital Twin deployment:
+CCM starts a restart-safe background workflow after an attempted Digital Twin deployment by default:
 
-1. Poll `GET http://ai-target-of-evaluation.cobalt.local:8005/health`.
+1. Poll `GET http://ai-target-of-evaluation.cobalt.local:30005/health`.
 2. Only after the health endpoint returns exactly `200`, send the uploaded ToE UUID to
    `POST /api/IDSconnector/TOE/id`.
 3. After the ToE ID is accepted, periodically call the SDTM
@@ -169,18 +169,19 @@ pre-deployment skip caused by missing BOM data does not schedule the workflow.
 The worker persists its state in MongoDB collection `toe_workflow_jobs`, uses a lease to avoid
 duplicate processing, and does not make an otherwise successful ToE upload fail.
 
-The workflow is disabled by default. Configure and enable it with:
+Configure it with:
 
 ```env
 TOE_ID_HANDOFF_ENABLED=true
-TOE_CONNECTOR_BASE_URL=http://ai-target-of-evaluation.cobalt.local:8005
-TOE_CONNECTOR_HEALTH_URL=http://ai-target-of-evaluation.cobalt.local:8005/health
-TOE_CONNECTOR_ID_URL=http://ai-target-of-evaluation.cobalt.local:8005/api/IDSconnector/TOE/id
+TOE_CONNECTOR_BASE_URL=http://ai-target-of-evaluation.cobalt.local:30005
+TOE_CONNECTOR_HEALTH_URL=http://ai-target-of-evaluation.cobalt.local:30005/health
+TOE_CONNECTOR_ID_URL=http://ai-target-of-evaluation.cobalt.local:30005/api/IDSconnector/TOE/id
 TOE_CONNECTOR_ID_FIELD=toe_id
 TOE_CONNECTOR_TIMEOUT_SECONDS=15
 TOE_CONNECTOR_RETRY_SECONDS=30
-TOE_CONNECTOR_RETRY_MAX_SECONDS=600
-TOE_CONNECTOR_AUTH_DISABLED=true
+TOE_CONNECTOR_RETRY_MAX_SECONDS=30
+TOE_CONNECTOR_AUTH_DISABLED=false
+TOE_CONNECTOR_AUTH_ROLE=openid profile
 
 SDT_ID_SYNC_ENABLED=true
 SDT_ID_SYNC_URL=http://sdtm.cobalt.local:30008/api/SDT/sync/ids
@@ -194,9 +195,11 @@ TOE_WORKFLOW_LEASE_SECONDS=90
 TOE_WORKFLOW_RESPONSE_MAX_CHARS=4000
 ```
 
-`TOE_CONNECTOR_AUTH_DISABLED=true` and the existing default `SDT_AUTH_DISABLED=true` reproduce
-the unauthenticated curl contracts. Set either value to `false` and configure its corresponding
-auth role or bearer token when those services require IAM authentication.
+The connector health check is public. The ToE ID handoff uses CCM's IAM client credentials,
+refreshes expired access tokens, and retries every 30 seconds until the connector accepts the ID.
+Set `TOE_CONNECTOR_AUTH_DISABLED=true` only when the ToE ID endpoint is intentionally public.
+The existing default `SDT_AUTH_DISABLED=true` keeps SDTM calls unauthenticated; set it to `false`
+and configure its corresponding auth role or bearer token when SDTM requires IAM authentication.
 
 The worker runs as the Compose service `toe-workflow-worker`. Inspect it with:
 

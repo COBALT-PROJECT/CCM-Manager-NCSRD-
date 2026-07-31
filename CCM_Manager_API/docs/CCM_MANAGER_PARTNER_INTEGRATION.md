@@ -140,10 +140,10 @@ curl -sS -X POST "$CCM_BASE_URL/upload_toe_descriptor?scheme_id=$SCHEME_ID&deplo
   --data-binary @toe.json | jq
 ```
 
-When `deploy_sdt=true` and the ToE contains deployable BOM data, CCM can schedule the optional
+When `deploy_sdt=true` and the ToE contains deployable BOM data, CCM schedules the
 background ToE ID handoff. The worker health-checks the AI ToE connector, sends the uploaded
-`toe_uuid`, and then periodically synchronizes SDTM IDs. This workflow is controlled by
-`TOE_ID_HANDOFF_ENABLED` and `SDT_ID_SYNC_ENABLED`; it remains disabled by default.
+`toe_uuid`, and then periodically synchronizes SDTM IDs. ToE handoff is enabled by default and
+retries until accepted; periodic synchronization remains controlled by `SDT_ID_SYNC_ENABLED`.
 
 ## Initial Certificate Creation
 

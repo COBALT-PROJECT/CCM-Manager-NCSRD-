@@ -41,7 +41,8 @@ def _build_auth_client():
 auth_client = _build_auth_client()
 
 
-AUTH_DISABLED_BY_DEFAULT = {"SDT", "SDTM", "SCHEME_IMPORT", "TOE_CONNECTOR"}
+AUTH_DISABLED_BY_DEFAULT = {"SDT", "SDTM", "SCHEME_IMPORT", "TOE_CONNECTOR_HEALTH"}
+DEFAULT_AUTH_ROLES = {"TOE_CONNECTOR": "openid profile"}
 
 
 def _service_env_key(service):
@@ -102,6 +103,7 @@ def auth_role_for_service(service=None, scope=None):
         os.getenv(f"{service_key}_AUTH_ROLE")
         or os.getenv(f"CCM_{service_key}_AUTH_ROLE")
         or os.getenv("CCM_AUTH_ROLE")
+        or DEFAULT_AUTH_ROLES.get(service_key)
         or os.getenv("AM_SCOPE", "digital_twins profile")
     )
 
@@ -130,7 +132,26 @@ def authed_request(method, url, **kwargs):
 
     bearer_token = _bearer_token_for_service(service)
     if bearer_token:
-        return requests.request(method, url, **_with_bearer_header(kwargs, bearer_token))
+        response = requests.request(
+            method,
+            url,
+            **_with_bearer_header(kwargs, bearer_token),
+        )
+        if response.status_code != 401 or auth_client is None:
+            return response
+
+        headers = dict(kwargs.get("headers", {}) or {})
+        headers.pop("Authorization", None)
+        if headers:
+            kwargs["headers"] = headers
+        else:
+            kwargs.pop("headers", None)
+        return auth_client.authenticated_request(
+            method,
+            url,
+            scope=scope,
+            **kwargs,
+        )
 
     if auth_client is not None:
         if scope is None:

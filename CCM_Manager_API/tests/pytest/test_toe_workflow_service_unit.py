@@ -91,10 +91,12 @@ def test_worker_startup_reactivates_persisted_jobs(monkeypatch):
     toe_workflow_service.activate_completed_handoffs_for_sync(now=now)
 
     assert collection.update_many.call_count == 2
+    pending_filter = collection.update_many.call_args_list[0].args[0]
     pending_update = collection.update_many.call_args_list[0].args[1]["$set"]
     sync_update = collection.update_many.call_args_list[1].args[1]["$set"]
     assert pending_update["state"] == "pending_handoff"
     assert pending_update["next_run_at"] == now
+    assert {"lease_until": {"$lte": now}} in pending_filter["$or"]
     assert sync_update["state"] == "id_sync_active"
     assert sync_update["next_run_at"] == now
 
@@ -188,7 +190,7 @@ def test_healthy_connector_receives_actual_toe_id(monkeypatch):
         (
             "GET",
             "http://connector.test/health",
-            {"timeout": 15.0, "service": "toe_connector"},
+            {"timeout": 15.0, "service": "toe_connector_health"},
         ),
         (
             "POST",
@@ -204,6 +206,57 @@ def test_healthy_connector_receives_actual_toe_id(monkeypatch):
     assert update["$set"]["handoff_status"] == "sent"
     assert update["$set"]["state"] == "id_sync_active"
     assert update["$set"]["next_run_at"] == now
+
+
+def test_unauthorized_handoff_keeps_retrying(monkeypatch):
+    collection = Mock()
+    now = datetime(2026, 7, 30, 12, 0, 0)
+
+    def fake_authed_request(method, url, **kwargs):
+        if method == "GET":
+            return DummyResponse(200, {"status": "healthy"})
+        return DummyResponse(401, {
+            "detail": {
+                "code": "INVALID_BEARER_TOKEN",
+                "message": "Could not validate caller JWT with Authentication Manager.",
+            }
+        })
+
+    monkeypatch.setattr(toe_workflow_service, "TOE_ID_HANDOFF_ENABLED", True)
+    monkeypatch.setattr(toe_workflow_service, "TOE_CONNECTOR_RETRY_SECONDS", 30)
+    monkeypatch.setattr(toe_workflow_service, "TOE_CONNECTOR_RETRY_MAX_SECONDS", 30)
+    monkeypatch.setattr(
+        toe_workflow_service,
+        "TOE_CONNECTOR_HEALTH_URL",
+        "http://connector.test/health",
+    )
+    monkeypatch.setattr(
+        toe_workflow_service,
+        "TOE_CONNECTOR_ID_URL",
+        "http://connector.test/api/IDSconnector/TOE/id",
+    )
+    monkeypatch.setattr(toe_workflow_service, "authed_request", fake_authed_request)
+    monkeypatch.setattr(toe_workflow_service, "toe_workflow_jobs_col", collection)
+
+    result = toe_workflow_service.process_claimed_job(
+        {
+            "_id": "job-1",
+            "toe_id": "toe-actual",
+            "handoff_status": "retrying",
+            "handoff_attempts": 42,
+        },
+        now=now,
+    )
+
+    assert result == {
+        "status": "retrying",
+        "phase": "send_toe_id",
+        "next_run_at": now + timedelta(seconds=30),
+    }
+    update = collection.update_one.call_args.args[1]
+    assert update["$set"]["handoff_status"] == "retrying"
+    assert update["$set"]["last_status_code"] == 401
+    assert update["$set"]["last_response"]["detail"]["code"] == "INVALID_BEARER_TOKEN"
 
 
 def test_periodic_sync_uses_expected_query_parameters(monkeypatch):

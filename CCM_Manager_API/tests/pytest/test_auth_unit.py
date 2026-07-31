@@ -7,7 +7,8 @@ pytestmark = pytest.mark.unit
 
 
 class DummyResponse:
-    status_code = 200
+    def __init__(self, status_code=200):
+        self.status_code = status_code
 
 
 class DummyAuthClient:
@@ -91,6 +92,98 @@ def test_authed_request_uses_service_specific_role(monkeypatch):
     assert isinstance(response, DummyResponse)
     assert client.calls == [
         ("POST", "http://drm.example.test/schemes", {"scope": "SchemeAdmin"})
+    ]
+
+
+def test_toe_connector_uses_component_auth_by_default(monkeypatch):
+    client = DummyAuthClient()
+    monkeypatch.setattr(auth, "auth_client", client)
+    monkeypatch.delenv("TOE_CONNECTOR_AUTH_DISABLED", raising=False)
+    monkeypatch.delenv("CCM_TOE_CONNECTOR_AUTH_DISABLED", raising=False)
+    monkeypatch.delenv("TOE_CONNECTOR_AUTH_ROLE", raising=False)
+    monkeypatch.delenv("CCM_TOE_CONNECTOR_AUTH_ROLE", raising=False)
+    monkeypatch.delenv("CCM_AUTH_ROLE", raising=False)
+
+    response = auth.authed_request(
+        "POST",
+        "http://connector.test/api/IDSconnector/TOE/id",
+        service="toe_connector",
+    )
+
+    assert isinstance(response, DummyResponse)
+    assert client.calls == [
+        (
+            "POST",
+            "http://connector.test/api/IDSconnector/TOE/id",
+            {"scope": "openid profile"},
+        )
+    ]
+
+
+def test_toe_connector_health_is_unauthenticated_by_default(monkeypatch):
+    calls = []
+    client = DummyAuthClient()
+
+    def fake_request(method, url, **kwargs):
+        calls.append((method, url, kwargs))
+        return DummyResponse()
+
+    monkeypatch.setattr(auth, "auth_client", client)
+    monkeypatch.setattr(auth.requests, "request", fake_request)
+    monkeypatch.delenv("TOE_CONNECTOR_HEALTH_AUTH_DISABLED", raising=False)
+
+    response = auth.authed_request(
+        "GET",
+        "http://connector.test/health",
+        service="toe_connector_health",
+    )
+
+    assert isinstance(response, DummyResponse)
+    assert client.calls == []
+    assert calls == [("GET", "http://connector.test/health", {})]
+
+
+def test_rejected_static_token_falls_back_to_component_auth(monkeypatch):
+    calls = []
+    client = DummyAuthClient()
+
+    def fake_request(method, url, **kwargs):
+        calls.append((method, url, kwargs))
+        return DummyResponse(401)
+
+    monkeypatch.setattr(auth, "auth_client", client)
+    monkeypatch.setattr(auth.requests, "request", fake_request)
+    monkeypatch.setenv("TOE_CONNECTOR_BEARER_TOKEN", "expired-token")
+    monkeypatch.setenv("TOE_CONNECTOR_AUTH_DISABLED", "false")
+    monkeypatch.delenv("TOE_CONNECTOR_AUTH_ROLE", raising=False)
+
+    response = auth.authed_request(
+        "POST",
+        "http://connector.test/api/IDSconnector/TOE/id",
+        service="toe_connector",
+        json={"toe_id": "toe-actual"},
+    )
+
+    assert isinstance(response, DummyResponse)
+    assert calls == [
+        (
+            "POST",
+            "http://connector.test/api/IDSconnector/TOE/id",
+            {
+                "json": {"toe_id": "toe-actual"},
+                "headers": {"Authorization": "Bearer expired-token"},
+            },
+        )
+    ]
+    assert client.calls == [
+        (
+            "POST",
+            "http://connector.test/api/IDSconnector/TOE/id",
+            {
+                "scope": "openid profile",
+                "json": {"toe_id": "toe-actual"},
+            },
+        )
     ]
 
 
