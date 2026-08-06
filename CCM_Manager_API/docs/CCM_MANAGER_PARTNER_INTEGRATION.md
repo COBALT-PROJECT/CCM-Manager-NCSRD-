@@ -167,7 +167,7 @@ curl -sS -X POST "$CCM_BASE_URL/certificate-evaluation-result" \
 
 For this endpoint, `scheme_id` may be the CCM scheme UUID or the exact scheme name, for example `QUANTUM Scheme Reupload Test`. You can also send `scheme_name` or `certification_scheme_name` instead of `scheme_id`. The `evidence_id` field is optional; if it is omitted CCM stores `N/A` as the certificate evidence reference.
 
-Submit the same request format again for the same ToE and scheme to update the existing certificate. `result=OK` changes it to `VALID`; `result=NOK` changes it to `SUSPENDED`. CCM preserves the certificate ID, appends its history, uploads the update to the DLT, and regenerates the PDF.
+Submit the same request format again for the same ToE and scheme to update the existing certificate. `result=OK` changes it to `VALID`; `result=NOK` or `result=NOT_OK` changes it to `SUSPENDED`. CCM normalizes `NOT_OK` to `NOK`, preserves the certificate ID, appends its history, uploads the update to the DLT, and regenerates the PDF.
 
 `POST /certificate-evaluation-result` is the only endpoint that creates or changes certificate state. `POST /certificates/evaluation-result` remains an alias with identical behavior.
 

@@ -11,7 +11,7 @@ from services.ledger import ledger_auth_context, send_to_ledger
 
 
 VALID_EVALUATION_TYPES = {"MANUAL": "Manual", "DYNAMIC": "DYNAMIC"}
-VALID_EVALUATION_RESULTS = {"OK", "NOK"}
+VALID_EVALUATION_RESULTS = {"OK": "OK", "NOK": "NOK", "NOT_OK": "NOK"}
 ACTIVE_CERTIFICATE_STATES = {"INITIATE", "VALID", "SUSPENDED"}
 INACTIVE_CERTIFICATE_STATES = {"WITHDRAWN", "ARCHIVED", "EXPIRED", "ARCHIVED/EXPIRED"}
 
@@ -412,9 +412,10 @@ def update_certificate_evaluation_result(data):
         return {"error": "evaluation_type must be Manual or DYNAMIC"}, 400
     evaluation_type = VALID_EVALUATION_TYPES[evaluation_type_key]
 
-    result = str(result_raw).strip().upper()
-    if result not in VALID_EVALUATION_RESULTS:
-        return {"error": "result must be OK or NOK"}, 400
+    result_key = str(result_raw).strip().upper()
+    if result_key not in VALID_EVALUATION_RESULTS:
+        return {"error": "result must be OK, NOK, or NOT_OK"}, 400
+    result = VALID_EVALUATION_RESULTS[result_key]
 
     toe_record = toes_col.find_one({"uuid": str(toe_id)})
     if not toe_record:

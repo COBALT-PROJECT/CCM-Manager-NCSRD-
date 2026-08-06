@@ -215,12 +215,13 @@ def test_certificate_evaluation_creates_then_updates_same_certificate(monkeypatc
     assert len(certificates.docs) == 1
 
     suspended, status = service.update_certificate_evaluation_result(
-        {**base_payload, "evaluation_type": "DYNAMIC", "result": "NOK"}
+        {**base_payload, "evaluation_type": "DYNAMIC", "result": "NOT_OK"}
     )
 
     assert status == 200
     assert suspended["previous_state"] == "VALID"
     assert suspended["decision_status"] == "SUSPENDED"
+    assert suspended["result"] == "NOK"
     assert suspended["certificate_id"] == certificate_id
     assert len(certificates.docs) == 1
 

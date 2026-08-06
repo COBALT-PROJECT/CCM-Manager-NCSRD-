@@ -225,7 +225,7 @@ sudo docker compose stop toe-workflow-worker
 ## Certificate State Updates
 
 `POST /certificate-evaluation-result` is the only endpoint that creates or changes certificate state for a ToE and certification scheme.
-The first request must be `evaluation_type` `Manual` with result `OK`; CCM creates the certificate with state `INITIATE`, uploads it to the DLT, and stores the certificate hash. Later requests for the same ToE and scheme update that certificate in place: `OK` sets `VALID` and `NOK` sets `SUSPENDED`.
+The first request must be `evaluation_type` `Manual` with result `OK`; CCM creates the certificate with state `INITIATE`, uploads it to the DLT, and stores the certificate hash. Later requests for the same ToE and scheme update that certificate in place: `OK` sets `VALID`, while `NOK` or `NOT_OK` sets `SUSPENDED`. CCM normalizes `NOT_OK` to `NOK` internally.
 The certificate ID and issuance metadata remain unchanged while CCM appends the evaluation history, uploads the updated certificate to the DLT, and regenerates its PDF.
 The `scheme_id` value can be either the CCM scheme UUID or the exact human-readable scheme name. You can also send `scheme_name` or `certification_scheme_name`.
 The `evidence_id` field is optional for this endpoint; if omitted, CCM stores `N/A` as the evidence reference.

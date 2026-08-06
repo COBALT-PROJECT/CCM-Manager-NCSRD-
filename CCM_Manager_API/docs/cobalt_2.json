@@ -231,8 +231,10 @@
                   "type": "string",
                   "enum": [
                     "OK",
-                    "NOK"
+                    "NOK",
+                    "NOT_OK"
                   ],
+                  "description": "OK sets an existing certificate to VALID. NOK and NOT_OK set it to SUSPENDED; NOT_OK is normalized to NOK.",
                   "example": "OK"
                 },
                 "evidence_id": {
@@ -326,8 +328,10 @@
                   "type": "string",
                   "enum": [
                     "OK",
-                    "NOK"
+                    "NOK",
+                    "NOT_OK"
                   ],
+                  "description": "OK sets an existing certificate to VALID. NOK and NOT_OK set it to SUSPENDED; NOT_OK is normalized to NOK.",
                   "example": "OK"
                 },
                 "evidence_id": {
