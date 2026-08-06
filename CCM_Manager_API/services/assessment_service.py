@@ -546,27 +546,14 @@ def process_assessment_result(data):
             "timestamp": datetime.utcnow().isoformat(),
         })
 
-        from services import certificate_service
-
-        certificate_payload, certificate_status = certificate_service.update_certificate_from_assessment_result(
-            data,
-            assessment_hash=assessment_hash,
-        )
-        if certificate_status != 200:
-            return {
-                "status": "processed",
-                "message": "Assessment processed, but certificate state was not updated.",
-                "assessment_hash": assessment_hash,
-                "certificate_update": certificate_payload,
-                "outbound_auth": [ledger_auth_context()],
-            }, certificate_status
-
         return {
             "status": "success",
-            "message": "Assessment processed and Certificate state updated.",
+            "message": "Assessment processed and stored. Certificate state was not changed.",
             "assessment_hash": assessment_hash,
-            "certificate_update": certificate_payload,
-            "certificate": certificate_payload.get("certificate"),
+            "toe_id": str(toe_id),
+            "scheme_id": str(scheme_id),
+            "certificate_update_status": "skipped",
+            "certificate_update_endpoint": "/certificate-evaluation-result",
             "outbound_auth": [ledger_auth_context()],
         }, 200
 

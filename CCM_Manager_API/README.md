@@ -224,12 +224,13 @@ sudo docker compose stop toe-workflow-worker
 
 ## Certificate State Updates
 
-`POST /certificate-evaluation-result` creates the initial certificate for a ToE and certification scheme.
-The first request must be `evaluation_type` `Manual` with result `OK`; CCM creates the certificate with state `INITIATE`, uploads it to the DLT, and stores the certificate hash.
+`POST /certificate-evaluation-result` is the only endpoint that creates or changes certificate state for a ToE and certification scheme.
+The first request must be `evaluation_type` `Manual` with result `OK`; CCM creates the certificate with state `INITIATE`, uploads it to the DLT, and stores the certificate hash. Later requests for the same ToE and scheme update that certificate in place: `OK` sets `VALID` and `NOK` sets `SUSPENDED`.
+The certificate ID and issuance metadata remain unchanged while CCM appends the evaluation history, uploads the updated certificate to the DLT, and regenerates its PDF.
 The `scheme_id` value can be either the CCM scheme UUID or the exact human-readable scheme name. You can also send `scheme_name` or `certification_scheme_name`.
 The `evidence_id` field is optional for this endpoint; if omitted, CCM stores `N/A` as the evidence reference.
 
-`POST /certificates/evaluation-result` is available as an alias for the same certificate creation workflow.
+`POST /certificates/evaluation-result` is available as an alias for the same create-or-update workflow.
 
 ```bash
 curl -X POST "http://localhost:5001/certificate-evaluation-result" \
@@ -242,12 +243,7 @@ curl -X POST "http://localhost:5001/certificate-evaluation-result" \
   }'
 ```
 
-After the certificate exists, `POST /assessment-result` updates its certificate state.
-The assessment result remains stored as an assessment result; CCM derives `OK` from `compliant: true` and `NOK` from `compliant: false`, reuploads the updated certificate to the DLT, and stores the new certificate hash.
-By default assessment results are treated as `DYNAMIC`; include `evaluation_type: "Manual"` in the assessment payload if the result should follow the manual transition.
-
-For an existing active certificate, assessment `OK` moves `SUSPENDED` to `VALID`, keeps `VALID` as `VALID`, and moves `INITIATE` to `VALID` for `DYNAMIC`.
-Assessment `NOK` moves `INITIATE` or `VALID` to `SUSPENDED`, and keeps `SUSPENDED` as `SUSPENDED`.
+`POST /assessment-result` validates, uploads, and stores detailed assessment records, but does not change certificate state. Submit the compact result to `POST /certificate-evaluation-result` when the certificate must be updated.
 
 The generated certificate PDF can be downloaded by another component, such as the UI, through the certificate ID:
 

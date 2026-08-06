@@ -1,9 +1,11 @@
 import copy
 import re
 import uuid
+from datetime import datetime, timezone
 
 import pytest
 
+from services import assessment_service
 from services import certificate_service as service
 
 
@@ -40,6 +42,12 @@ class FakeCollection:
     def insert_one(self, document):
         self.docs.append(copy.deepcopy(document))
         return FakeInsertResult()
+
+    def replace_one(self, query, document):
+        for index, existing in enumerate(self.docs):
+            if self._matches(existing, query):
+                self.docs[index] = copy.deepcopy(document)
+                return
 
     def _matches(self, doc, query):
         for key, expected in query.items():
@@ -170,6 +178,98 @@ def test_certificate_evaluation_resolves_scheme_name_alias(monkeypatch):
 
     assert status == 201
     assert payload["scheme_id"] == scheme_id
+
+
+def test_certificate_evaluation_creates_then_updates_same_certificate(monkeypatch):
+    scheme_id = "urn:uuid:state-transition-scheme"
+    toe_id = str(uuid.uuid4())
+    certificates = _patch_certificate_dependencies(
+        monkeypatch,
+        [_scheme_doc(scheme_id, "State Transition Scheme")],
+        [_toe_doc(toe_id, scheme_id)],
+    )
+
+    base_payload = {
+        "toe_id": toe_id,
+        "scheme_id": scheme_id,
+        "evaluation_type": "Manual",
+        "result": "OK",
+        "evidence_id": str(uuid.uuid4()),
+    }
+
+    created, status = service.update_certificate_evaluation_result(base_payload)
+    certificate_id = created["certificate_id"]
+
+    assert status == 201
+    assert created["operation"] == "created"
+    assert created["decision_status"] == "INITIATE"
+    assert len(certificates.docs) == 1
+
+    valid, status = service.update_certificate_evaluation_result(base_payload)
+
+    assert status == 200
+    assert valid["operation"] == "updated"
+    assert valid["previous_state"] == "INITIATE"
+    assert valid["decision_status"] == "VALID"
+    assert valid["certificate_id"] == certificate_id
+    assert len(certificates.docs) == 1
+
+    suspended, status = service.update_certificate_evaluation_result(
+        {**base_payload, "evaluation_type": "DYNAMIC", "result": "NOK"}
+    )
+
+    assert status == 200
+    assert suspended["previous_state"] == "VALID"
+    assert suspended["decision_status"] == "SUSPENDED"
+    assert suspended["certificate_id"] == certificate_id
+    assert len(certificates.docs) == 1
+
+    restored, status = service.update_certificate_evaluation_result(
+        {**base_payload, "evaluation_type": "DYNAMIC", "result": "OK"}
+    )
+
+    assert status == 200
+    assert restored["previous_state"] == "SUSPENDED"
+    assert restored["decision_status"] == "VALID"
+    assert restored["certificate_id"] == certificate_id
+    assert len(certificates.docs) == 1
+    assert len(restored["certificate"]["certification"]["history"]) == 4
+
+
+def test_assessment_result_stores_without_updating_certificate(monkeypatch):
+    scheme_id = "urn:uuid:record-only-scheme"
+    toe_id = str(uuid.uuid4())
+    assessments = FakeCollection()
+
+    monkeypatch.setattr(assessment_service, "toes_col", FakeCollection([_toe_doc(toe_id, scheme_id)]))
+    monkeypatch.setattr(assessment_service, "schemes_col", FakeCollection([_scheme_doc(scheme_id, "Scheme")]))
+    monkeypatch.setattr(assessment_service, "collection", assessments)
+    monkeypatch.setattr(assessment_service, "send_to_ledger", lambda *args, **kwargs: "assessment-hash")
+    monkeypatch.setattr(assessment_service, "ledger_auth_context", lambda: {"service": "ledger"})
+
+    now = datetime.now(timezone.utc).isoformat()
+    payload, status = assessment_service.process_assessment_result(
+        {
+            "id": str(uuid.uuid4()),
+            "created_at": now,
+            "metric_id": "metric-1",
+            "metric_configuration": {},
+            "compliant": False,
+            "evidence_id": str(uuid.uuid4()),
+            "resource_id": "resource-1",
+            "resource_types": ["service"],
+            "compliance_comment": "Noncompliant",
+            "target_of_evaluation_id": toe_id,
+            "history_updated_at": now,
+            "history": [],
+        }
+    )
+
+    assert status == 200
+    assert payload["status"] == "success"
+    assert payload["certificate_update_status"] == "skipped"
+    assert payload["certificate_update_endpoint"] == "/certificate-evaluation-result"
+    assert len(assessments.docs) == 1
 
 
 def test_certificate_evaluation_rejects_ambiguous_scheme_name(monkeypatch):

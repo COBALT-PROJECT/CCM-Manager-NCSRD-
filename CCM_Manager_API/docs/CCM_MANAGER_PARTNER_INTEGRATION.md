@@ -145,9 +145,9 @@ background ToE ID handoff. The worker health-checks the AI ToE connector, sends 
 `toe_uuid`, and then periodically synchronizes SDTM IDs. ToE handoff is enabled by default and
 retries until accepted; periodic synchronization remains controlled by `SDT_ID_SYNC_ENABLED`.
 
-## Initial Certificate Creation
+## Certificate Creation And Updates
 
-Create the initial certificate from a manual OK evaluation:
+Create the initial certificate from a manual OK evaluation. It starts in `INITIATE`:
 
 ```bash
 TOE_ID="<toe-id>"
@@ -167,13 +167,13 @@ curl -sS -X POST "$CCM_BASE_URL/certificate-evaluation-result" \
 
 For this endpoint, `scheme_id` may be the CCM scheme UUID or the exact scheme name, for example `QUANTUM Scheme Reupload Test`. You can also send `scheme_name` or `certification_scheme_name` instead of `scheme_id`. The `evidence_id` field is optional; if it is omitted CCM stores `N/A` as the certificate evidence reference.
 
-## Assessment Result State Updates
+Submit the same request format again for the same ToE and scheme to update the existing certificate. `result=OK` changes it to `VALID`; `result=NOK` changes it to `SUSPENDED`. CCM preserves the certificate ID, appends its history, uploads the update to the DLT, and regenerates the PDF.
 
-Use `/assessment-result` to update an existing certificate state.
+`POST /certificate-evaluation-result` is the only endpoint that creates or changes certificate state. `POST /certificates/evaluation-result` remains an alias with identical behavior.
 
-`compliant=false` moves active certificates to `SUSPENDED`.
+## Assessment Result Records
 
-`compliant=true` moves `SUSPENDED` certificates back to `VALID`, and can also move an `INITIATE` dynamic assessment to `VALID`.
+Use `/assessment-result` to validate, upload to the DLT, and store detailed assessment records. This endpoint does not create or update certificates.
 
 ```bash
 curl -sS -X POST "$CCM_BASE_URL/assessment-result" \

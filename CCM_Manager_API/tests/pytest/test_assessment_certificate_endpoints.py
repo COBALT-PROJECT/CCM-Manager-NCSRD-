@@ -57,29 +57,15 @@ def test_assessment_result_rejects_unregistered_toe(http, base_url):
     not os.getenv("CCM_RUN_EXTERNAL_TESTS"),
     reason="Set CCM_RUN_EXTERNAL_TESTS=1 to exercise ledger-backed certificate issuance",
 )
-def test_assessment_result_can_issue_and_withdraw_certificate(http, base_url, assessment_payload):
+def test_assessment_result_stores_without_updating_certificate(http, base_url, assessment_payload):
     assessment_payload["compliant"] = True
     response = http.post(f"{base_url}/assessment-result", json=assessment_payload)
 
-    assert response.status_code == 201
+    assert response.status_code == 200
     payload = response.json()
     assert payload.get("status") == "success"
-
-    certificate = payload.get("certificate", {}).get("certification", {})
-    cert_uuid = certificate.get("certification_id")
-    assert cert_uuid
-
-    response = http.get(f"{base_url}/certificates/{cert_uuid}")
-    assert response.status_code == 200
-    assert response.json().get("certification", {}).get("certification_id") == cert_uuid
-
-    response = http.put(f"{base_url}/certificates/{cert_uuid}/withdraw")
-    assert response.status_code == 200
-    assert "withdrawn" in response.json().get("message", "").lower()
-
-    response = http.put(f"{base_url}/certificates/{cert_uuid}/withdraw")
-    assert response.status_code == 200
-    assert "already withdrawn" in response.json().get("message", "").lower()
+    assert payload.get("certificate_update_status") == "skipped"
+    assert payload.get("certificate_update_endpoint") == "/certificate-evaluation-result"
 
 
 def test_list_certificates(http, base_url):

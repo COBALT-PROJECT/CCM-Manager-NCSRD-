@@ -176,8 +176,8 @@
         "tags": [
           "Internal Endpoint"
         ],
-        "summary": "Create Initial Certificate From Evaluation Result",
-        "description": "Receives the compact initial certificate evaluation result. A new certificate is created only when evaluation_type is Manual and result is OK. The certificate starts in INITIATE state, is uploaded to the DLT, and stores the returned certificate ledger hash. Later assessment results update the certificate state through POST /assessment-result. The scheme_id can be either the CCM scheme UUID or the exact human-readable scheme name. evidence_id is optional.",
+        "summary": "Create Or Update Certificate From Evaluation Result",
+        "description": "This is the only endpoint that creates or changes certificate state. The first Manual/OK result for a ToE and scheme creates an INITIATE certificate. Later results for the same ToE and scheme update that certificate in place: OK sets VALID and NOK sets SUSPENDED. The certificate ID is preserved, the history is appended, the updated certificate is uploaded to the DLT, and its PDF is regenerated. The request format does not change. scheme_id can be the CCM scheme UUID or exact human-readable scheme name; evidence_id is optional.",
         "consumes": [
           "application/json"
         ],
@@ -245,6 +245,9 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "Existing certificate updated and uploaded to DLT."
+          },
           "201": {
             "description": "Certificate created and uploaded to DLT."
           },
@@ -255,7 +258,7 @@
             "description": "ToE or certification scheme not found."
           },
           "409": {
-            "description": "A certificate already exists or the initial evaluation is not Manual OK."
+            "description": "Initial evaluation is not Manual OK, or the ToE is linked to a different scheme."
           },
           "500": {
             "description": "Internal server error."
@@ -268,8 +271,8 @@
         "tags": [
           "Internal Endpoint"
         ],
-        "summary": "Create Initial Certificate From Evaluation Result",
-        "description": "Alias of POST /certificate-evaluation-result. Receives the compact initial certificate evaluation result. A new certificate is created only when evaluation_type is Manual and result is OK. The certificate starts in INITIATE state, is uploaded to the DLT, and stores the returned certificate ledger hash. Later assessment results update the certificate state through POST /assessment-result. The scheme_id can be either the CCM scheme UUID or the exact human-readable scheme name. evidence_id is optional.",
+        "summary": "Create Or Update Certificate From Evaluation Result",
+        "description": "Alias of POST /certificate-evaluation-result with identical create-or-update behavior. The first Manual/OK result creates INITIATE. Later OK results set VALID and NOK results set SUSPENDED while preserving the certificate ID. The request format does not change. scheme_id can be the CCM scheme UUID or exact human-readable scheme name; evidence_id is optional.",
         "consumes": [
           "application/json"
         ],
@@ -337,6 +340,9 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "Existing certificate updated and uploaded to DLT."
+          },
           "201": {
             "description": "Certificate created and uploaded to DLT."
           },
@@ -347,7 +353,7 @@
             "description": "ToE or certification scheme not found."
           },
           "409": {
-            "description": "A certificate already exists or the initial evaluation is not Manual OK."
+            "description": "Initial evaluation is not Manual OK, or the ToE is linked to a different scheme."
           },
           "500": {
             "description": "Internal server error."
@@ -2362,8 +2368,8 @@
         "tags": [
           "Internal Endpoint"
         ],
-        "summary": "Upload Assessment Result And Update Certificate State",
-        "description": "Stores a compliance assessment result, uploads it to the DLT, derives OK from compliant=true or NOK from compliant=false, updates the existing active certificate state for the assessment ToE, reuploads the updated certificate to the DLT, and stores the new certificate ledger hash.",
+        "summary": "Upload And Store Assessment Result",
+        "description": "Validates a detailed compliance assessment result, uploads it to the DLT, and stores it in CCM. This endpoint does not create or update certificates. Use POST /certificate-evaluation-result for all certificate state changes.",
         "consumes": [
           "application/json"
         ],
@@ -2414,7 +2420,7 @@
                 },
                 "compliant": {
                   "type": "boolean",
-                  "description": "true derives OK; false derives NOK for certificate state updates.",
+                  "description": "Recorded compliance outcome. It does not directly change certificate state.",
                   "example": true
                 },
                 "evidence_id": {
@@ -2490,16 +2496,20 @@
         ],
         "responses": {
           "200": {
-            "description": "Assessment result stored and certificate state updated successfully",
+            "description": "Assessment result uploaded and stored successfully without changing certificate state.",
             "schema": {
               "type": "object",
               "properties": {
                 "message": {
                   "type": "string",
-                  "example": "Assessment processed and Certificate state updated."
+                  "example": "Assessment processed and stored. Certificate state was not changed."
                 },
                 "assessment_hash": {
                   "type": "string"
+                },
+                "certificate_update_status": {
+                  "type": "string",
+                  "example": "skipped"
                 }
               }
             }
@@ -2508,7 +2518,7 @@
             "description": "Missing required fields"
           },
           "404": {
-            "description": "ToE, certification scheme, or active certificate not found"
+            "description": "ToE or linked certification scheme not found"
           },
           "409": {
             "description": "ToE is not linked to a certification scheme"
