@@ -80,6 +80,10 @@ MQTT_USERNAME = os.getenv("MQTT_USERNAME", "").strip()
 MQTT_PASSWORD = os.getenv("MQTT_PASSWORD", "")
 MQTT_TLS_ENABLED = _env_bool("MQTT_TLS_ENABLED", False)
 MQTT_DETAILS_MAX_CHARS = max(_env_int("MQTT_DETAILS_MAX_CHARS", 4000), 256)
+CCM_MQTT_TEST_ENDPOINT_ENABLED = _env_bool(
+    "CCM_MQTT_TEST_ENDPOINT_ENABLED", False
+)
+CCM_MQTT_TEST_TOKEN = os.getenv("CCM_MQTT_TEST_TOKEN", "")
 
 LEDGER_BASE_URL = os.getenv("LEDGER_BASE_URL", "http://10.163.1.211:3000").rstrip("/")
 FORWARD_URL = os.getenv("FORWARD_URL", "http://orchestrator:3000/toe/register")

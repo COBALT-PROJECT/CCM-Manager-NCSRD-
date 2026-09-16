@@ -5,6 +5,7 @@ import json
 import logging
 import time
 import hashlib
+import hmac
 import requests
 from uuid import uuid4
 from flask_cors import CORS
@@ -16,7 +17,7 @@ except ImportError:
     Swagger = None
 
 from auth import auth_context, auth_status_payload
-from config import Config
+from config import CCM_MQTT_TEST_ENDPOINT_ENABLED, CCM_MQTT_TEST_TOKEN, Config
 from db import (
     cm_col,
     controls_col,
@@ -278,6 +279,109 @@ def auth_status():
     payload = auth_status_payload()
     payload["inbound"] = inbound_auth_status()
     return jsonify(payload), 200
+
+
+def _mqtt_test_cases(filter_text=""):
+    # Kept in the test client module so the server and CLI always exercise the
+    # same catalogue of synthetic failure messages.
+    from scripts.test_all_mqtt_alerts import ALERT_CASES
+
+    if not filter_text:
+        return ALERT_CASES
+    needle = str(filter_text).casefold()
+    return [
+        case
+        for case in ALERT_CASES
+        if needle
+        in " ".join(
+            (case["name"], case["operation"], case["message"])
+        ).casefold()
+    ]
+
+
+def _mqtt_test_access_allowed():
+    supplied_token = request.headers.get("X-CCM-MQTT-Test-Token", "")
+    return bool(
+        CCM_MQTT_TEST_TOKEN
+        and supplied_token
+        and hmac.compare_digest(supplied_token, CCM_MQTT_TEST_TOKEN)
+    )
+
+
+@app.route('/internal/test/mqtt-alerts', methods=['GET', 'POST'])
+def test_mqtt_alerts():
+    """List or publish the guarded synthetic MQTT failure-alert catalogue."""
+    if not CCM_MQTT_TEST_ENDPOINT_ENABLED:
+        return jsonify({"error": "Not found"}), 404
+    if not _mqtt_test_access_allowed():
+        return jsonify({"error": "Invalid MQTT test token"}), 403
+
+    request_data = request.get_json(silent=True) or {}
+    filter_text = request.args.get("filter") or request_data.get("filter", "")
+    cases = _mqtt_test_cases(filter_text)
+    if not cases:
+        return jsonify({"error": "No MQTT alert cases matched the filter"}), 404
+
+    if request.method == "GET":
+        return jsonify({
+            "count": len(cases),
+            "alerts": [
+                {
+                    "name": case["name"],
+                    "operation": case["operation"],
+                    "message": case["message"],
+                }
+                for case in cases
+            ],
+        }), 200
+
+    if request_data.get("confirm") != "PUBLISH_SYNTHETIC_FAILURE_ALERTS":
+        return jsonify({
+            "error": "Explicit confirmation is required",
+            "required_confirm": "PUBLISH_SYNTHETIC_FAILURE_ALERTS",
+        }), 400
+
+    try:
+        delay_seconds = min(max(float(request_data.get("delay", 0.2)), 0.0), 2.0)
+    except (TypeError, ValueError):
+        return jsonify({"error": "delay must be a number between 0 and 2"}), 400
+
+    run_id = f"mqtt-alert-test-{uuid4()}"
+    results = []
+    for index, case in enumerate(cases, start=1):
+        event_id = f"failure-test-{run_id}-{index:02d}"
+        details = {
+            **case["details"],
+            "synthetic_test": True,
+            "test_run_id": run_id,
+            "test_case": case["name"],
+            "sequence": index,
+            "total": len(cases),
+        }
+        result = publish_failure(
+            operation=case["operation"],
+            message=case["message"],
+            details=details,
+            event_id=event_id,
+        )
+        results.append({
+            "name": case["name"],
+            "operation": case["operation"],
+            **result,
+        })
+        if index < len(cases) and delay_seconds:
+            time.sleep(delay_seconds)
+
+    published = sum(result.get("status") == "published" for result in results)
+    response = {
+        "test_run_id": run_id,
+        "requested": len(cases),
+        "published": published,
+        "failed": len(cases) - published,
+        "synthetic_test": True,
+        "results": results,
+    }
+    return jsonify(response), 200 if published == len(cases) else 502
 
 
 @app.route('/')

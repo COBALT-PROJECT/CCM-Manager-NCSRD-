@@ -248,3 +248,57 @@ def test_scheme_import_rejection_emits_alert(monkeypatch):
     assert len(calls) == 1
     assert calls[0][1]["operation"] == "Import certification scheme to orchestrator"
     assert calls[0][1]["details"]["status_code"] == 500
+
+
+def test_ccm_mqtt_test_endpoint_is_disabled_by_default(monkeypatch):
+    monkeypatch.setattr(app, "CCM_MQTT_TEST_ENDPOINT_ENABLED", False)
+
+    response = app.app.test_client().get(
+        "/internal/test/mqtt-alerts",
+        headers={"X-CCM-MQTT-Test-Token": "test-token"},
+    )
+
+    assert response.status_code == 404
+
+
+def test_ccm_mqtt_test_endpoint_requires_matching_token(monkeypatch):
+    monkeypatch.setattr(app, "CCM_MQTT_TEST_ENDPOINT_ENABLED", True)
+    monkeypatch.setattr(app, "CCM_MQTT_TEST_TOKEN", "expected-token")
+
+    response = app.app.test_client().get(
+        "/internal/test/mqtt-alerts",
+        headers={"X-CCM-MQTT-Test-Token": "wrong-token"},
+    )
+
+    assert response.status_code == 403
+
+
+def test_ccm_mqtt_test_endpoint_publishes_filtered_case_through_ccm(monkeypatch):
+    calls = []
+    monkeypatch.setattr(app, "CCM_MQTT_TEST_ENDPOINT_ENABLED", True)
+    monkeypatch.setattr(app, "CCM_MQTT_TEST_TOKEN", "expected-token")
+
+    def fake_publish_failure(*args, **kwargs):
+        calls.append((args, kwargs))
+        return {"status": "published", "event_id": kwargs["event_id"]}
+
+    monkeypatch.setattr(app, "publish_failure", fake_publish_failure)
+
+    response = app.app.test_client().post(
+        "/internal/test/mqtt-alerts",
+        headers={"X-CCM-MQTT-Test-Token": "expected-token"},
+        json={
+            "confirm": "PUBLISH_SYNTHETIC_FAILURE_ALERTS",
+            "filter": "certificate-pdf",
+            "delay": 0,
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json["requested"] == 1
+    assert response.json["published"] == 1
+    assert response.json["failed"] == 0
+    assert len(calls) == 1
+    assert calls[0][1]["operation"] == "Generate certificate PDF"
+    assert calls[0][1]["details"]["synthetic_test"] is True
+    assert calls[0][1]["details"]["test_case"] == "certificate-pdf"
