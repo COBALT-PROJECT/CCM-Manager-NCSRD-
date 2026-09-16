@@ -48,6 +48,7 @@ Every failure alert follows this structure:
   "event_id": "failure-<unique-uuid>",
   "state": "failed",
   "severity": "critical",
+  "component": "<component that failed>",
   "operation": "<failed operation>",
   "message": "<failure explanation>",
   "occurred_at": "<ISO-8601 UTC timestamp>",
@@ -62,7 +63,12 @@ Every failure alert follows this structure:
 }
 ```
 
-The `details` object changes according to the failed operation. Authentication credentials, bearer tokens, passwords, client secrets, and API keys are redacted. Large downstream responses are truncated.
+The top-level `component` identifies the component that failed. It is taken
+from `details.service` when the failure concerns another component, such as
+`ledger`, `sdt`, or `orchestrator`. Internal CCM failures use `CCM-Manager`.
+The `details` object changes according to the failed operation. Authentication
+credentials, bearer tokens, passwords, client secrets, and API keys are
+redacted. Large downstream responses are truncated.
 
 ## Blockchain and ledger alerts
 
@@ -83,6 +89,7 @@ The `details` object changes according to the failed operation. Authentication c
   "event_id": "failure-8ed223c3-a716-4782-a32b-35d20234e92d",
   "state": "failed",
   "severity": "critical",
+  "component": "ledger",
   "operation": "Publish certification scheme to blockchain",
   "message": "Blockchain ledger request failed",
   "occurred_at": "2026-09-16T14:42:18.521934+00:00",
@@ -106,6 +113,7 @@ The `details` object changes according to the failed operation. Authentication c
   "event_id": "failure-2de35293-c2f7-437d-8f60-1d4b36965243",
   "state": "failed",
   "severity": "critical",
+  "component": "ledger",
   "operation": "Publish assessment result to blockchain",
   "message": "Blockchain ledger request failed",
   "occurred_at": "2026-09-16T15:10:42.391204+00:00",
@@ -141,6 +149,7 @@ The `details` object changes according to the failed operation. Authentication c
   "event_id": "failure-c8a41483-d594-4d68-87cd-d8bb0257c202",
   "state": "failed",
   "severity": "critical",
+  "component": "drm",
   "operation": "Synchronize certification scheme to DRM",
   "message": "DRM rejected part of the certification scheme synchronization",
   "occurred_at": "2026-09-16T15:13:08.101934+00:00",
@@ -182,6 +191,7 @@ The `details` object changes according to the failed operation. Authentication c
   "event_id": "failure-9ca0e280-2531-421d-9454-55d87b3121ce",
   "state": "failed",
   "severity": "critical",
+  "component": "toe_connector",
   "operation": "Handoff ToE ID to connector",
   "message": "ToE connector handoff failed and was scheduled for retry",
   "occurred_at": "2026-09-16T15:17:31.754983+00:00",
@@ -219,6 +229,7 @@ Repeating background-worker failures are deduplicated. One alert is sent at the 
   "event_id": "failure-c85eb597-976b-41bd-87d6-3f087beb8f50",
   "state": "failed",
   "severity": "critical",
+  "component": "sdt",
   "operation": "Deploy SDT instance",
   "message": "Failed to deploy SDT instance",
   "occurred_at": "2026-09-16T15:20:59.019308+00:00",
@@ -253,6 +264,7 @@ Any HTTP 5xx response that has not already produced a more specific alert genera
   "event_id": "failure-d3960464-c004-42ec-a6dd-874da1d94555",
   "state": "failed",
   "severity": "critical",
+  "component": "CCM-Manager",
   "operation": "POST /generate_sbom",
   "message": "Failed to generate SBOM",
   "occurred_at": "2026-09-16T15:24:17.495613+00:00",
@@ -292,23 +304,21 @@ MQTT publication is best-effort. If the MQTT broker is unavailable:
 
 ## Testing every alert through CCM Manager
 
-CCM provides a guarded synthetic test endpoint. It is disabled by default and
-requires a separate test token. The endpoint publishes through the running CCM
-process, using CCM's loaded MQTT configuration and alert service. It does not
+The test utility imports the same alert service used by CCM. It uses CCM's MQTT
+configuration and production payload builder without calling the protected HTTP
+API, so it does not require a bearer token or separate test token. It does not
 invoke the real ledger, DRM, SDTM, orchestrator, or database failure paths.
 
-Temporarily add the following to the deployed CCM environment:
+Ensure MQTT alerts are enabled in the environment where the script runs:
 
 ```env
-CCM_MQTT_TEST_ENDPOINT_ENABLED=true
-CCM_MQTT_TEST_TOKEN=<temporary-random-secret>
+MQTT_ALERTS_ENABLED=true
 ```
 
-Restart the CCM API so it loads the settings. From the CCM project directory,
-list the available cases through the API:
+From the `CCM_Manager_API` directory, list the available cases without
+publishing:
 
 ```bash
-export CCM_MQTT_TEST_TOKEN='<temporary-random-secret>'
 python3 scripts/test_all_mqtt_alerts.py --list
 ```
 
@@ -324,18 +334,6 @@ Test only matching cases:
 python3 scripts/test_all_mqtt_alerts.py --filter sdt --publish
 ```
 
-When CCM is hosted elsewhere, specify its URL:
-
-```bash
-python3 scripts/test_all_mqtt_alerts.py \
-  --ccm-url http://127.0.0.1:5001 \
-  --publish
-```
-
 Each test alert includes `synthetic_test`, `test_run_id`, `test_case`,
-`sequence`, and `total` fields. The publish request must also contain the exact
-confirmation phrase `PUBLISH_SYNTHETIC_FAILURE_ALERTS`; the provided client adds
-it automatically.
-
-After testing, remove or disable `CCM_MQTT_TEST_ENDPOINT_ENABLED` and restart
-CCM Manager.
+`sequence`, and `total` fields in `details`, plus the top-level `component`
+field.

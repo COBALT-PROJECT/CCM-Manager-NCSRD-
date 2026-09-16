@@ -78,6 +78,7 @@ Each message uses the failure-report contract:
   "event_id": "failure-<uuid>",
   "state": "failed",
   "severity": "critical",
+  "component": "ledger",
   "operation": "Publish certification scheme to blockchain",
   "message": "Blockchain ledger request failed",
   "occurred_at": "2026-09-16T12:00:00+00:00",
@@ -93,20 +94,11 @@ Publishing is best-effort: an unavailable MQTT broker is logged but never masks
 or changes the original CCM result. Repeating background-worker failures are
 deduplicated until that operation succeeds and starts a new failure episode.
 
-### Guarded end-to-end test through CCM
+### Test all alerts through CCM
 
-The synthetic test endpoint is disabled by default. To test all alert messages
-through the running CCM process, configure a temporary strong token and restart
-CCM:
-
-```env
-CCM_MQTT_TEST_ENDPOINT_ENABLED=true
-CCM_MQTT_TEST_TOKEN=<temporary-random-secret>
-```
-
-Then run `python scripts/test_all_mqtt_alerts.py --publish`. The client calls
-`POST /internal/test/mqtt-alerts`; it never connects to MQTT directly. Disable
-the endpoint again after testing.
+Run `python3 scripts/test_all_mqtt_alerts.py --publish`. The script calls the
+same MQTT alert service used by CCM, so it does not need an HTTP bearer token
+or a separate test token. Ensure `MQTT_ALERTS_ENABLED=true` first.
 
 ## Startup Catalogue Seeding
 

@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
-"""Ask a running CCM instance to test every MQTT failure-alert scenario.
+"""Test every MQTT failure-alert scenario through CCM's alert service.
 
-The script never connects to MQTT itself. It calls CCM's guarded internal test
-endpoint, and the running CCM process publishes the synthetic failure alerts.
+The script does not call CCM's HTTP API and does not need an authentication
+token. It imports the same ``publish_failure`` function used by CCM itself, so
+configuration, payload sanitisation, topic selection, and MQTT publication all
+follow the production CCM code path.
 """
 
 import argparse
 import json
-import os
 import sys
+import time
 from pathlib import Path
-
-import requests
+from uuid import uuid4
 
 
 API_ROOT = Path(__file__).resolve().parents[1]
 if str(API_ROOT) not in sys.path:
     sys.path.insert(0, str(API_ROOT))
+
+from services.mqtt_alert_service import publish_failure
 
 
 ALERT_CASES = [
@@ -406,32 +409,17 @@ def parse_args():
     parser.add_argument(
         "--publish",
         action="store_true",
-        help="Ask CCM to publish the synthetic alerts. Without this flag, list them through CCM.",
+        help="Publish the synthetic alerts through CCM. Without this flag, only list them.",
     )
     parser.add_argument(
         "--list",
         action="store_true",
-        help="List the alert catalogue through CCM without publishing.",
+        help="List the alert catalogue without publishing.",
     )
     parser.add_argument(
         "--filter",
         default="",
         help="Run only cases whose name, operation, or message contains this text.",
-    )
-    parser.add_argument(
-        "--ccm-url",
-        default=os.getenv("CCM_API_BASE_URL", "http://localhost:5001"),
-        help="Base URL of the running CCM API.",
-    )
-    parser.add_argument(
-        "--token",
-        default=os.getenv("CCM_MQTT_TEST_TOKEN", ""),
-        help="Token configured as CCM_MQTT_TEST_TOKEN on the CCM server.",
-    )
-    parser.add_argument(
-        "--bearer-token",
-        default=os.getenv("CCM_API_BEARER_TOKEN", ""),
-        help="Optional bearer token when CCM inbound authentication is enabled.",
     )
     parser.add_argument(
         "--delay",
@@ -444,65 +432,84 @@ def parse_args():
 
 def main():
     args = parse_args()
-    if not args.token:
-        print(
-            "CCM MQTT test token is required. Pass --token or set "
-            "CCM_MQTT_TEST_TOKEN.",
-            file=sys.stderr,
-        )
+    needle = args.filter.casefold().strip()
+    cases = [
+        case
+        for case in ALERT_CASES
+        if not needle
+        or needle
+        in " ".join(
+            (case["name"], case["operation"], case["message"])
+        ).casefold()
+    ]
+
+    if not cases:
+        print("No MQTT alert cases matched the filter.", file=sys.stderr)
         return 2
 
-    endpoint = f"{args.ccm_url.rstrip('/')}/internal/test/mqtt-alerts"
-    headers = {
-        "Accept": "application/json",
-        "X-CCM-MQTT-Test-Token": args.token,
-    }
-    if args.bearer_token:
-        headers["Authorization"] = f"Bearer {args.bearer_token}"
-
-    try:
-        if args.publish:
-            response = requests.post(
-                endpoint,
-                headers=headers,
-                json={
-                    "confirm": "PUBLISH_SYNTHETIC_FAILURE_ALERTS",
-                    "filter": args.filter,
-                    "delay": args.delay,
-                },
-                timeout=max(30, 15 + (len(ALERT_CASES) * max(args.delay, 0))),
-            )
-        else:
-            response = requests.get(
-                endpoint,
-                headers=headers,
-                params={"filter": args.filter} if args.filter else None,
-                timeout=15,
-            )
-    except requests.RequestException as exc:
-        print(f"Failed to call CCM MQTT test endpoint: {exc}", file=sys.stderr)
-        return 1
-
-    try:
-        response_body = response.json()
-    except ValueError:
-        response_body = {"raw_response": response.text}
-
     if not args.publish or args.list:
-        for index, case in enumerate(response_body.get("alerts", []), start=1):
+        for index, case in enumerate(cases, start=1):
             print(
                 f"{index:02d}. {case['name']}: {case['operation']} — "
                 f"{case['message']}"
             )
-        if response_body.get("alerts"):
-            print(f"\n{response_body.get('count', 0)} alert case(s)")
-        else:
-            print(json.dumps(response_body, indent=2, ensure_ascii=False))
-    else:
-        print(json.dumps(response_body, indent=2, ensure_ascii=False))
+        print(f"\n{len(cases)} alert case(s)")
+        if not args.publish:
+            return 0
 
-    if not response.ok:
-        print(f"CCM returned HTTP {response.status_code}.", file=sys.stderr)
+    delay_seconds = min(max(args.delay, 0.0), 2.0)
+    run_id = f"mqtt-alert-test-{uuid4()}"
+    results = []
+
+    for index, case in enumerate(cases, start=1):
+        event_id = f"failure-test-{run_id}-{index:02d}"
+        details = {
+            **case["details"],
+            "synthetic_test": True,
+            "test_run_id": run_id,
+            "test_case": case["name"],
+            "sequence": index,
+            "total": len(cases),
+        }
+        result = publish_failure(
+            operation=case["operation"],
+            message=case["message"],
+            details=details,
+            event_id=event_id,
+        )
+        result = {
+            "name": case["name"],
+            "operation": case["operation"],
+            **result,
+        }
+        results.append(result)
+        print(
+            f"[{index:02d}/{len(cases):02d}] {case['name']}: "
+            f"{result.get('status', 'unknown')}"
+        )
+        if result.get("error"):
+            print(f"  error: {result['error']}")
+        if index < len(cases) and delay_seconds:
+            time.sleep(delay_seconds)
+
+    published = sum(result.get("status") == "published" for result in results)
+    summary = {
+        "test_run_id": run_id,
+        "requested": len(cases),
+        "published": published,
+        "failed": len(cases) - published,
+        "synthetic_test": True,
+        "results": results,
+    }
+    print("\n" + json.dumps(summary, indent=2, ensure_ascii=False))
+
+    if published != len(cases):
+        if any(result.get("status") == "disabled" for result in results):
+            print(
+                "\nMQTT alerts are disabled. Set MQTT_ALERTS_ENABLED=true "
+                "in CCM's environment and run the command again.",
+                file=sys.stderr,
+            )
         return 1
     return 0
 

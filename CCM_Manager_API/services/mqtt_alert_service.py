@@ -28,6 +28,7 @@ from config import (
     MQTT_ALERTS_ENABLED,
     MQTT_BROKER_HOST,
     MQTT_BROKER_PORT,
+    MQTT_COMPONENT_ID,
     MQTT_DETAILS_MAX_CHARS,
     MQTT_KEEPALIVE_SECONDS,
     MQTT_PASSWORD,
@@ -153,14 +154,27 @@ def _remember_failure(dedupe_key):
         _active_failure_keys.add(str(dedupe_key))
 
 
-def build_failure_payload(operation, message, severity="critical", details=None, event_id=None):
+def build_failure_payload(
+    operation,
+    message,
+    severity="critical",
+    details=None,
+    event_id=None,
+    component=None,
+):
     supplied_details = details if isinstance(details, dict) else {"context": details}
     merged_details = {**_request_details(), **(supplied_details or {})}
     merged_details = {key: value for key, value in merged_details.items() if value is not None}
+    failed_component = (
+        component
+        or merged_details.get("service")
+        or MQTT_COMPONENT_ID
+    )
     return {
         "event_id": event_id or f"failure-{uuid4()}",
         "state": "failed",
         "severity": severity,
+        "component": _sanitize(str(failed_component)),
         "operation": _sanitize(str(operation)),
         "message": _sanitize(str(message)),
         "occurred_at": datetime.now(timezone.utc).isoformat(),
@@ -175,6 +189,7 @@ def publish_failure(
     details=None,
     event_id=None,
     dedupe_key=None,
+    component=None,
 ):
     """Publish one failure without ever changing the caller's error handling."""
     _mark_request_alerted()
@@ -185,7 +200,14 @@ def publish_failure(
         return {"status": "duplicate"}
 
     try:
-        payload = build_failure_payload(operation, message, severity, details, event_id)
+        payload = build_failure_payload(
+            operation,
+            message,
+            severity,
+            details,
+            event_id,
+            component,
+        )
     except Exception as exc:
         LOGGER.warning("Failed to build MQTT alert payload: %s", exc)
         return {"status": "failed", "error": str(exc)}

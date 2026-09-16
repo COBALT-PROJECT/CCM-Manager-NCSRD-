@@ -61,6 +61,7 @@ def test_publish_failure_uses_required_contract_and_redacts_details(monkeypatch)
             operation="Publish certification scheme to blockchain",
             message="Processor timeout",
             details={
+                "service": "ledger",
                 "scheme_id": "scheme-42",
                 "attempt": 3,
                 "access_token": "must-not-leak",
@@ -83,6 +84,7 @@ def test_publish_failure_uses_required_contract_and_redacts_details(monkeypatch)
     assert payload["event_id"] == "failure-42"
     assert payload["state"] == "failed"
     assert payload["severity"] == "critical"
+    assert payload["component"] == "ledger"
     assert payload["operation"] == "Publish certification scheme to blockchain"
     assert payload["message"] == "Processor timeout"
     assert payload["occurred_at"].endswith("+00:00")
@@ -90,6 +92,7 @@ def test_publish_failure_uses_required_contract_and_redacts_details(monkeypatch)
         "request_id": "request-123",
         "method": "POST",
         "path": "/upload_certification_scheme",
+        "service": "ledger",
         "scheme_id": "scheme-42",
         "attempt": 3,
         "access_token": "[REDACTED]",
@@ -106,6 +109,31 @@ def test_disabled_alerts_do_not_contact_publisher(monkeypatch):
         "status": "disabled"
     }
     assert publisher.calls == []
+
+
+def test_internal_failure_uses_ccm_manager_as_component(monkeypatch):
+    monkeypatch.setattr(alerts, "MQTT_COMPONENT_ID", "CCM-Manager")
+
+    payload = alerts.build_failure_payload(
+        "Generate certificate PDF",
+        "Failed to regenerate the certificate PDF",
+        details={"certificate_id": "certificate-42"},
+    )
+
+    assert payload["component"] == "CCM-Manager"
+
+
+def test_explicit_component_overrides_details_service(monkeypatch):
+    monkeypatch.setattr(alerts, "MQTT_COMPONENT_ID", "CCM-Manager")
+
+    payload = alerts.build_failure_payload(
+        "Publish certification scheme",
+        "Publication failed",
+        details={"service": "ledger"},
+        component="Blockchain-Ledger",
+    )
+
+    assert payload["component"] == "Blockchain-Ledger"
 
 
 def test_broker_failure_never_raises_into_business_operation(monkeypatch):
