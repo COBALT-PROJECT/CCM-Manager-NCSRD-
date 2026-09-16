@@ -534,7 +534,16 @@ def process_assessment_result(data):
             return {"error": "Linked Certification Scheme not found in database"}, 404
 
         try:
-            assessment_hash = send_to_ledger("/v1/manufacturer/ass-results", data)
+            assessment_hash = send_to_ledger(
+                "/v1/manufacturer/ass-results",
+                data,
+                operation="Publish assessment result to blockchain",
+                details={
+                    "assessment_id": data.get("id"),
+                    "toe_id": toe_id,
+                    "scheme_id": scheme_id,
+                },
+            )
         except Exception as exc:
             logging.warning("Ledger unavailable for assessment result, using placeholder hash: %s", exc)
             assessment_hash = "TempHashDueToHotFix"

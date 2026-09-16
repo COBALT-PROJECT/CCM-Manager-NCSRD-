@@ -120,7 +120,11 @@ def patch_scheme_collections(monkeypatch):
     monkeypatch.setattr(scheme_service, "controls_col", collections["controls"])
     monkeypatch.setattr(scheme_service, "rtc_col", collections["rtc"])
     monkeypatch.setattr(scheme_service, "cm_col", collections["cm"])
-    monkeypatch.setattr(scheme_service, "send_to_ledger", lambda endpoint, data: "ledger-hash")
+    monkeypatch.setattr(
+        scheme_service,
+        "send_to_ledger",
+        lambda *args, **kwargs: "ledger-hash",
+    )
     return collections
 
 

@@ -5,6 +5,7 @@ from auth import auth_context, authed_request
 from config import FORWARD_URL
 from db import certificates_col, collection, schemes_col, toes_col
 from services import sdt_sender, toe_workflow_service
+from services.mqtt_alert_service import publish_failure
 from utils import mongo_safe_document
 
 
@@ -194,13 +195,43 @@ def upload_toe_descriptor(
         forward_status = "not_configured"
         try:
             if FORWARD_URL:
-                authed_request("POST", FORWARD_URL, json=data, timeout=5, service="orchestrator")
+                forward_response = authed_request(
+                    "POST",
+                    FORWARD_URL,
+                    json=data,
+                    timeout=5,
+                    service="orchestrator",
+                )
                 outbound_auth.append(auth_context("orchestrator"))
-                forward_status = "sent"
+                if 200 <= forward_response.status_code < 300:
+                    forward_status = "sent"
+                else:
+                    forward_status = "failed"
+                    publish_failure(
+                        operation="Forward ToE to orchestrator",
+                        message="Orchestrator rejected the ToE descriptor",
+                        details={
+                            "service": "orchestrator",
+                            "toe_id": toe_uuid,
+                            "scheme_id": scheme_id,
+                            "status_code": forward_response.status_code,
+                        },
+                    )
         except Exception as exc:
             logging.warning("Failed to forward enriched ToE: %s", exc)
             outbound_auth.append(auth_context("orchestrator"))
             forward_status = "failed"
+            publish_failure(
+                operation="Forward ToE to orchestrator",
+                message="Failed to forward the ToE descriptor",
+                details={
+                    "service": "orchestrator",
+                    "toe_id": toe_uuid,
+                    "scheme_id": scheme_id,
+                    "exception_type": type(exc).__name__,
+                    "error": str(exc),
+                },
+            )
 
         response = {
             "message": "ToE registered and BOM files grouped successfully",
@@ -228,6 +259,17 @@ def upload_toe_descriptor(
             except Exception as exc:
                 sdtm_attempted = True
                 logging.warning("Failed to sync ToE %s to SDTM: %s", toe_uuid, exc)
+                publish_failure(
+                    operation="Synchronize ToE to SDTM",
+                    message="Unexpected failure while synchronizing the ToE to SDTM",
+                    details={
+                        "service": "sdt",
+                        "toe_id": toe_uuid,
+                        "scheme_id": scheme_id,
+                        "exception_type": type(exc).__name__,
+                        "error": str(exc),
+                    },
+                )
                 response.update({
                     "sdtm_status": "failed",
                     "sdtm_attempted": True,
@@ -252,6 +294,16 @@ def upload_toe_descriptor(
                     "Failed to schedule ToE ID handoff for %s: %s",
                     toe_uuid,
                     exc,
+                )
+                publish_failure(
+                    operation="Schedule ToE ID handoff",
+                    message="Failed to schedule the ToE ID handoff workflow",
+                    details={
+                        "service": "toe_connector",
+                        "toe_id": toe_uuid,
+                        "exception_type": type(exc).__name__,
+                        "error": str(exc),
+                    },
                 )
                 response["toe_id_handoff"] = {
                     "status": "scheduling_failed",

@@ -45,6 +45,54 @@ CCM_HTTP_LOG_MAX_BODY_CHARS=4000
 
 Sensitive headers and payload fields such as `Authorization`, tokens, passwords, and client secrets are redacted before logging.
 
+## MQTT Failure Alerts
+
+CCM can publish operational failures to an MQTT broker. Alerts are emitted for
+downstream and internal failures, including ledger, scheme import, DRM, SDTM,
+ToE connector, artifact-forwarding, and unexpected HTTP 5xx failures. Successful
+operations, expected client errors, skipped integrations, and recovery events do
+not produce MQTT messages.
+
+Failure alerts are disabled by default so development and CI environments never
+contact the test-bed broker unexpectedly. Enable them in the deployed CCM with:
+
+```env
+MQTT_ALERTS_ENABLED=true
+MQTT_BROKER_HOST=10.163.1.161
+MQTT_BROKER_PORT=1883
+MQTT_COMPONENT_ID=CCM-Manager
+MQTT_ALERT_TOPIC=components/CCM-Manager/reports
+MQTT_QOS=1
+MQTT_RETAIN=false
+MQTT_KEEPALIVE_SECONDS=10
+MQTT_DETAILS_MAX_CHARS=4000
+```
+
+Optional authenticated or TLS-enabled brokers can also use `MQTT_USERNAME`,
+`MQTT_PASSWORD`, and `MQTT_TLS_ENABLED=true`.
+
+Each message uses the failure-report contract:
+
+```json
+{
+  "event_id": "failure-<uuid>",
+  "state": "failed",
+  "severity": "critical",
+  "operation": "Publish certification scheme to blockchain",
+  "message": "Blockchain ledger request failed",
+  "occurred_at": "2026-09-16T12:00:00+00:00",
+  "details": {
+    "service": "ledger",
+    "scheme_id": "example-scheme",
+    "request_id": "example-request-id"
+  }
+}
+```
+
+Publishing is best-effort: an unavailable MQTT broker is logged but never masks
+or changes the original CCM result. Repeating background-worker failures are
+deduplicated until that operation succeeds and starts a new failure episode.
+
 ## Startup Catalogue Seeding
 
 When the Flask app starts, CCM seeds the global catalogue collections from the bundled EUCS and Quantum data files.

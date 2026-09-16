@@ -7,6 +7,7 @@ import requests
 from auth import auth_context, authed_request
 from config import ENDPOINTS
 from db import collection, db
+from services.mqtt_alert_service import publish_failure
 from utils import generate_json_hash, is_valid_urn_uuid
 
 
@@ -274,12 +275,34 @@ def receive_and_forward(incoming_data):
                 timeout=5,
                 service="artifact_forwarder",
             )
-            forward_result["status"] = "sent"
             forward_result["response_status"] = response.status_code
+            if 200 <= response.status_code < 300:
+                forward_result["status"] = "sent"
+            else:
+                forward_result["status"] = "failed"
+                publish_failure(
+                    operation="Forward artifact record",
+                    message="Artifact destination rejected the forwarded record",
+                    details={
+                        "service": "artifact_forwarder",
+                        "destination": url,
+                        "status_code": response.status_code,
+                    },
+                )
         except requests.RequestException as exc:
             print(f"Failed to forward to {url}: {exc}")
             forward_result["status"] = "failed"
             forward_result["error"] = str(exc)
+            publish_failure(
+                operation="Forward artifact record",
+                message="Failed to forward an artifact record",
+                details={
+                    "service": "artifact_forwarder",
+                    "destination": url,
+                    "exception_type": type(exc).__name__,
+                    "error": str(exc),
+                },
+            )
         forward_results.append(forward_result)
 
     return {"status": "Success", "forwarded_to": forward_results}, 200

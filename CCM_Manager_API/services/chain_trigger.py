@@ -7,6 +7,7 @@ from pymongo import ReturnDocument
 
 from auth import auth_context, authed_request
 from config import LEDGER_BASE_URL, LEDGER_HASH_URL, SEND_SDT_URL
+from services.mqtt_alert_service import publish_failure
 
 
 def xml_to_dict(elem):
@@ -94,6 +95,16 @@ def trigger_chain(request_data):
     except requests.RequestException as exc:
         if not outbound_auth:
             outbound_auth.append(auth_context("ledger"))
+        publish_failure(
+            operation="Publish BOM to blockchain",
+            message="Blockchain rejected or could not receive the BOM",
+            details={
+                "service": "ledger",
+                "unique_key": unique_key,
+                "exception_type": type(exc).__name__,
+                "error": str(exc),
+            },
+        )
         return {
             "error": "POST to blockchain failed",
             "details": str(exc),
@@ -121,6 +132,16 @@ def trigger_chain(request_data):
     except requests.RequestException as exc:
         if not any(item["service"] == "ledger" for item in outbound_auth):
             outbound_auth.append(auth_context("ledger"))
+        publish_failure(
+            operation="Retrieve BOM hash from blockchain",
+            message="Failed to retrieve the blockchain hash",
+            details={
+                "service": "ledger",
+                "unique_key": unique_key,
+                "exception_type": type(exc).__name__,
+                "error": str(exc),
+            },
+        )
         return {
             "error": "GET hash failed",
             "details": str(exc),
@@ -145,6 +166,17 @@ def trigger_chain(request_data):
     except requests.RequestException as exc:
         if not any(item["service"] == "sdt" for item in outbound_auth):
             outbound_auth.append(auth_context("sdt"))
+        publish_failure(
+            operation="Send blockchain BOM to SDTM",
+            message="Failed to pass the blockchain hash to SDTM",
+            details={
+                "service": "sdt",
+                "unique_key": unique_key,
+                "hash": hash_value,
+                "exception_type": type(exc).__name__,
+                "error": str(exc),
+            },
+        )
         return {
             "error": "Failed to call /send_sdt",
             "details": str(exc),

@@ -9,6 +9,7 @@ from auth import auth_context, authed_request
 from config import SCHEME_IMPORT_PAYLOAD_MODE, SCHEME_IMPORT_TIMEOUT, SCHEME_IMPORT_URL
 from db import cm_col, controls_col, metrics_col, risks_col, rtc_col, schemes_col, threats_col
 from services.ledger import ledger_auth_context, send_to_ledger
+from services.mqtt_alert_service import publish_failure
 
 
 INVALID_REFERENCE_VALUES = {"", "N/A", "NA", "NONE", "NULL"}
@@ -237,6 +238,18 @@ def import_scheme_to_orchestrator(data, scheme_content, scheme_id, payload_mode=
             )
         except requests.RequestException as exc:
             logging.warning("Scheme import request failed for %s: %s", scheme_id, exc)
+            publish_failure(
+                operation="Import certification scheme to orchestrator",
+                message="Scheme import request failed",
+                details={
+                    "service": "scheme_import",
+                    "scheme_id": scheme_id,
+                    "payload_mode": mode,
+                    "correlation_id": correlation_id,
+                    "exception_type": type(exc).__name__,
+                    "error": str(exc),
+                },
+            )
             return {
                 "scheme_import_status": "failed",
                 "scheme_import_url": SCHEME_IMPORT_URL,
@@ -276,6 +289,18 @@ def import_scheme_to_orchestrator(data, scheme_content, scheme_id, payload_mode=
             break
 
     last_attempt = attempts[-1] if attempts else {}
+    publish_failure(
+        operation="Import certification scheme to orchestrator",
+        message="Scheme import service rejected the certification scheme",
+        details={
+            "service": "scheme_import",
+            "scheme_id": scheme_id,
+            "payload_mode": last_attempt.get("payload_mode"),
+            "correlation_id": correlation_id,
+            "status_code": last_attempt.get("status_code"),
+            "response": last_attempt.get("response"),
+        },
+    )
     return {
         "scheme_import_status": "failed",
         "scheme_import_url": SCHEME_IMPORT_URL,
@@ -303,7 +328,12 @@ def upload_certification_scheme(data, sync_drm_on_upload=True, sync_scheme_impor
     catalog = sections["catalog"]
 
     try:
-        ledger_hash = send_to_ledger("/v1/certification-authority/certification-scheme", scheme_content)
+        ledger_hash = send_to_ledger(
+            "/v1/certification-authority/certification-scheme",
+            scheme_content,
+            operation="Publish certification scheme to blockchain",
+            details={"scheme_id": scheme_id},
+        )
     except Exception as exc:
         logging.warning("Ledger unavailable, using placeholder hash: %s", exc)
         ledger_hash = "TempHashDueToHotFix"
@@ -910,6 +940,11 @@ def _prepare_drm_entities(export_payload, control_metric_pairs=None, risk_threat
 def sync_drm(scheme_id):
     drm_base = os.getenv("DRM_BASE_URL", "")
     if not drm_base:
+        publish_failure(
+            operation="Synchronize certification scheme to DRM",
+            message="DRM synchronization is enabled but DRM_BASE_URL is not configured",
+            details={"service": "drm", "scheme_id": scheme_id},
+        )
         return {"error": "DRM_BASE_URL is not configured in .env"}, 503
 
     payload, status = export_scheme(scheme_id)
@@ -1036,6 +1071,18 @@ def sync_drm(scheme_id):
             "warnings": entities["warnings"],
         }, 200
     except DrmSyncError as exc:
+        publish_failure(
+            operation="Synchronize certification scheme to DRM",
+            message="DRM rejected part of the certification scheme synchronization",
+            details={
+                "service": "drm",
+                "scheme_id": scheme_id,
+                "path": exc.path,
+                "status_code": exc.status_code,
+                "response": exc.body,
+                "created_before_failure": created,
+            },
+        )
         return {
             "error": "DRM sync failed",
             "path": exc.path,
@@ -1046,4 +1093,15 @@ def sync_drm(scheme_id):
         }, 502
     except Exception as exc:
         logging.error("DRM sync failed for scheme %s: %s", scheme_id, exc)
+        publish_failure(
+            operation="Synchronize certification scheme to DRM",
+            message="Unexpected DRM synchronization failure",
+            details={
+                "service": "drm",
+                "scheme_id": scheme_id,
+                "exception_type": type(exc).__name__,
+                "error": str(exc),
+                "created_before_failure": created,
+            },
+        )
         return {"error": f"DRM sync failed: {str(exc)}"}, 502

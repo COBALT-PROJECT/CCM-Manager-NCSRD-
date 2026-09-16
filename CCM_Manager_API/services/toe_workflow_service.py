@@ -23,6 +23,7 @@ from config import (
     TOE_WORKFLOW_RESPONSE_MAX_CHARS,
 )
 from db import toe_workflow_jobs_col
+from services.mqtt_alert_service import clear_failure, publish_failure
 from utils import mongo_safe_document
 
 
@@ -280,6 +281,21 @@ def _retry_handoff(job, phase, message, now, status_code=None, response_body=Non
         next_run.isoformat(),
         message,
     )
+    publish_failure(
+        operation="Handoff ToE ID to connector",
+        message="ToE connector handoff failed and was scheduled for retry",
+        details={
+            "service": "toe_connector",
+            "toe_id": job.get("toe_id"),
+            "phase": phase,
+            "status_code": status_code,
+            "attempt": attempt,
+            "next_run_at": next_run.isoformat(),
+            "error": str(message),
+            "response": response_body,
+        },
+        dedupe_key=f"toe-handoff:{job.get('toe_id')}",
+    )
     return {
         "status": "retrying",
         "phase": phase,
@@ -378,6 +394,8 @@ def _process_handoff(job, now):
         handoff_response.status_code,
         SDT_ID_SYNC_ENABLED,
     )
+    clear_failure(f"toe-handoff:{job.get('toe_id')}")
+    clear_failure(f"toe-worker:{job.get('toe_id')}")
     return {
         "status": "sent",
         "phase": "send_toe_id",
@@ -409,6 +427,20 @@ def _retry_sync(job, message, now, status_code=None, response_body=None):
         status_code,
         next_run.isoformat(),
         message,
+    )
+    publish_failure(
+        operation="Synchronize SDT IDs",
+        message="SDT ID synchronization failed and was scheduled for retry",
+        details={
+            "service": "sdt",
+            "toe_id": job.get("toe_id"),
+            "status_code": status_code,
+            "attempt": attempt,
+            "next_run_at": next_run.isoformat(),
+            "error": str(message),
+            "response": response_body,
+        },
+        dedupe_key=f"sdt-id-sync:{job.get('toe_id')}",
     )
     return {
         "status": "retrying",
@@ -478,6 +510,8 @@ def _process_id_sync(job, now):
         response.status_code,
         next_run.isoformat(),
     )
+    clear_failure(f"sdt-id-sync:{job.get('toe_id')}")
+    clear_failure(f"toe-worker:{job.get('toe_id')}")
     return {
         "status": "synchronized",
         "phase": "sync_ids",

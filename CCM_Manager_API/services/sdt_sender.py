@@ -16,6 +16,7 @@ from config import (
 )
 from db import collection
 from utils import mongo_safe_document
+from services.mqtt_alert_service import publish_failure
 
 
 IDENTIFIER_KEYS = (
@@ -193,6 +194,11 @@ def _load_bom_content(file_path=None, bom_content=None):
 def _adapt_bom(file_path, hash_value, toe_id, payload_type, bom_content=None, source_label=None):
     adapt_url = _adapt_url()
     if not adapt_url:
+        publish_failure(
+            operation="Adapt BOM in SDTM",
+            message="SDTM adapt endpoint is not configured",
+            details={"service": "sdt", "toe_id": toe_id, "hash": hash_value},
+        )
         return None, {
             "error": "SDTM adapt endpoint is not configured",
             "outbound_auth": [auth_context("sdt")],
@@ -212,6 +218,18 @@ def _adapt_bom(file_path, hash_value, toe_id, payload_type, bom_content=None, so
         response.raise_for_status()
         return response, None, None
     except requests.RequestException as exc:
+        publish_failure(
+            operation="Adapt BOM in SDTM",
+            message="SDTM adapt request failed",
+            details={
+                "service": "sdt",
+                "toe_id": toe_id,
+                "hash": hash_value,
+                "payload_type": payload_type,
+                "exception_type": type(exc).__name__,
+                "error": str(exc),
+            },
+        )
         _, fallback_payload, fallback_status = _save_adapt_fallback(
             file_path,
             hash_value,
@@ -244,6 +262,16 @@ def get_sdt(identifier):
             auth_resp.raise_for_status()
         except requests.RequestException as exc:
             auth_error = str(exc)
+            publish_failure(
+                operation="Retrieve SDTM authentication status",
+                message="Failed to retrieve authentication status for an SDT instance",
+                details={
+                    "service": "sdt",
+                    "twin_id": identifier,
+                    "exception_type": type(exc).__name__,
+                    "error": str(exc),
+                },
+            )
 
     return {
         "sdt": _json_or_text(status_resp),
@@ -269,11 +297,21 @@ def send_sdt(
 
     deploy_url = _digital_twin_url()
     if not deploy_url:
+        publish_failure(
+            operation="Deploy SDT instance",
+            message="SDTM digital twin endpoint is not configured",
+            details={"service": "sdt", "toe_id": toe_id, "hash": hash_value},
+        )
         return {
             "error": "SDTM digital twin endpoint is not configured",
             "outbound_auth": [auth_context("sdt")],
         }, 500
     if not _adapt_url():
+        publish_failure(
+            operation="Adapt BOM in SDTM",
+            message="SDTM adapt endpoint is not configured",
+            details={"service": "sdt", "toe_id": toe_id, "hash": hash_value},
+        )
         return {
             "error": "SDTM adapt endpoint is not configured",
             "outbound_auth": [auth_context("sdt")],
@@ -313,6 +351,17 @@ def send_sdt(
         print(f"SDTM deploy completed (status {deploy_resp.status_code})")
         deploy_resp.raise_for_status()
     except requests.RequestException as exc:
+        publish_failure(
+            operation="Deploy SDT instance",
+            message="Failed to deploy SDT instance",
+            details={
+                "service": "sdt",
+                "toe_id": resolved_toe_id,
+                "hash": hash_value,
+                "exception_type": type(exc).__name__,
+                "error": str(exc),
+            },
+        )
         return {
             "error": "Failed to deploy SDT instance",
             "details": str(exc),
@@ -350,6 +399,17 @@ def send_sdt(
         deployments_payload = _json_or_text(deployments_resp) if deployments_resp is not None else None
     except requests.RequestException as exc:
         deployments_error = str(exc)
+        publish_failure(
+            operation="List SDTM deployments",
+            message="Failed to list SDTM deployments after deployment",
+            details={
+                "service": "sdt",
+                "toe_id": resolved_toe_id,
+                "twin_id": twin_id,
+                "exception_type": type(exc).__name__,
+                "error": str(exc),
+            },
+        )
 
     status_payload = None
     status_code = None
@@ -367,6 +427,17 @@ def send_sdt(
             auth_error = status_result.get("auth_error")
         except requests.RequestException as exc:
             status_error = str(exc)
+            publish_failure(
+                operation="Retrieve deployed SDT instance",
+                message="Failed to retrieve the deployed SDT instance",
+                details={
+                    "service": "sdt",
+                    "toe_id": resolved_toe_id,
+                    "twin_id": twin_id,
+                    "exception_type": type(exc).__name__,
+                    "error": str(exc),
+                },
+            )
 
     sdt_ids = _extract_identifiers(deployments_payload if deployments_payload is not None else deploy_payload)
 
@@ -411,6 +482,17 @@ def trigger_delete(identifier):
         }, 500
 
     response = authed_request("DELETE", delete_url, service="sdt")
+    if response.status_code >= 400:
+        publish_failure(
+            operation="Delete SDT instance",
+            message="SDTM rejected the delete request",
+            details={
+                "service": "sdt",
+                "twin_id": identifier,
+                "status_code": response.status_code,
+                "response": _json_or_text(response),
+            },
+        )
 
     return {
         "message": "Triggered delete request",

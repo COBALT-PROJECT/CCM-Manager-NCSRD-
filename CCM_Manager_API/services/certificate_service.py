@@ -8,6 +8,7 @@ from uuid import uuid4
 from db import certificates_col, schemes_col, toes_col
 from services.assessment_service import PDF_OUTPUT_DIR, generate_certificate
 from services.ledger import ledger_auth_context, send_to_ledger
+from services.mqtt_alert_service import publish_failure
 
 
 VALID_EVALUATION_TYPES = {"MANUAL": "Manual", "DYNAMIC": "DYNAMIC"}
@@ -502,6 +503,13 @@ def update_certificate_evaluation_result(data):
         cert_hash = send_to_ledger(
             "/v1/certification-authority/certificate",
             _certificate_ledger_payload(updated_certificate),
+            operation="Publish certificate to blockchain",
+            details={
+                "certificate_id": certification.get("certification_id"),
+                "toe_id": toe_id,
+                "scheme_id": scheme_id,
+                "certificate_operation": operation,
+            },
         )
     except Exception as exc:
         logging.warning("Ledger unavailable for certificate update, using placeholder hash: %s", exc)
@@ -525,6 +533,17 @@ def update_certificate_evaluation_result(data):
             "Failed to regenerate PDF for certificate %s: %s",
             certification.get("certification_id"),
             exc,
+        )
+        publish_failure(
+            operation="Generate certificate PDF",
+            message="Failed to regenerate the certificate PDF",
+            details={
+                "certificate_id": certification.get("certification_id"),
+                "toe_id": toe_id,
+                "scheme_id": scheme_id,
+                "exception_type": type(exc).__name__,
+                "error": str(exc),
+            },
         )
         warnings.append(f"Failed to regenerate certificate PDF: {exc}")
 

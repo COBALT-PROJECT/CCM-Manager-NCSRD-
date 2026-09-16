@@ -32,6 +32,7 @@ from services import catalogue_service
 from services import cbom_workflow
 from services import certificate_service
 from services import chain_trigger
+from services.mqtt_alert_service import publish_failure, request_alert_was_emitted
 from services import certification_scheme_service as scheme_service
 from services import sbom_workflow
 from services import sdt_sender
@@ -243,6 +244,19 @@ def log_http_response(response):
         duration_ms = round((time.perf_counter() - started_at) * 1000, 2)
 
     body_preview = _response_body_preview(response)
+    if response.status_code >= 500 and not request_alert_was_emitted():
+        failure_message = f"CCM endpoint returned HTTP {response.status_code}"
+        if isinstance(body_preview, dict):
+            failure_message = str(
+                body_preview.get("error")
+                or body_preview.get("message")
+                or failure_message
+            )
+        publish_failure(
+            operation=f"{request.method} {request.path}",
+            message=failure_message,
+            details={"status_code": response.status_code},
+        )
     logger.info(
         "response id=%s method=%s path=%s status=%s duration_ms=%s content_length=%s headers=%s body=%s",
         request_id,
@@ -1174,6 +1188,15 @@ if __name__ == '__main__':
             )
         except Exception as e:
             logging.error(f"Failed to auto-initialize catalogue from {catalogue_path}: {e}")
+            publish_failure(
+                operation="Initialize CCM catalogue",
+                message="Failed to initialize a configured catalogue",
+                details={
+                    "catalogue_path": catalogue_path,
+                    "exception_type": type(e).__name__,
+                    "error": str(e),
+                },
+            )
 
     app.run(host='0.0.0.0', port=5001, debug=True)
     # DEV CCM MANAGER CODE BELOW THIS LINE IS FOR TESTING PURPOSES ONLY - NOT FOR PRODUCTION USE YET

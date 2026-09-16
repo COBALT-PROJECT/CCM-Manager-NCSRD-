@@ -5,9 +5,10 @@ import requests
 
 from auth import auth_context, authed_request
 from config import LEDGER_BASE_URL
+from services.mqtt_alert_service import publish_failure
 
 
-def send_to_ledger(endpoint, data):
+def send_to_ledger(endpoint, data, operation=None, details=None):
     url = f"{LEDGER_BASE_URL}{endpoint}"
     payload = {"content": json.dumps(data)}
 
@@ -17,6 +18,17 @@ def send_to_ledger(endpoint, data):
         return response.json().get("hash")
     except requests.RequestException as exc:
         logging.error("Ledger Error (%s): %s", url, exc)
+        publish_failure(
+            operation=operation or "Send data to blockchain ledger",
+            message="Blockchain ledger request failed",
+            details={
+                "service": "ledger",
+                "endpoint": endpoint,
+                "exception_type": type(exc).__name__,
+                "error": str(exc),
+                **(details or {}),
+            },
+        )
         raise
 
 

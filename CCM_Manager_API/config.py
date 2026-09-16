@@ -63,6 +63,24 @@ class Config:
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://mongo:27017/")
 MONGO_DB_NAME = os.getenv("MONGO_DB", "mydatabase")
 
+# Failure alerts are opt-in so local and CI environments never attempt to
+# contact the test-bed broker unexpectedly. Enable them in the deployed CCM.
+MQTT_ALERTS_ENABLED = _env_bool("MQTT_ALERTS_ENABLED", False)
+MQTT_BROKER_HOST = os.getenv("MQTT_BROKER_HOST", "10.163.1.161").strip()
+MQTT_BROKER_PORT = max(_env_int("MQTT_BROKER_PORT", 1883), 1)
+MQTT_COMPONENT_ID = os.getenv("MQTT_COMPONENT_ID", "CCM-Manager").strip() or "CCM-Manager"
+MQTT_ALERT_TOPIC = (
+    os.getenv("MQTT_ALERT_TOPIC", "").strip()
+    or f"components/{MQTT_COMPONENT_ID}/reports"
+)
+MQTT_QOS = min(max(_env_int("MQTT_QOS", 1), 0), 2)
+MQTT_RETAIN = _env_bool("MQTT_RETAIN", False)
+MQTT_KEEPALIVE_SECONDS = max(_env_int("MQTT_KEEPALIVE_SECONDS", 10), 1)
+MQTT_USERNAME = os.getenv("MQTT_USERNAME", "").strip()
+MQTT_PASSWORD = os.getenv("MQTT_PASSWORD", "")
+MQTT_TLS_ENABLED = _env_bool("MQTT_TLS_ENABLED", False)
+MQTT_DETAILS_MAX_CHARS = max(_env_int("MQTT_DETAILS_MAX_CHARS", 4000), 256)
+
 LEDGER_BASE_URL = os.getenv("LEDGER_BASE_URL", "http://10.163.1.211:3000").rstrip("/")
 FORWARD_URL = os.getenv("FORWARD_URL", "http://orchestrator:3000/toe/register")
 LEDGER_SUBMIT_URL = f"{LEDGER_BASE_URL}/submit"

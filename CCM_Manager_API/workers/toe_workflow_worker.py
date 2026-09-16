@@ -10,6 +10,7 @@ from config import (
     TOE_WORKFLOW_POLL_SECONDS,
 )
 from services import toe_workflow_service
+from services.mqtt_alert_service import publish_failure
 
 
 LOGGER = logging.getLogger("ccm.toe_workflow.worker")
@@ -48,10 +49,22 @@ def run():
 
         try:
             toe_workflow_service.process_claimed_job(job)
-        except Exception:
+        except Exception as exc:
             LOGGER.exception(
                 "Unexpected ToE workflow failure toe_id=%s; lease will expire for retry",
                 job.get("toe_id"),
+            )
+            publish_failure(
+                operation="Process ToE background workflow",
+                message="Unexpected ToE workflow worker failure; the job will retry after its lease expires",
+                details={
+                    "service": "toe_workflow_worker",
+                    "toe_id": job.get("toe_id"),
+                    "worker_id": worker_id,
+                    "exception_type": type(exc).__name__,
+                    "error": str(exc),
+                },
+                dedupe_key=f"toe-worker:{job.get('toe_id')}",
             )
 
 
