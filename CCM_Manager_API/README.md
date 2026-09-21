@@ -235,7 +235,11 @@ CCM starts a restart-safe background workflow after an attempted Digital Twin de
 2. Only after the health endpoint returns exactly `200`, send the uploaded ToE UUID to
    `POST /api/IDSconnector/TOE/id`.
 3. After the ToE ID is accepted, periodically call the SDTM
-   `GET /api/SDT/sync/ids` endpoint with the real ToE UUID.
+   `GET /api/SDT/sync/ids` endpoint only for the most recently uploaded ToE UUID.
+
+Uploading another ToE immediately supersedes older periodic sync jobs. Older ToE handoffs may
+still finish, but they cannot reactivate their ID sync. A successful sync is logged as
+`SDT ID sync SUCCESS` with the latest ToE ID, endpoint, HTTP status, and next run time.
 
 A failed SDTM response does not prevent the handoff from being scheduled because SDTM can return
 an error after the Digital Twin was created. An intentional `deploy_sdt=false` request or a

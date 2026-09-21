@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta
 from unittest.mock import Mock
 
@@ -57,6 +58,11 @@ def test_schedule_upserts_by_actual_toe_id(monkeypatch):
     assert first_call.kwargs["upsert"] is True
     assert first_call.args[1]["$set"]["sdt_attempt_status"] == "failed"
     assert first_call.args[1]["$set"]["sdt_attempt_status_code"] == 502
+    assert first_call.args[1]["$set"]["uploaded_at"] == now
+    supersede_call = collection.update_many.call_args
+    assert supersede_call.args[0]["toe_id"] == {"$ne": "toe-actual"}
+    assert supersede_call.args[1]["$set"]["sync_status"] == "superseded"
+    assert supersede_call.args[1]["$set"]["next_run_at"] is None
     assert result == {
         "status": "scheduled",
         "toe_id": "toe-actual",
@@ -84,6 +90,7 @@ def test_claim_due_job_uses_atomic_lease(monkeypatch):
 
 def test_worker_startup_reactivates_persisted_jobs(monkeypatch):
     collection = Mock()
+    collection.find_one.return_value = {"toe_id": "toe-latest"}
     now = datetime(2026, 7, 30, 12, 0, 0)
     monkeypatch.setattr(toe_workflow_service, "toe_workflow_jobs_col", collection)
     monkeypatch.setattr(toe_workflow_service, "TOE_ID_HANDOFF_ENABLED", True)
@@ -94,12 +101,19 @@ def test_worker_startup_reactivates_persisted_jobs(monkeypatch):
     assert collection.update_many.call_count == 2
     pending_filter = collection.update_many.call_args_list[0].args[0]
     pending_update = collection.update_many.call_args_list[0].args[1]["$set"]
-    sync_update = collection.update_many.call_args_list[1].args[1]["$set"]
+    older_filter = collection.update_many.call_args_list[1].args[0]
+    older_update = collection.update_many.call_args_list[1].args[1]["$set"]
+    latest_filter = collection.update_one.call_args.args[0]
+    latest_update = collection.update_one.call_args.args[1]["$set"]
     assert pending_update["state"] == "pending_handoff"
     assert pending_update["next_run_at"] == now
     assert {"lease_until": {"$lte": now}} in pending_filter["$or"]
-    assert sync_update["state"] == "id_sync_active"
-    assert sync_update["next_run_at"] == now
+    assert older_filter["toe_id"] == {"$ne": "toe-latest"}
+    assert older_update["sync_status"] == "superseded"
+    assert older_update["next_run_at"] is None
+    assert latest_filter["toe_id"] == "toe-latest"
+    assert latest_update["state"] == "id_sync_active"
+    assert latest_update["next_run_at"] == now
 
 
 def test_health_must_return_200_before_toe_id_is_sent(monkeypatch):
@@ -260,7 +274,7 @@ def test_unauthorized_handoff_keeps_retrying(monkeypatch):
     assert update["$set"]["last_response"]["detail"]["code"] == "INVALID_BEARER_TOKEN"
 
 
-def test_periodic_sync_uses_expected_query_parameters(monkeypatch):
+def test_periodic_sync_uses_expected_query_parameters(monkeypatch, caplog):
     collection = Mock()
     requests = []
     now = datetime(2026, 7, 30, 12, 0, 0)
@@ -283,6 +297,9 @@ def test_periodic_sync_uses_expected_query_parameters(monkeypatch):
         "auth_context",
         lambda service: {"service": service},
     )
+
+    collection.find_one.return_value = {"toe_id": "toe-actual"}
+    caplog.set_level(logging.INFO, logger="ccm.toe_workflow")
 
     result = toe_workflow_service.process_claimed_job(
         {
@@ -315,6 +332,48 @@ def test_periodic_sync_uses_expected_query_parameters(monkeypatch):
     update = collection.update_one.call_args.args[1]
     assert update["$set"]["next_run_at"] == now + timedelta(seconds=300)
     assert update["$set"]["sync_status"] == "synchronized"
+    assert (
+        "SDT ID sync SUCCESS latest_toe_id=toe-actual "
+        "endpoint=http://sdtm.test/api/SDT/sync/ids http_status=200"
+    ) in caplog.text
+
+
+def test_periodic_sync_skips_older_toe(monkeypatch):
+    collection = Mock()
+    collection.find_one.return_value = {"toe_id": "toe-latest"}
+    request = Mock()
+    now = datetime(2026, 7, 30, 12, 0, 0)
+
+    monkeypatch.setattr(toe_workflow_service, "SDT_ID_SYNC_ENABLED", True)
+    monkeypatch.setattr(
+        toe_workflow_service,
+        "SDT_ID_SYNC_URL",
+        "http://sdtm.test/api/SDT/sync/ids",
+    )
+    monkeypatch.setattr(toe_workflow_service, "authed_request", request)
+    monkeypatch.setattr(toe_workflow_service, "toe_workflow_jobs_col", collection)
+
+    result = toe_workflow_service.process_claimed_job(
+        {
+            "_id": "job-older",
+            "toe_id": "toe-older",
+            "handoff_status": "sent",
+            "sync_attempts": 4,
+        },
+        now=now,
+    )
+
+    assert result == {
+        "status": "superseded",
+        "phase": "sync_ids",
+        "toe_id": "toe-older",
+        "latest_toe_id": "toe-latest",
+    }
+    request.assert_not_called()
+    update = collection.update_one.call_args.args[1]["$set"]
+    assert update["sync_status"] == "superseded"
+    assert update["superseded_by"] == "toe-latest"
+    assert update["next_run_at"] is None
 
 
 def test_sdt_failure_still_schedules_connector_handoff(monkeypatch):

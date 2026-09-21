@@ -29,6 +29,12 @@ from utils import mongo_safe_document
 
 LOGGER = logging.getLogger("ccm.toe_workflow")
 
+LATEST_UPLOAD_SORT = [
+    ("uploaded_at", -1),
+    ("created_at", -1),
+    ("_id", -1),
+]
+
 
 def _utcnow():
     return datetime.utcnow()
@@ -71,6 +77,44 @@ def ensure_indexes():
     toe_workflow_jobs_col.create_index(
         [("enabled", 1), ("next_run_at", 1), ("lease_until", 1)]
     )
+    toe_workflow_jobs_col.create_index(
+        [("enabled", 1), ("uploaded_at", -1)]
+    )
+
+
+def _latest_scheduled_toe_id():
+    latest = toe_workflow_jobs_col.find_one(
+        {"enabled": True},
+        {"_id": 0, "toe_id": 1},
+        sort=LATEST_UPLOAD_SORT,
+    )
+    if not isinstance(latest, dict) or not latest.get("toe_id"):
+        return None
+    return str(latest["toe_id"])
+
+
+def _supersede_sync_job(job, now, superseded_by=None):
+    values = {
+        "state": "handoff_complete",
+        "sync_status": "superseded",
+        "last_phase": "sync_ids",
+        "next_run_at": None,
+        "updated_at": now,
+    }
+    if superseded_by:
+        values["superseded_by"] = str(superseded_by)
+    _finish_job(job, values)
+    LOGGER.info(
+        "SDT ID sync skipped for older ToE toe_id=%s latest_toe_id=%s",
+        job.get("toe_id"),
+        superseded_by,
+    )
+    return {
+        "status": "superseded",
+        "phase": "sync_ids",
+        "toe_id": job.get("toe_id"),
+        "latest_toe_id": superseded_by,
+    }
 
 
 def activate_completed_handoffs_for_sync(now=None):
@@ -97,9 +141,30 @@ def activate_completed_handoffs_for_sync(now=None):
         )
 
     if SDT_ID_SYNC_ENABLED:
+        latest_toe_id = _latest_scheduled_toe_id()
+        if not latest_toe_id:
+            return
+
         toe_workflow_jobs_col.update_many(
             {
                 "enabled": True,
+                "handoff_status": "sent",
+                "toe_id": {"$ne": latest_toe_id},
+            },
+            {
+                "$set": {
+                    "state": "handoff_complete",
+                    "sync_status": "superseded",
+                    "next_run_at": None,
+                    "superseded_by": latest_toe_id,
+                    "updated_at": current_time,
+                }
+            },
+        )
+        toe_workflow_jobs_col.update_one(
+            {
+                "enabled": True,
+                "toe_id": latest_toe_id,
                 "handoff_status": "sent",
                 "$or": [
                     {"next_run_at": None},
@@ -112,7 +177,8 @@ def activate_completed_handoffs_for_sync(now=None):
                     "sync_status": "pending",
                     "next_run_at": current_time,
                     "updated_at": current_time,
-                }
+                },
+                "$unset": {"superseded_by": ""},
             },
         )
 
@@ -148,6 +214,7 @@ def schedule_toe_workflow(
                 "data_path": data_path or SDT_ID_SYNC_DATA_PATH,
                 "sdt_attempt_status": sdt_attempt_status,
                 "sdt_attempt_status_code": sdt_attempt_status_code,
+                "uploaded_at": current_time,
                 "updated_at": current_time,
             },
             "$setOnInsert": {
@@ -165,6 +232,23 @@ def schedule_toe_workflow(
         },
         upsert=True,
     )
+    if SDT_ID_SYNC_ENABLED:
+        toe_workflow_jobs_col.update_many(
+            {
+                "enabled": True,
+                "toe_id": {"$ne": normalized_toe_id},
+                "handoff_status": "sent",
+            },
+            {
+                "$set": {
+                    "state": "handoff_complete",
+                    "sync_status": "superseded",
+                    "next_run_at": None,
+                    "superseded_by": normalized_toe_id,
+                    "updated_at": current_time,
+                }
+            },
+        )
     toe_workflow_jobs_col.update_one(
         {
             "toe_id": normalized_toe_id,
@@ -179,6 +263,22 @@ def schedule_toe_workflow(
             }
         },
     )
+    if SDT_ID_SYNC_ENABLED:
+        toe_workflow_jobs_col.update_one(
+            {
+                "toe_id": normalized_toe_id,
+                "handoff_status": "sent",
+            },
+            {
+                "$set": {
+                    "state": "id_sync_active",
+                    "sync_status": "pending",
+                    "next_run_at": current_time,
+                    "updated_at": current_time,
+                },
+                "$unset": {"superseded_by": ""},
+            },
+        )
     job = toe_workflow_jobs_col.find_one(
         {"toe_id": normalized_toe_id},
         {"_id": 0, "toe_id": 1, "state": 1, "next_run_at": 1},
@@ -360,13 +460,16 @@ def _process_handoff(job, now):
             response_body=handoff_body,
         )
 
-    if SDT_ID_SYNC_ENABLED:
+    latest_toe_id = _latest_scheduled_toe_id()
+    if SDT_ID_SYNC_ENABLED and (
+        latest_toe_id is None or latest_toe_id == str(job.get("toe_id"))
+    ):
         state = "id_sync_active"
         sync_status = "pending"
         next_run = now
     else:
         state = "handoff_complete"
-        sync_status = "disabled"
+        sync_status = "superseded" if SDT_ID_SYNC_ENABLED else "disabled"
         next_run = None
 
     _finish_job(
@@ -385,6 +488,11 @@ def _process_handoff(job, now):
             "consecutive_failures": 0,
             "updated_at": now,
             "outbound_auth": [auth_context("toe_connector")],
+            "superseded_by": (
+                latest_toe_id
+                if SDT_ID_SYNC_ENABLED and sync_status == "superseded"
+                else None
+            ),
         },
         increments={"handoff_attempts": 1},
     )
@@ -457,6 +565,14 @@ def _process_id_sync(job, now):
     if not SDT_ID_SYNC_URL:
         return _retry_sync(job, "SDT ID sync endpoint is not configured.", now)
 
+    latest_toe_id = _latest_scheduled_toe_id()
+    if latest_toe_id is not None and latest_toe_id != str(job.get("toe_id")):
+        return _supersede_sync_job(
+            job,
+            now,
+            superseded_by=latest_toe_id,
+        )
+
     params = {
         "category": job.get("category") or SDT_ID_SYNC_CATEGORY,
         "toe_id": str(job["toe_id"]),
@@ -505,8 +621,9 @@ def _process_id_sync(job, now):
         increments={"sync_attempts": 1},
     )
     LOGGER.info(
-        "SDT IDs synchronized toe_id=%s status=%s next_run_at=%s",
+        "SDT ID sync SUCCESS latest_toe_id=%s endpoint=%s http_status=%s next_run_at=%s",
         job.get("toe_id"),
+        SDT_ID_SYNC_URL,
         response.status_code,
         next_run.isoformat(),
     )
