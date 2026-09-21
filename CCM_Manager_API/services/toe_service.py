@@ -1,10 +1,13 @@
 import logging
 from datetime import datetime
 
+import requests
+
 from auth import auth_context, authed_request
-from config import FORWARD_URL
+from config import FORWARD_URL, SBOM_LEDGER_ENDPOINT
 from db import certificates_col, collection, schemes_col, toes_col
 from services import sdt_sender, toe_workflow_service
+from services.ledger import ledger_auth_context, send_to_ledger
 from services.mqtt_alert_service import publish_failure
 from utils import mongo_safe_document
 
@@ -110,6 +113,99 @@ def _extract_attached_bom(data, preferred_type=None):
     return None, None
 
 
+def _extract_sbom(data):
+    """Return only the software BOM intended for the manufacturer DLT API."""
+    bills_of_material = data.get("bills-of-material")
+    if isinstance(bills_of_material, dict):
+        sbom = bills_of_material.get("sbom")
+        if isinstance(sbom, (dict, list)):
+            return sbom, "bills-of-material.sbom"
+
+    attached_boms = data.get("attached_boms")
+    if not isinstance(attached_boms, dict):
+        return None, None
+
+    for bom_type, entries in attached_boms.items():
+        normalized_type = str(bom_type).strip().lower().replace("_", "-")
+        if normalized_type not in {"sbom", "sbom-file", "software-bom"}:
+            continue
+        if not isinstance(entries, list):
+            continue
+        for entry in entries:
+            content = entry.get("content") if isinstance(entry, dict) else None
+            if isinstance(content, (dict, list)):
+                return content, f"attached_boms.{bom_type}"
+
+    return None, None
+
+
+def _publish_sbom_to_ledger(data, toe_uuid):
+    sbom, sbom_source = _extract_sbom(data)
+    if sbom is None:
+        return {
+            "ledger_hash": None,
+            "sbom_ledger_status": "skipped",
+            "sbom_ledger_reason": "No SBOM was available in the ToE payload.",
+            "sbom_source": None,
+            "attempted": False,
+        }
+
+    try:
+        ledger_hash = send_to_ledger(
+            SBOM_LEDGER_ENDPOINT,
+            sbom,
+            operation="Publish SBOM to blockchain",
+            details={"toe_id": toe_uuid, "sbom_source": sbom_source},
+        )
+        if not ledger_hash:
+            publish_failure(
+                operation="Publish SBOM to blockchain",
+                message="Blockchain response did not include an SBOM hash",
+                details={
+                    "service": "ledger",
+                    "endpoint": SBOM_LEDGER_ENDPOINT,
+                    "toe_id": toe_uuid,
+                    "sbom_source": sbom_source,
+                },
+            )
+            return {
+                "ledger_hash": None,
+                "sbom_ledger_status": "failed",
+                "sbom_ledger_error": "DLT response did not contain a hash",
+                "sbom_source": sbom_source,
+                "attempted": True,
+            }
+
+        return {
+            "ledger_hash": ledger_hash,
+            "sbom_ledger_status": "published",
+            "sbom_source": sbom_source,
+            "attempted": True,
+        }
+    except Exception as exc:
+        logging.warning("Failed to publish ToE SBOM to the ledger: %s", exc)
+        if not isinstance(exc, requests.RequestException):
+            publish_failure(
+                operation="Publish SBOM to blockchain",
+                message="Failed to process the blockchain SBOM response",
+                details={
+                    "service": "ledger",
+                    "endpoint": SBOM_LEDGER_ENDPOINT,
+                    "toe_id": toe_uuid,
+                    "sbom_source": sbom_source,
+                    "exception_type": type(exc).__name__,
+                    "error": str(exc),
+                },
+            )
+        return {
+            "ledger_hash": None,
+            "sbom_ledger_status": "failed",
+            "sbom_ledger_error": str(exc),
+            "sbom_source": sbom_source,
+            "attempted": True,
+        }
+
+
 def _sdt_payload(toe_uuid, toe_name, scheme_id=None):
     metadata = {
         "toe_id": toe_uuid,
@@ -121,7 +217,15 @@ def _sdt_payload(toe_uuid, toe_name, scheme_id=None):
     return {"metadata": metadata}
 
 
-def _sync_to_sdtm(data, toe_uuid, toe_name, scheme_id=None, bom_path=None, payload_type=None):
+def _sync_to_sdtm(
+    data,
+    toe_uuid,
+    toe_name,
+    scheme_id=None,
+    bom_path=None,
+    payload_type=None,
+    ledger_hash=None,
+):
     inline_bom, bom_source = _extract_inline_bom(data, payload_type)
     if inline_bom is None:
         inline_bom, bom_source = _extract_attached_bom(data, payload_type)
@@ -134,6 +238,7 @@ def _sync_to_sdtm(data, toe_uuid, toe_name, scheme_id=None, bom_path=None, paylo
         }, 200
 
     sdt_payload, sdt_status = sdt_sender.send_sdt(
+        hash_value=ledger_hash,
         bom_path=bom_path,
         toe_id=toe_uuid,
         category=payload_type or "BOMS",
@@ -180,18 +285,25 @@ def upload_toe_descriptor(
         if scheme_id and not schemes_col.find_one({"uuid": scheme_id}):
             return {"error": f"Scheme {scheme_id} not found."}, 404
 
+        sbom_ledger = _publish_sbom_to_ledger(data, toe_uuid)
+        ledger_hash = sbom_ledger["ledger_hash"]
+
         toe_entry = {
             "type": "target_of_evaluation",
             "uuid": toe_uuid,
             "name": toe_name,
             "content": mongo_safe_document(data),
             "linked_scheme_id": scheme_id,
+            "ledger_hash": ledger_hash,
+            "sbom_ledger_status": sbom_ledger["sbom_ledger_status"],
             "timestamp": datetime.utcnow().isoformat(),
         }
 
         toes_col.update_one({"uuid": toe_uuid}, {"$set": toe_entry}, upsert=True)
 
         outbound_auth = []
+        if sbom_ledger["attempted"]:
+            outbound_auth.append(ledger_auth_context())
         forward_status = "not_configured"
         try:
             if FORWARD_URL:
@@ -236,9 +348,16 @@ def upload_toe_descriptor(
         response = {
             "message": "ToE registered and BOM files grouped successfully",
             "toe_uuid": toe_uuid,
+            "ledger_hash": ledger_hash,
+            "sbom_ledger_status": sbom_ledger["sbom_ledger_status"],
+            "sbom_source": sbom_ledger["sbom_source"],
             "forward_status": forward_status,
             "outbound_auth": outbound_auth,
         }
+        if sbom_ledger.get("sbom_ledger_reason"):
+            response["sbom_ledger_reason"] = sbom_ledger["sbom_ledger_reason"]
+        if sbom_ledger.get("sbom_ledger_error"):
+            response["sbom_ledger_error"] = sbom_ledger["sbom_ledger_error"]
 
         sdtm_attempted = False
         if _flag_enabled(deploy_sdt, default=True):
@@ -250,6 +369,7 @@ def upload_toe_descriptor(
                     scheme_id=scheme_id,
                     bom_path=sdt_bom_path,
                     payload_type=sdt_payload_type,
+                    ledger_hash=ledger_hash,
                 )
                 response.update(sdtm_payload)
                 sdtm_attempted = bool(sdtm_payload.get("sdtm_attempted"))

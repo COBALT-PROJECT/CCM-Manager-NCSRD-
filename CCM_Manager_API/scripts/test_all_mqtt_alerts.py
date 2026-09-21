@@ -76,6 +76,30 @@ ALERT_CASES = [
         },
     },
     {
+        "name": "toe-sbom-ledger",
+        "operation": "Publish SBOM to blockchain",
+        "message": "Blockchain ledger request failed",
+        "details": {
+            "service": "ledger",
+            "endpoint": "/v1/manufacturer/sbom",
+            "exception_type": "ConnectTimeout",
+            "error": "Synthetic test: SBOM publication timed out",
+            "toe_id": "mqtt-test-toe",
+            "sbom_source": "bills-of-material.sbom",
+        },
+    },
+    {
+        "name": "toe-sbom-hash-missing",
+        "operation": "Publish SBOM to blockchain",
+        "message": "Blockchain response did not include an SBOM hash",
+        "details": {
+            "service": "ledger",
+            "endpoint": "/v1/manufacturer/sbom",
+            "toe_id": "mqtt-test-toe",
+            "sbom_source": "bills-of-material.sbom",
+        },
+    },
+    {
         "name": "bom-blockchain-publish",
         "operation": "Publish BOM to blockchain",
         "message": "Blockchain rejected or could not receive the BOM",

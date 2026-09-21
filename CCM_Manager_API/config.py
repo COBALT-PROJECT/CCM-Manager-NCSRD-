@@ -86,6 +86,10 @@ CCM_MQTT_TEST_ENDPOINT_ENABLED = _env_bool(
 CCM_MQTT_TEST_TOKEN = os.getenv("CCM_MQTT_TEST_TOKEN", "")
 
 LEDGER_BASE_URL = os.getenv("LEDGER_BASE_URL", "http://10.163.1.211:3000").rstrip("/")
+SBOM_LEDGER_ENDPOINT = (
+    os.getenv("SBOM_LEDGER_ENDPOINT", "/v1/manufacturer/sbom").strip()
+    or "/v1/manufacturer/sbom"
+)
 FORWARD_URL = os.getenv("FORWARD_URL", "http://orchestrator:3000/toe/register")
 LEDGER_SUBMIT_URL = f"{LEDGER_BASE_URL}/submit"
 SCHEME_IMPORT_BASE_URL = _env_url("SCHEME_IMPORT_BASE_URL") or "http://10.163.1.127:8080"

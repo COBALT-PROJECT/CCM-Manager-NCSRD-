@@ -453,3 +453,111 @@ def test_handoff_scheduling_failure_does_not_fail_toe_upload(monkeypatch):
 
     assert status_code == 200
     assert payload["toe_id_handoff"]["status"] == "scheduling_failed"
+
+
+def test_toe_upload_sends_only_embedded_sbom_to_ledger_and_attaches_hash(monkeypatch):
+    toe_id = "toe-with-sbom"
+    sbom = {
+        "bomFormat": "CycloneDX",
+        "specVersion": "1.5",
+        "components": [{"name": "example-library", "version": "1.0"}],
+    }
+    vex = {"vulnerabilities": [{"id": "CVE-TEST"}]}
+    ledger_calls = []
+    toe_updates = Mock()
+
+    def fake_send_to_ledger(endpoint, payload, **kwargs):
+        ledger_calls.append((endpoint, payload, kwargs))
+        return "dlt-sbom-hash"
+
+    monkeypatch.setattr(toe_service, "FORWARD_URL", "")
+    monkeypatch.setattr(toe_service, "SBOM_LEDGER_ENDPOINT", "/v1/manufacturer/sbom")
+    monkeypatch.setattr(toe_service, "send_to_ledger", fake_send_to_ledger)
+    monkeypatch.setattr(
+        toe_service,
+        "ledger_auth_context",
+        lambda: {"service": "ledger"},
+    )
+    monkeypatch.setattr(toe_service.toes_col, "update_one", toe_updates)
+
+    payload, status_code = toe_service.upload_toe_descriptor(
+        {
+            "component": {
+                "component-definition": {
+                    "components": [{"uuid": toe_id, "title": "Test ToE", "links": []}]
+                }
+            },
+            "bills-of-material": {
+                "sbom": sbom,
+                "vex": vex,
+            },
+        },
+        deploy_sdt=False,
+    )
+
+    assert status_code == 200
+    assert ledger_calls == [
+        (
+            "/v1/manufacturer/sbom",
+            sbom,
+            {
+                "operation": "Publish SBOM to blockchain",
+                "details": {
+                    "toe_id": toe_id,
+                    "sbom_source": "bills-of-material.sbom",
+                },
+            },
+        )
+    ]
+    assert payload["ledger_hash"] == "dlt-sbom-hash"
+    assert payload["sbom_ledger_status"] == "published"
+    assert payload["sbom_source"] == "bills-of-material.sbom"
+    assert payload["outbound_auth"] == [{"service": "ledger"}]
+
+    stored_toe = toe_updates.call_args.args[1]["$set"]
+    assert stored_toe["ledger_hash"] == "dlt-sbom-hash"
+    assert stored_toe["sbom_ledger_status"] == "published"
+    assert stored_toe["content"]["bills-of-material"]["vex"] == vex
+
+
+def test_toe_upload_without_sbom_skips_ledger(monkeypatch):
+    send_to_ledger = Mock()
+    monkeypatch.setattr(toe_service, "FORWARD_URL", "")
+    monkeypatch.setattr(toe_service, "send_to_ledger", send_to_ledger)
+    monkeypatch.setattr(toe_service.toes_col, "update_one", Mock())
+
+    payload, status_code = toe_service.upload_toe_descriptor(
+        {
+            "component": {
+                "component-definition": {
+                    "components": [
+                        {"uuid": "toe-without-sbom", "title": "Test ToE", "links": []}
+                    ]
+                }
+            },
+            "bills-of-material": {"vex": {"vulnerabilities": []}},
+        },
+        deploy_sdt=False,
+    )
+
+    assert status_code == 200
+    assert payload["ledger_hash"] is None
+    assert payload["sbom_ledger_status"] == "skipped"
+    send_to_ledger.assert_not_called()
+
+
+def test_sdt_sync_receives_hash_returned_for_uploaded_sbom(monkeypatch):
+    send_sdt = Mock(return_value=({"status": "deployed"}, 200))
+    monkeypatch.setattr(toe_service.sdt_sender, "send_sdt", send_sdt)
+
+    payload, status_code = toe_service._sync_to_sdtm(
+        {"bills-of-material": {"sbom": {"components": []}}},
+        "toe-123",
+        "Test ToE",
+        ledger_hash="dlt-sbom-hash",
+    )
+
+    assert status_code == 200
+    assert payload["sdtm_status"] == "deployed"
+    assert send_sdt.call_args.kwargs["hash_value"] == "dlt-sbom-hash"
+    assert send_sdt.call_args.kwargs["bom_content"] == {"components": []}

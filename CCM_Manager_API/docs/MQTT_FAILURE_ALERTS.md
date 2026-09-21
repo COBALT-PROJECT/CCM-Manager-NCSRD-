@@ -78,6 +78,8 @@ redacted. Large downstream responses are truncated.
 | `Publish assessment result to blockchain` | `Blockchain ledger request failed` | Assessment ID, ToE ID, scheme ID and error |
 | `Publish certificate to blockchain` | `Blockchain ledger request failed` | Certificate ID, ToE ID, scheme ID and certificate operation |
 | `Send data to blockchain ledger` | `Blockchain ledger request failed` | Ledger endpoint, exception type and error |
+| `Publish SBOM to blockchain` | `Blockchain ledger request failed` | ToE ID, SBOM source, ledger endpoint and error |
+| `Publish SBOM to blockchain` | `Blockchain response did not include an SBOM hash` | ToE ID, SBOM source and ledger endpoint |
 | `Publish BOM to blockchain` | `Blockchain rejected or could not receive the BOM` | Unique key, exception type and error |
 | `Retrieve BOM hash from blockchain` | `Failed to retrieve the blockchain hash` | Unique key, exception type and error |
 | `Send blockchain BOM to SDTM` | `Failed to pass the blockchain hash to SDTM` | Unique key, hash and error |
