@@ -95,6 +95,43 @@ def test_authed_request_uses_service_specific_role(monkeypatch):
     ]
 
 
+def test_authed_request_uses_dedicated_service_client_credentials(monkeypatch):
+    created = {}
+    global_client = DummyAuthClient()
+
+    class FakeServiceAuthClient(DummyAuthClient):
+        def __init__(self, **kwargs):
+            super().__init__()
+            created.update(kwargs)
+
+    monkeypatch.setattr(auth, "auth_client", global_client)
+    monkeypatch.setattr(auth, "ComponentAuthClient", FakeServiceAuthClient)
+    monkeypatch.setattr(auth, "_service_auth_clients", {})
+    monkeypatch.setattr(auth, "_service_auth_client_settings", {})
+    monkeypatch.setenv("AM_BASE_URL", "http://iam.example.test")
+    monkeypatch.setenv("AM_VERIFY_TLS", "false")
+    monkeypatch.setenv("MANUFACTURER_CLIENT_ID", "manufacturer-client")
+    monkeypatch.setenv("MANUFACTURER_CLIENT_SECRET", "manufacturer-secret")
+    monkeypatch.setenv("MANUFACTURER_AUTH_ROLE", "openid profile")
+
+    response = auth.authed_request(
+        "POST",
+        "http://dlt.example.test/v1/manufacturer/sbom/",
+        service="manufacturer",
+        json={"components": []},
+    )
+
+    assert isinstance(response, DummyResponse)
+    assert created == {
+        "base_url": "http://iam.example.test",
+        "client_id": "manufacturer-client",
+        "client_secret": "manufacturer-secret",
+        "default_scope": "openid profile",
+        "verify_tls": False,
+    }
+    assert global_client.calls == []
+
+
 def test_toe_connector_uses_component_auth_by_default(monkeypatch):
     client = DummyAuthClient()
     monkeypatch.setattr(auth, "auth_client", client)

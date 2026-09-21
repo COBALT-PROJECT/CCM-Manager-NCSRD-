@@ -285,6 +285,44 @@ def test_ledger_can_send_content_as_json_object(monkeypatch):
     ]
 
 
+def test_ledger_can_send_raw_sbom_with_manufacturer_auth(monkeypatch):
+    calls = []
+
+    class SuccessfulResponse:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"hash": "dlt-sbom-hash"}
+
+    def fake_authed_request(method, url, **kwargs):
+        calls.append((method, url, kwargs))
+        return SuccessfulResponse()
+
+    monkeypatch.setattr(ledger, "authed_request", fake_authed_request)
+
+    sbom = {"bomFormat": "CycloneDX", "components": []}
+    result = ledger.send_to_ledger(
+        "http://dlt.test/v1/manufacturer/sbom/",
+        sbom,
+        raw_body=True,
+        auth_service="manufacturer",
+    )
+
+    assert result == "dlt-sbom-hash"
+    assert calls == [
+        (
+            "POST",
+            "http://dlt.test/v1/manufacturer/sbom/",
+            {
+                "json": sbom,
+                "timeout": 10,
+                "service": "manufacturer",
+            },
+        )
+    ]
+
+
 def test_scheme_import_rejection_emits_alert(monkeypatch):
     calls = []
     monkeypatch.setattr(

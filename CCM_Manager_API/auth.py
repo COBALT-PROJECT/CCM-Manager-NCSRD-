@@ -39,10 +39,15 @@ def _build_auth_client():
 
 
 auth_client = _build_auth_client()
+_service_auth_clients = {}
+_service_auth_client_settings = {}
 
 
 AUTH_DISABLED_BY_DEFAULT = {"SDT", "SDTM", "SCHEME_IMPORT", "TOE_CONNECTOR_HEALTH"}
-DEFAULT_AUTH_ROLES = {"TOE_CONNECTOR": "openid profile"}
+DEFAULT_AUTH_ROLES = {
+    "MANUFACTURER": "openid profile",
+    "TOE_CONNECTOR": "openid profile",
+}
 
 
 def _service_env_key(service):
@@ -108,13 +113,81 @@ def auth_role_for_service(service=None, scope=None):
     )
 
 
+def _auth_client_for_service(service):
+    """Return a dedicated OAuth client when service credentials are configured."""
+    service_key = _service_env_key(service)
+    client_id = (
+        os.getenv(f"{service_key}_CLIENT_ID")
+        or os.getenv(f"CCM_{service_key}_CLIENT_ID")
+        or ""
+    ).strip()
+    client_secret = (
+        os.getenv(f"{service_key}_CLIENT_SECRET")
+        or os.getenv(f"CCM_{service_key}_CLIENT_SECRET")
+        or ""
+    ).strip()
+
+    if not client_id or not client_secret or ComponentAuthClient is None:
+        return auth_client
+
+    base_url = (
+        os.getenv(f"{service_key}_AM_BASE_URL")
+        or os.getenv(f"CCM_{service_key}_AM_BASE_URL")
+        or os.getenv("AM_BASE_URL", "")
+    ).rstrip("/")
+    scope = auth_role_for_service(service)
+    verify_tls_value = (
+        os.getenv(f"{service_key}_AM_VERIFY_TLS")
+        or os.getenv(f"CCM_{service_key}_AM_VERIFY_TLS")
+        or os.getenv("AM_VERIFY_TLS", "true")
+    )
+    verify_tls = verify_tls_value.lower() in ("1", "true", "yes")
+    settings = (base_url, client_id, client_secret, scope, verify_tls)
+
+    if not base_url:
+        logging.warning(
+            "%s_CLIENT_ID / %s_CLIENT_SECRET are set but AM_BASE_URL is missing",
+            service_key,
+            service_key,
+        )
+        return auth_client
+
+    if _service_auth_client_settings.get(service_key) == settings:
+        return _service_auth_clients[service_key]
+
+    try:
+        client = ComponentAuthClient(
+            base_url=base_url,
+            client_id=client_id,
+            client_secret=client_secret,
+            default_scope=scope,
+            verify_tls=verify_tls,
+        )
+        _service_auth_clients[service_key] = client
+        _service_auth_client_settings[service_key] = settings
+        logging.info(
+            "Dedicated ComponentAuthClient initialized for service=%s client_id=%s",
+            service or "default",
+            client_id,
+        )
+        return client
+    except Exception as exc:
+        logging.warning(
+            "Dedicated ComponentAuthClient init failed for service=%s: %s",
+            service or "default",
+            exc,
+        )
+        return auth_client
+
+
 def auth_context(service=None, scope=None):
     role = auth_role_for_service(service, scope)
     service_auth_disabled = _auth_disabled_for_service(service)
+    service_client = _auth_client_for_service(service)
     return {
         "service": service or "default",
-        "auth_enabled": auth_client is not None and not service_auth_disabled,
-        "auth_role": role if auth_client is not None and not service_auth_disabled else "unauthenticated",
+        "auth_enabled": service_client is not None and not service_auth_disabled,
+        "auth_role": role if service_client is not None and not service_auth_disabled else "unauthenticated",
         "configured_role": role,
     }
 
@@ -130,6 +203,8 @@ def authed_request(method, url, **kwargs):
     if scope is None and service is not None:
         scope = auth_role_for_service(service)
 
+    service_client = _auth_client_for_service(service)
+
     bearer_token = _bearer_token_for_service(service)
     if bearer_token:
         response = requests.request(
@@ -137,7 +212,7 @@ def authed_request(method, url, **kwargs):
             url,
             **_with_bearer_header(kwargs, bearer_token),
         )
-        if response.status_code != 401 or auth_client is None:
+        if response.status_code != 401 or service_client is None:
             return response
 
         headers = dict(kwargs.get("headers", {}) or {})
@@ -146,17 +221,17 @@ def authed_request(method, url, **kwargs):
             kwargs["headers"] = headers
         else:
             kwargs.pop("headers", None)
-        return auth_client.authenticated_request(
+        return service_client.authenticated_request(
             method,
             url,
             scope=scope,
             **kwargs,
         )
 
-    if auth_client is not None:
+    if service_client is not None:
         if scope is None:
-            return auth_client.authenticated_request(method, url, **kwargs)
-        return auth_client.authenticated_request(method, url, scope=scope, **kwargs)
+            return service_client.authenticated_request(method, url, **kwargs)
+        return service_client.authenticated_request(method, url, scope=scope, **kwargs)
     return requests.request(method, url, **kwargs)
 
 
@@ -171,10 +246,11 @@ def access_token_for_service(service=None, scope=None):
     if bearer_token:
         return bearer_token
 
-    if auth_client is None:
+    service_client = _auth_client_for_service(service)
+    if service_client is None:
         return None
 
-    return auth_client.get_token(scope=scope)
+    return service_client.get_token(scope=scope)
 
 
 def auth_status_payload():

@@ -14,14 +14,25 @@ def send_to_ledger(
     operation=None,
     details=None,
     content_as_object=False,
+    raw_body=False,
+    auth_service="ledger",
 ):
-    url = f"{LEDGER_BASE_URL}{endpoint}"
-    payload = {
-        "content": data if content_as_object else json.dumps(data)
-    }
+    url = endpoint if str(endpoint).startswith(("http://", "https://")) else f"{LEDGER_BASE_URL}{endpoint}"
+    if raw_body:
+        payload = data
+    else:
+        payload = {
+            "content": data if content_as_object else json.dumps(data)
+        }
 
     try:
-        response = authed_request("POST", url, json=payload, timeout=10, service="ledger")
+        response = authed_request(
+            "POST",
+            url,
+            json=payload,
+            timeout=10,
+            service=auth_service,
+        )
         response.raise_for_status()
         return response.json().get("hash")
     except requests.RequestException as exc:
@@ -40,5 +51,5 @@ def send_to_ledger(
         raise
 
 
-def ledger_auth_context():
-    return auth_context("ledger")
+def ledger_auth_context(service="ledger"):
+    return auth_context(service)

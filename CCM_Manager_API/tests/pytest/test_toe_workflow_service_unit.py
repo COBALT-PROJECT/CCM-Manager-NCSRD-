@@ -471,12 +471,16 @@ def test_toe_upload_sends_only_embedded_sbom_to_ledger_and_attaches_hash(monkeyp
         return "dlt-sbom-hash"
 
     monkeypatch.setattr(toe_service, "FORWARD_URL", "")
-    monkeypatch.setattr(toe_service, "SBOM_LEDGER_ENDPOINT", "/v1/manufacturer/sbom")
+    monkeypatch.setattr(
+        toe_service,
+        "SBOM_LEDGER_URL",
+        "http://dlt.test/v1/manufacturer/sbom/",
+    )
     monkeypatch.setattr(toe_service, "send_to_ledger", fake_send_to_ledger)
     monkeypatch.setattr(
         toe_service,
         "ledger_auth_context",
-        lambda: {"service": "ledger"},
+        lambda service="ledger": {"service": service},
     )
     monkeypatch.setattr(toe_service.toes_col, "update_one", toe_updates)
 
@@ -498,7 +502,7 @@ def test_toe_upload_sends_only_embedded_sbom_to_ledger_and_attaches_hash(monkeyp
     assert status_code == 200
     assert ledger_calls == [
         (
-            "/v1/manufacturer/sbom",
+            "http://dlt.test/v1/manufacturer/sbom/",
             sbom,
             {
                 "operation": "Publish SBOM to blockchain",
@@ -506,14 +510,15 @@ def test_toe_upload_sends_only_embedded_sbom_to_ledger_and_attaches_hash(monkeyp
                     "toe_id": toe_id,
                     "sbom_source": "bills-of-material.sbom",
                 },
-                "content_as_object": True,
+                "raw_body": True,
+                "auth_service": "manufacturer",
             },
         )
     ]
     assert payload["ledger_hash"] == "dlt-sbom-hash"
     assert payload["sbom_ledger_status"] == "published"
     assert payload["sbom_source"] == "bills-of-material.sbom"
-    assert payload["outbound_auth"] == [{"service": "ledger"}]
+    assert payload["outbound_auth"] == [{"service": "manufacturer"}]
 
     stored_toe = toe_updates.call_args.args[1]["$set"]
     assert stored_toe["ledger_hash"] == "dlt-sbom-hash"

@@ -161,8 +161,7 @@ Configure the DRM target with:
 
 `POST /upload_toe_descriptor` now registers the ToE and, by default, starts the SDTM flow for it.
 When the uploaded ToE JSON contains `bills-of-material.sbom`, CCM sends only that
-SBOM to `<LEDGER_BASE_URL>/v1/manufacturer/sbom` as a JSON object in the
-`content` field. The returned DLT hash is stored
+SBOM as the raw JSON request body to the Manufacturer DLT endpoint. The returned DLT hash is stored
 on the ToE as `ledger_hash`, included in the upload response, and passed into the
 SDTM flow. Other ToE sections such as the component definition, VEX, CBOM, and
 SaaSBOM are not sent to this DLT endpoint.
@@ -179,8 +178,18 @@ curl -X POST "http://localhost:5001/upload_toe_descriptor" \
   -d @Toe.json
 ```
 
-The DLT destination uses `LEDGER_BASE_URL` and can override the path with
-`SBOM_LEDGER_ENDPOINT` (default: `/v1/manufacturer/sbom`).
+Configure the dedicated Manufacturer identity supplied by the DLT team:
+
+```env
+MANUFACTURER_CLIENT_ID=<manufacturer-client-id>
+MANUFACTURER_CLIENT_SECRET=<manufacturer-client-secret>
+MANUFACTURER_AUTH_ROLE=openid profile
+SBOM_LEDGER_URL=http://cobalt-dlt.cobalt.local/v1/manufacturer/sbom/
+```
+
+`SBOM_LEDGER_URL` can be omitted to use
+`<LEDGER_BASE_URL>/v1/manufacturer/sbom/`. CCM obtains and refreshes the
+Manufacturer token independently from its normal `ccm-component` token.
 
 To register the ToE without touching SDTM:
 

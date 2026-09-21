@@ -4,7 +4,7 @@ from datetime import datetime
 import requests
 
 from auth import auth_context, authed_request
-from config import FORWARD_URL, SBOM_LEDGER_ENDPOINT
+from config import FORWARD_URL, SBOM_LEDGER_URL
 from db import certificates_col, collection, schemes_col, toes_col
 from services import sdt_sender, toe_workflow_service
 from services.ledger import ledger_auth_context, send_to_ledger
@@ -152,11 +152,12 @@ def _publish_sbom_to_ledger(data, toe_uuid):
 
     try:
         ledger_hash = send_to_ledger(
-            SBOM_LEDGER_ENDPOINT,
+            SBOM_LEDGER_URL,
             sbom,
             operation="Publish SBOM to blockchain",
             details={"toe_id": toe_uuid, "sbom_source": sbom_source},
-            content_as_object=True,
+            raw_body=True,
+            auth_service="manufacturer",
         )
         if not ledger_hash:
             publish_failure(
@@ -164,7 +165,7 @@ def _publish_sbom_to_ledger(data, toe_uuid):
                 message="Blockchain response did not include an SBOM hash",
                 details={
                     "service": "ledger",
-                    "endpoint": SBOM_LEDGER_ENDPOINT,
+                    "endpoint": SBOM_LEDGER_URL,
                     "toe_id": toe_uuid,
                     "sbom_source": sbom_source,
                 },
@@ -191,7 +192,7 @@ def _publish_sbom_to_ledger(data, toe_uuid):
                 message="Failed to process the blockchain SBOM response",
                 details={
                     "service": "ledger",
-                    "endpoint": SBOM_LEDGER_ENDPOINT,
+                    "endpoint": SBOM_LEDGER_URL,
                     "toe_id": toe_uuid,
                     "sbom_source": sbom_source,
                     "exception_type": type(exc).__name__,
@@ -304,7 +305,7 @@ def upload_toe_descriptor(
 
         outbound_auth = []
         if sbom_ledger["attempted"]:
-            outbound_auth.append(ledger_auth_context())
+            outbound_auth.append(ledger_auth_context("manufacturer"))
         forward_status = "not_configured"
         try:
             if FORWARD_URL:
