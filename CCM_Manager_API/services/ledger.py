@@ -8,9 +8,17 @@ from config import LEDGER_BASE_URL
 from services.mqtt_alert_service import publish_failure
 
 
-def send_to_ledger(endpoint, data, operation=None, details=None):
+def send_to_ledger(
+    endpoint,
+    data,
+    operation=None,
+    details=None,
+    content_as_object=False,
+):
     url = f"{LEDGER_BASE_URL}{endpoint}"
-    payload = {"content": json.dumps(data)}
+    payload = {
+        "content": data if content_as_object else json.dumps(data)
+    }
 
     try:
         response = authed_request("POST", url, json=payload, timeout=10, service="ledger")

@@ -506,6 +506,7 @@ def test_toe_upload_sends_only_embedded_sbom_to_ledger_and_attaches_hash(monkeyp
                     "toe_id": toe_id,
                     "sbom_source": "bills-of-material.sbom",
                 },
+                "content_as_object": True,
             },
         )
     ]

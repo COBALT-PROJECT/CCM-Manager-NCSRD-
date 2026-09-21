@@ -161,7 +161,8 @@ Configure the DRM target with:
 
 `POST /upload_toe_descriptor` now registers the ToE and, by default, starts the SDTM flow for it.
 When the uploaded ToE JSON contains `bills-of-material.sbom`, CCM sends only that
-SBOM to `<LEDGER_BASE_URL>/v1/manufacturer/sbom`. The returned DLT hash is stored
+SBOM to `<LEDGER_BASE_URL>/v1/manufacturer/sbom` as a JSON object in the
+`content` field. The returned DLT hash is stored
 on the ToE as `ledger_hash`, included in the upload response, and passed into the
 SDTM flow. Other ToE sections such as the component definition, VEX, CBOM, and
 SaaSBOM are not sent to this DLT endpoint.

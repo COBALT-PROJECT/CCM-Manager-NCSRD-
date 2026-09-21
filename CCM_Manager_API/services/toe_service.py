@@ -156,6 +156,7 @@ def _publish_sbom_to_ledger(data, toe_uuid):
             sbom,
             operation="Publish SBOM to blockchain",
             details={"toe_id": toe_uuid, "sbom_source": sbom_source},
+            content_as_object=True,
         )
         if not ledger_hash:
             publish_failure(
