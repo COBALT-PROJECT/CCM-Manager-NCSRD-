@@ -156,7 +156,7 @@ def _publish_sbom_to_ledger(data, toe_uuid):
             sbom,
             operation="Publish SBOM to blockchain",
             details={"toe_id": toe_uuid, "sbom_source": sbom_source},
-            raw_body=True,
+            content_as_object=True,
             auth_service="manufacturer",
         )
         if not ledger_hash:
@@ -186,6 +186,11 @@ def _publish_sbom_to_ledger(data, toe_uuid):
         }
     except Exception as exc:
         logging.warning("Failed to publish ToE SBOM to the ledger: %s", exc)
+        error_message = str(exc)
+        error_response = getattr(exc, "response", None)
+        response_text = getattr(error_response, "text", "") if error_response is not None else ""
+        if response_text and response_text.strip():
+            error_message = f"{error_message}; response: {response_text.strip()[:2000]}"
         if not isinstance(exc, requests.RequestException):
             publish_failure(
                 operation="Publish SBOM to blockchain",
@@ -196,13 +201,13 @@ def _publish_sbom_to_ledger(data, toe_uuid):
                     "toe_id": toe_uuid,
                     "sbom_source": sbom_source,
                     "exception_type": type(exc).__name__,
-                    "error": str(exc),
+                    "error": error_message,
                 },
             )
         return {
             "ledger_hash": None,
             "sbom_ledger_status": "failed",
-            "sbom_ledger_error": str(exc),
+            "sbom_ledger_error": error_message,
             "sbom_source": sbom_source,
             "attempted": True,
         }

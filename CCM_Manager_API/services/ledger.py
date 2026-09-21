@@ -37,16 +37,21 @@ def send_to_ledger(
         return response.json().get("hash")
     except requests.RequestException as exc:
         logging.error("Ledger Error (%s): %s", url, exc)
+        error_details = {
+            "service": "ledger",
+            "endpoint": endpoint,
+            "exception_type": type(exc).__name__,
+            "error": str(exc),
+            **(details or {}),
+        }
+        error_response = getattr(exc, "response", None)
+        response_text = getattr(error_response, "text", "") if error_response is not None else ""
+        if response_text and response_text.strip():
+            error_details["response_body"] = response_text.strip()[:2000]
         publish_failure(
             operation=operation or "Send data to blockchain ledger",
             message="Blockchain ledger request failed",
-            details={
-                "service": "ledger",
-                "endpoint": endpoint,
-                "exception_type": type(exc).__name__,
-                "error": str(exc),
-                **(details or {}),
-            },
+            details=error_details,
         )
         raise
 

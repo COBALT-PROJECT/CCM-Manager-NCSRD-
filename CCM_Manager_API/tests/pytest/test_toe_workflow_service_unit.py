@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from unittest.mock import Mock
 
 import pytest
+import requests
 
 from services import toe_service, toe_workflow_service
 
@@ -510,7 +511,7 @@ def test_toe_upload_sends_only_embedded_sbom_to_ledger_and_attaches_hash(monkeyp
                     "toe_id": toe_id,
                     "sbom_source": "bills-of-material.sbom",
                 },
-                "raw_body": True,
+                "content_as_object": True,
                 "auth_service": "manufacturer",
             },
         )
@@ -550,6 +551,28 @@ def test_toe_upload_without_sbom_skips_ledger(monkeypatch):
     assert payload["ledger_hash"] is None
     assert payload["sbom_ledger_status"] == "skipped"
     send_to_ledger.assert_not_called()
+
+
+def test_sbom_ledger_failure_returns_dlt_response_body(monkeypatch):
+    response = requests.Response()
+    response.status_code = 400
+    response._content = b'{"message":"Invalid SBOM."}'
+    error = requests.HTTPError("400 Client Error", response=response)
+
+    def fail_ledger_request(*args, **kwargs):
+        raise error
+
+    monkeypatch.setattr(toe_service, "send_to_ledger", fail_ledger_request)
+
+    result = toe_service._publish_sbom_to_ledger(
+        {"bills-of-material": {"sbom": {"bomFormat": "CycloneDX"}}},
+        "toe-invalid-sbom",
+    )
+
+    assert result["sbom_ledger_status"] == "failed"
+    assert result["sbom_ledger_error"].endswith(
+        '; response: {"message":"Invalid SBOM."}'
+    )
 
 
 def test_sdt_sync_receives_hash_returned_for_uploaded_sbom(monkeypatch):

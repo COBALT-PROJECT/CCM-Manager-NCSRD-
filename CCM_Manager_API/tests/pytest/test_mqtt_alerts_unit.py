@@ -247,6 +247,38 @@ def test_ledger_failure_emits_contextual_alert_and_preserves_exception(monkeypat
     assert calls[0][1]["details"]["service"] == "ledger"
 
 
+def test_ledger_failure_alert_includes_dlt_response_body(monkeypatch):
+    calls = []
+    response = requests.Response()
+    response.status_code = 400
+    response._content = b'{"message":"Content must be a JSON object."}'
+    response.url = "http://dlt.test/v1/manufacturer/sbom/"
+    error = requests.HTTPError("400 Client Error", response=response)
+
+    monkeypatch.setattr(
+        ledger,
+        "authed_request",
+        lambda *args, **kwargs: (_ for _ in ()).throw(error),
+    )
+    monkeypatch.setattr(
+        ledger,
+        "publish_failure",
+        lambda *args, **kwargs: calls.append((args, kwargs)),
+    )
+
+    with pytest.raises(requests.HTTPError):
+        ledger.send_to_ledger(
+            "http://dlt.test/v1/manufacturer/sbom/",
+            {"bomFormat": "CycloneDX"},
+            content_as_object=True,
+            auth_service="manufacturer",
+        )
+
+    assert calls[0][1]["details"]["response_body"] == (
+        '{"message":"Content must be a JSON object."}'
+    )
+
+
 def test_ledger_can_send_content_as_json_object(monkeypatch):
     calls = []
 
