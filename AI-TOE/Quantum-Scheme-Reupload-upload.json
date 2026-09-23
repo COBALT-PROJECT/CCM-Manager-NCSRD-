@@ -13,46 +13,234 @@
       "environment": "Quantum Backend ",
       "scope": "None"
     },
-    "catalog": {},
+    "catalog": {
+      "uuid": "7ad9f46f-0000-4000-8000-quantumcat01",
+      "metadata": {
+        "title": "Quantum Controls Catalog (QPU Security & Integrity)",
+        "published": "2026-06-29T00:00:00+00:00",
+        "last-modified": "2026-06-29T00:00:00+00:00",
+        "version": "1.0",
+        "oscal-version": "1.1.2",
+        "props": [
+          {
+            "name": "keywords",
+            "value": "quantum, QPU, quantum computing, error correction, coherence, OSCAL"
+          }
+        ],
+        "links": [
+          {
+            "href": "qc-pdf-resource",
+            "rel": "alternate"
+          }
+        ],
+        "roles": [
+          {
+            "id": "publisher",
+            "title": "Source document converter to OSCAL."
+          },
+          {
+            "id": "author",
+            "title": "Source document author."
+          },
+          {
+            "id": "contact",
+            "title": "Contact."
+          }
+        ],
+        "parties": [
+          {
+            "uuid": "b1d4a0c2-0000-4000-8000-000000000001",
+            "type": "organization",
+            "name": "COBALT-Quantum",
+            "email-addresses": [
+              "name@domain.eu"
+            ],
+            "addresses": [
+              {
+                "addr-lines": [
+                  "COBALT",
+                  "Attn: Somebody",
+                  "1 Some Street"
+                ],
+                "city": "City",
+                "country": "EU"
+              }
+            ]
+          }
+        ],
+        "responsible-parties": [
+          {
+            "role-id": "publisher",
+            "party-uuids": [
+              "b1d4a0c2-0000-4000-8000-000000000001"
+            ]
+          },
+          {
+            "role-id": "author",
+            "party-uuids": [
+              "b1d4a0c2-0000-4000-8000-000000000001"
+            ]
+          },
+          {
+            "role-id": "contact",
+            "party-uuids": [
+              "b1d4a0c2-0000-4000-8000-000000000001"
+            ]
+          }
+        ],
+        "remarks": "Quantum-only control set. Mirrors the EUCS OSCAL structure but scoped exclusively to Quantum Processing Unit (QPU) security and integrity. AI and Cloud controls are excluded."
+      },
+      "groups": [
+        {
+          "id": "quantum-1",
+          "title": "Quantum Error Correction",
+          "props": [
+            {
+              "name": "label",
+              "value": "1."
+            }
+          ],
+          "controls": [
+            {
+              "id": "quantum-1.QEC-01_req.1",
+              "class": "Quantum",
+              "title": "QEC-01.1",
+              "parts": [
+                {
+                  "id": "quantum-1.QEC-01_req.1_stmt",
+                  "name": "statement",
+                  "prose": "The quantum service provider shall enable an active error-correction scheme on the QPU before exposing it for production workloads."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "quantum-2",
+          "title": "Gate Operation Integrity",
+          "props": [
+            {
+              "name": "label",
+              "value": "2."
+            }
+          ],
+          "controls": [
+            {
+              "id": "quantum-2.QGT-01_req.1",
+              "class": "Quantum",
+              "title": "QGT-01.1",
+              "parts": [
+                {
+                  "id": "quantum-2.QGT-01_req.1_stmt",
+                  "name": "statement",
+                  "prose": "The quantum service provider shall characterise and bound the one-qubit gate error rate below the specified threshold."
+                }
+              ]
+            },
+            {
+              "id": "quantum-2.QGT-02_req.1",
+              "class": "Quantum",
+              "title": "QGT-02.1",
+              "parts": [
+                {
+                  "id": "quantum-2.QGT-02_req.1_stmt",
+                  "name": "statement",
+                  "prose": "The quantum service provider shall characterise and bound the two-qubit gate error rate below the specified threshold."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "quantum-3",
+          "title": "State Preparation and Measurement",
+          "props": [
+            {
+              "name": "label",
+              "value": "3."
+            }
+          ],
+          "controls": [
+            {
+              "id": "quantum-3.QSM-01_req.1",
+              "class": "Quantum",
+              "title": "QSM-01.1",
+              "parts": [
+                {
+                  "id": "quantum-3.QSM-01_req.1_stmt",
+                  "name": "statement",
+                  "prose": "The quantum service provider shall bound the State Preparation And Measurement (SPAM) error rate below the specified threshold."
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "back-matter": {
+        "resources": [
+          {
+            "uuid": "qc-pdf-resource",
+            "title": "COBALT-Quantum Control Reference",
+            "rlinks": [
+              {
+                "href": "https://example.org/cobalt-quantum.pdf",
+                "media-type": "application/pdf"
+              }
+            ]
+          }
+        ]
+      }
+    },
     "certifiable_standards_mapping": [
       {
+        "control_id": "quantum-1.QEC-01_req.1",
+        "description": "The metric verifies that an active error-correction scheme is enabled before the QPU is used for production workloads.",
+        "metric_id": "ErrorCorrectionEnabled",
+        "standard": "COBALT-Q"
+      },
+      {
         "control_id": "quantum-2.QGT-01_req.1",
-        "description": "wdwdwd4f43f43f43f",
-        "metric_id": "OneQubitGateErrorRate_QPU_1.0",
-        "standard": "COBALT-Q"
-      },
-      {
-        "control_id": "quantum-2.QGT-02_req.1",
-        "description": "wdwdwd3f3f43ff",
-        "metric_id": "TwoQubitGateErrorRate_QPU_1.0",
-        "standard": "COBALT-Q"
-      },
-      {
-        "control_id": "quantum-5.QCP-06_req.1",
-        "description": "dwdwdwdw",
-        "metric_id": "RandomizedBenchmarkingFidelity_QPU_1.0",
-        "standard": "COBALT-Q"
-      },
-      {
-        "control_id": "quantum-5.QCP-07_req.1",
-        "description": "wdwdwdwdwdwdw",
-        "metric_id": "BellStateFidelity_QPU_1.0",
+        "description": "The metric characterises and bounds the one-qubit gate error rate below the specified threshold.",
+        "metric_id": "OneQubitGateErrorRate",
         "standard": "COBALT-Q"
       },
       {
         "control_id": "quantum-3.QSM-01_req.1",
-        "description": "wdwdwdwdw",
-        "metric_id": "SPAMErrorRate_QPU_1.0",
+        "description": "The metric characterises and bounds the State Preparation And Measurement error rate below the specified threshold.",
+        "metric_id": "SPAMErrorRate",
         "standard": "COBALT-Q"
       },
       {
-        "control_id": "quantum-3.QSM-02_req.1",
-        "description": "wdwdwdwdwdwdw3f3f34f3f3",
-        "metric_id": "ReadoutErrorRate_QPU_1.0",
+        "control_id": "quantum-2.QGT-02_req.1",
+        "description": "The metric characterises and bounds the two-qubit gate error rate below the specified threshold.",
+        "metric_id": "TwoQubitGateErrorRate",
         "standard": "COBALT-Q"
       }
     ],
     "compliance_metrics": [
+      {
+        "associated_control": {
+          "associated_control_category": "Quantum Error Correction",
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_requirement": "quantum-1.QEC-01_req.1"
+        },
+        "data_source_type": "QPU",
+        "description": "This metric is used to assess whether an active error-correction scheme is enabled on the QPU.",
+        "frequency": 1,
+        "id": "ErrorCorrectionEnabled",
+        "implementation_evidence": "JSON file",
+        "information_need": "This metric is used to assess whether an active error-correction scheme is enabled on the QPU.",
+        "mapped_risks": [
+          "#QuantumRisk_GateInfidelity"
+        ],
+        "name": "Error correction enabled",
+        "reporting_format": "Boolean",
+        "target_values": {
+          "target_value": "true",
+          "target_value_scale": "Boolean"
+        },
+        "version": "V1.0"
+      },
       {
         "associated_control": {
           "associated_control_category": "Gate Operation Integrity",
@@ -62,11 +250,36 @@
         "data_source_type": "QPU",
         "description": "This metric is used to assess whether a QPU has a one-qubit gate error rate below a specified threshold.",
         "frequency": 1,
-        "id": "OneQubitGateErrorRate_QPU_1.0",
+        "id": "OneQubitGateErrorRate",
         "implementation_evidence": "JSON file",
         "information_need": "This metric is used to assess whether a QPU has a one-qubit gate error rate below a specified threshold.",
-        "mapped_risks": [],
+        "mapped_risks": [
+          "#QuantumRisk_GateInfidelity"
+        ],
         "name": "One-qubit gate error rate",
+        "reporting_format": "Float",
+        "target_values": {
+          "target_value": "0.0001",
+          "target_value_scale": "[0,1]"
+        },
+        "version": "V1.0"
+      },
+      {
+        "associated_control": {
+          "associated_control_category": "State Preparation and Measurement",
+          "associated_control_framework": "COBALT-Quantum",
+          "associated_control_requirement": "quantum-3.QSM-01_req.1"
+        },
+        "data_source_type": "QPU",
+        "description": "This metric is used to assess whether a QPU has a State Preparation And Measurement (SPAM) error rate below a specified threshold.",
+        "frequency": 1,
+        "id": "SPAMErrorRate",
+        "implementation_evidence": "JSON file",
+        "information_need": "This metric is used to assess whether a QPU has a State Preparation And Measurement (SPAM) error rate below a specified threshold.",
+        "mapped_risks": [
+          "#QuantumRisk_ReadoutError"
+        ],
+        "name": "SPAM error rate",
         "reporting_format": "Float",
         "target_values": {
           "target_value": "0.0001",
@@ -83,10 +296,12 @@
         "data_source_type": "QPU",
         "description": "This metric is used to assess whether a QPU has a two-qubit gate error rate below a specified threshold.",
         "frequency": 1,
-        "id": "TwoQubitGateErrorRate_QPU_1.0",
+        "id": "TwoQubitGateErrorRate",
         "implementation_evidence": "JSON file",
         "information_need": "This metric is used to assess whether a QPU has a two-qubit gate error rate below a specified threshold.",
-        "mapped_risks": [],
+        "mapped_risks": [
+          "#QuantumRisk_GateInfidelity"
+        ],
         "name": "Two-qubit gate error rate",
         "reporting_format": "Float",
         "target_values": {
@@ -94,93 +309,16 @@
           "target_value_scale": "[0,1]"
         },
         "version": "V1.0"
-      },
-      {
-        "associated_control": {
-          "associated_control_category": "Capacity, Connectivity and Performance",
-          "associated_control_framework": "COBALT-Quantum",
-          "associated_control_requirement": "quantum-5.QCP-06_req.1"
-        },
-        "data_source_type": "QPU",
-        "description": "This metric is used to assess whether a QPU achieves a randomized-benchmarking fidelity at or above a specified threshold.",
-        "frequency": 1,
-        "id": "RandomizedBenchmarkingFidelity_QPU_1.0",
-        "implementation_evidence": "JSON file",
-        "information_need": "This metric is used to assess whether a QPU achieves a randomized-benchmarking fidelity at or above a specified threshold.",
-        "mapped_risks": [],
-        "name": "Randomized benchmarking fidelity",
-        "reporting_format": "Float",
-        "target_values": {
-          "target_value": "0.999",
-          "target_value_scale": "[0,1]"
-        },
-        "version": "V1.0"
-      },
-      {
-        "associated_control": {
-          "associated_control_category": "Capacity, Connectivity and Performance",
-          "associated_control_framework": "COBALT-Quantum",
-          "associated_control_requirement": "quantum-5.QCP-07_req.1"
-        },
-        "data_source_type": "QPU",
-        "description": "This metric is used to assess whether a QPU achieves a Bell-state (entanglement) fidelity at or above a specified threshold.",
-        "frequency": 1,
-        "id": "BellStateFidelity_QPU_1.0",
-        "implementation_evidence": "JSON file",
-        "information_need": "This metric is used to assess whether a QPU achieves a Bell-state (entanglement) fidelity at or above a specified threshold.",
-        "mapped_risks": [],
-        "name": "Bell-state fidelity",
-        "reporting_format": "Float",
-        "target_values": {
-          "target_value": "0.95",
-          "target_value_scale": "[0,1]"
-        },
-        "version": "V1.0"
-      },
-      {
-        "associated_control": {
-          "associated_control_category": "State Preparation and Measurement",
-          "associated_control_framework": "COBALT-Quantum",
-          "associated_control_requirement": "quantum-3.QSM-01_req.1"
-        },
-        "data_source_type": "QPU",
-        "description": "This metric is used to assess whether a QPU has a State Preparation And Measurement (SPAM) error rate below a specified threshold.",
-        "frequency": 1,
-        "id": "SPAMErrorRate_QPU_1.0",
-        "implementation_evidence": "JSON file",
-        "information_need": "This metric is used to assess whether a QPU has a State Preparation And Measurement (SPAM) error rate below a specified threshold.",
-        "mapped_risks": [],
-        "name": "SPAM error rate",
-        "reporting_format": "Float",
-        "target_values": {
-          "target_value": "0.0001",
-          "target_value_scale": "[0,1]"
-        },
-        "version": "V1.0"
-      },
-      {
-        "associated_control": {
-          "associated_control_category": "State Preparation and Measurement",
-          "associated_control_framework": "COBALT-Quantum",
-          "associated_control_requirement": "quantum-3.QSM-02_req.1"
-        },
-        "data_source_type": "QPU",
-        "description": "This metric is used to assess whether a QPU has a readout (measurement) error rate below a specified threshold.",
-        "frequency": 1,
-        "id": "ReadoutErrorRate_QPU_1.0",
-        "implementation_evidence": "JSON file",
-        "information_need": "This metric is used to assess whether a QPU has a readout (measurement) error rate below a specified threshold.",
-        "mapped_risks": [],
-        "name": "Readout error rate",
-        "reporting_format": "Float",
-        "target_values": {
-          "target_value": "0.01",
-          "target_value_scale": "[0,1]"
-        },
-        "version": "V1.0"
       }
     ],
     "controls": [
+      {
+        "control_id": "quantum-1.QEC-01_req.1",
+        "description": "The quantum service provider shall enable an active error-correction scheme on the QPU before exposing it for production workloads.",
+        "name": "quantum-1.QEC-01_req.1",
+        "oscal_id": null,
+        "standard": null
+      },
       {
         "control_id": "quantum-2.QGT-01_req.1",
         "description": "The quantum service provider shall characterise and bound the one-qubit gate error rate below the specified threshold.",
@@ -196,30 +334,9 @@
         "standard": null
       },
       {
-        "control_id": "quantum-5.QCP-06_req.1",
-        "description": "The quantum service provider shall achieve a randomized-benchmarking fidelity at or above the specified threshold.",
-        "name": "quantum-5.QCP-06_req.1",
-        "oscal_id": null,
-        "standard": null
-      },
-      {
-        "control_id": "quantum-5.QCP-07_req.1",
-        "description": "The quantum service provider shall achieve a Bell-state (entanglement) fidelity at or above the specified threshold.",
-        "name": "quantum-5.QCP-07_req.1",
-        "oscal_id": null,
-        "standard": null
-      },
-      {
         "control_id": "quantum-2.QGT-02_req.1",
         "description": "The quantum service provider shall characterise and bound the two-qubit gate error rate below the specified threshold.",
         "name": "quantum-2.QGT-02_req.1",
-        "oscal_id": null,
-        "standard": null
-      },
-      {
-        "control_id": "quantum-4.QCO-03_req.1",
-        "description": "The quantum service provider shall bound inter-qubit crosstalk error below the specified threshold.",
-        "name": "quantum-4.QCO-03_req.1",
         "oscal_id": null,
         "standard": null
       }
@@ -228,11 +345,116 @@
     "id": "urn:uuid:4a4f4f3d-2d55-4c48-82d2-0c44b9f43f61",
     "name": "QUANTUM Scheme Reupload Test",
     "productProfile": {},
-    "profile": {},
+    "profile": {
+      "uuid": "7ad9f46f-0000-4000-8000-quantumcat01",
+      "metadata": {
+        "title": "Quantum Profile - All QPU Controls",
+        "published": "2026-06-29T00:00:00+00:00",
+        "last-modified": "2026-06-29T00:00:00+00:00",
+        "version": "1.0",
+        "oscal-version": "1.1.2",
+        "props": [
+          {
+            "name": "keywords",
+            "value": "quantum, QPU, quantum computing, error correction, coherence, OSCAL"
+          }
+        ],
+        "links": [
+          {
+            "href": "qc-pdf-resource",
+            "rel": "alternate"
+          }
+        ],
+        "roles": [
+          {
+            "id": "publisher",
+            "title": "Source document converter to OSCAL."
+          },
+          {
+            "id": "author",
+            "title": "Source document author."
+          },
+          {
+            "id": "contact",
+            "title": "Contact."
+          }
+        ],
+        "parties": [
+          {
+            "uuid": "b1d4a0c2-0000-4000-8000-000000000001",
+            "type": "organization",
+            "name": "COBALT-Quantum",
+            "email-addresses": [
+              "name@domain.eu"
+            ],
+            "addresses": [
+              {
+                "addr-lines": [
+                  "COBALT",
+                  "Attn: Somebody",
+                  "1 Some Street"
+                ],
+                "city": "City",
+                "country": "EU"
+              }
+            ]
+          }
+        ],
+        "responsible-parties": [
+          {
+            "role-id": "publisher",
+            "party-uuids": [
+              "b1d4a0c2-0000-4000-8000-000000000001"
+            ]
+          },
+          {
+            "role-id": "author",
+            "party-uuids": [
+              "b1d4a0c2-0000-4000-8000-000000000001"
+            ]
+          },
+          {
+            "role-id": "contact",
+            "party-uuids": [
+              "b1d4a0c2-0000-4000-8000-000000000001"
+            ]
+          }
+        ],
+        "remarks": "Quantum-only control set. Mirrors the EUCS OSCAL structure but scoped exclusively to Quantum Processing Unit (QPU) security and integrity. AI and Cloud controls are excluded."
+      },
+      "imports": [
+        {
+          "href": "Quantum_controls_version_1.0_catalog_master.json",
+          "include-controls": [
+            {
+              "with-ids": [
+                "quantum-1.QEC-01_req.1",
+                "quantum-2.QGT-01_req.1",
+                "quantum-2.QGT-02_req.1",
+                "quantum-3.QSM-01_req.1"
+              ]
+            }
+          ]
+        }
+      ]
+    },
     "risk_catalogue": [
       {
         "associated_framework": "COBALT-Quantum",
-        "mapped_metrics": [],
+        "mapped_metrics": [
+          {
+            "metric_id": "ErrorCorrectionEnabled",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "OneQubitGateErrorRate",
+            "impact": "Unspecified"
+          },
+          {
+            "metric_id": "TwoQubitGateErrorRate",
+            "impact": "Unspecified"
+          }
+        ],
         "mapped_threats": [
           {
             "impact": "Medium",
@@ -250,7 +472,12 @@
       },
       {
         "associated_framework": "COBALT-Quantum",
-        "mapped_metrics": [],
+        "mapped_metrics": [
+          {
+            "metric_id": "SPAMErrorRate",
+            "impact": "Unspecified"
+          }
+        ],
         "mapped_threats": [
           {
             "impact": "Medium",

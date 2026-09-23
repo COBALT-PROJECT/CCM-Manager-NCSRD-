@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from datetime import datetime
 from uuid import uuid4
 
@@ -43,6 +44,33 @@ def _ordered_unique(values):
             seen.add(normalized)
 
     return unique
+
+
+def _normalized_metric_identity(value):
+    if value is None:
+        return ""
+    return re.sub(r"[^a-z0-9]+", "", str(value).strip().lower())
+
+
+def _metric_identity_conflicts(metrics):
+    identities = {}
+    for metric in metrics or []:
+        if not isinstance(metric, dict):
+            continue
+        metric_id = metric.get("id")
+        identity = _normalized_metric_identity(metric_id)
+        if not identity:
+            continue
+        identities.setdefault(identity, []).append(str(metric_id).strip())
+
+    return [
+        {
+            "normalized_identity": identity,
+            "metric_ids": _ordered_unique(metric_ids),
+        }
+        for identity, metric_ids in identities.items()
+        if len(metric_ids) > 1
+    ]
 
 
 def _control_key(control):
@@ -327,6 +355,18 @@ def upload_certification_scheme(data, sync_drm_on_upload=True, sync_scheme_impor
     controls_list = sections["controls_list"]
     catalog = sections["catalog"]
 
+    metric_conflicts = _metric_identity_conflicts(compliance_metrics)
+    if metric_conflicts:
+        return {
+            "error": "Certification scheme contains duplicate metric identifiers.",
+            "details": (
+                "Metric identifiers are compared without case, spaces, underscores, "
+                "or punctuation. Use one canonical identifier and update every mapping "
+                "to reference it."
+            ),
+            "metric_conflicts": metric_conflicts,
+        }, 409
+
     try:
         ledger_hash = send_to_ledger(
             "/v1/certification-authority/certification-scheme",
@@ -349,12 +389,34 @@ def upload_certification_scheme(data, sync_drm_on_upload=True, sync_scheme_impor
             "risk_threat_control_mappings": 0,
         }
 
+        incoming_metric_ids = []
         for metric in compliance_metrics:
             metric_id = metric.get("id")
             if metric_id:
+                metric_id = str(metric_id).strip()
+                incoming_metric_ids.append(metric_id)
                 metric_doc = {**metric, "scheme_id": scheme_id, "timestamp": ts}
-                metrics_col.update_one({"id": metric_id}, {"$set": metric_doc}, upsert=True)
+                metric_doc["id"] = metric_id
+                metrics_col.update_one(
+                    {"scheme_id": scheme_id, "id": metric_id},
+                    {"$set": metric_doc},
+                    upsert=True,
+                )
                 counts["metrics"] += 1
+
+        stale_metrics = metrics_col.delete_many(
+            {
+                "scheme_id": scheme_id,
+                "id": {"$nin": incoming_metric_ids},
+            }
+        )
+        removed_stale_metrics = int(getattr(stale_metrics, "deleted_count", 0) or 0)
+        if removed_stale_metrics:
+            logging.info(
+                "Scheme %s replacement removed %s stale metrics",
+                scheme_id,
+                removed_stale_metrics,
+            )
 
         seen_threats = set()
         for risk in risk_catalogue:

@@ -1,6 +1,7 @@
 import copy
 import json
 from pathlib import Path
+from unittest.mock import Mock
 
 import pytest
 
@@ -16,6 +17,11 @@ FIXTURE_DIR = Path(__file__).resolve().parents[2] / "data" / "eucs"
 
 class FakeInsertResult:
     inserted_id = "fake-id"
+
+
+class FakeDeleteResult:
+    def __init__(self, deleted_count):
+        self.deleted_count = deleted_count
 
 
 class FakeCollection:
@@ -42,10 +48,12 @@ class FakeCollection:
             self._set_nested(document, key, copy.deepcopy(value))
 
     def delete_many(self, query):
+        previous_count = len(self.docs)
         self.docs = [
             document for document in self.docs
             if not self._matches(document, query)
         ]
+        return FakeDeleteResult(previous_count - len(self.docs))
 
     def find(self, query=None, projection=None):
         query = query or {}
@@ -70,7 +78,11 @@ class FakeCollection:
 
     def _matches(self, document, query):
         for key, expected in query.items():
-            if self._get_nested(document, key) != expected:
+            actual = self._get_nested(document, key)
+            if isinstance(expected, dict) and "$nin" in expected:
+                if actual in expected["$nin"]:
+                    return False
+            elif actual != expected:
                 return False
         return True
 
@@ -173,6 +185,78 @@ def test_fully_mapped_scheme_imports_eucs_relationships(monkeypatch):
     assert first_control["title"] == "AI-01.1"
     assert first_control["class"] == "Model Theft"
     assert first_control["prose"]
+
+
+def test_scheme_reupload_replaces_stale_metrics(monkeypatch):
+    collections = patch_scheme_collections(monkeypatch)
+    scheme_id = "scheme-metric-replacement"
+    original = {
+        "certificationScheme": {
+            "id": scheme_id,
+            "name": "Metric replacement scheme",
+            "compliance_metrics": [
+                {"id": "MetricOne", "name": "Metric one"},
+                {"id": "MetricTwo", "name": "Metric two"},
+            ],
+        }
+    }
+
+    _, status_code = scheme_service.upload_certification_scheme(
+        original,
+        sync_drm_on_upload=False,
+        sync_scheme_import_on_upload=False,
+    )
+    assert status_code == 200
+
+    replacement = copy.deepcopy(original)
+    replacement["certificationScheme"]["compliance_metrics"] = [
+        {"id": "MetricOne", "name": "Metric one updated"},
+    ]
+    _, status_code = scheme_service.upload_certification_scheme(
+        replacement,
+        sync_drm_on_upload=False,
+        sync_scheme_import_on_upload=False,
+    )
+
+    assert status_code == 200
+    assert collections["metrics"].docs == [
+        {
+            "scheme_id": scheme_id,
+            "id": "MetricOne",
+            "name": "Metric one updated",
+            "timestamp": collections["metrics"].docs[0]["timestamp"],
+        }
+    ]
+
+
+def test_scheme_upload_rejects_punctuation_only_metric_duplicates(monkeypatch):
+    collections = patch_scheme_collections(monkeypatch)
+    ledger = Mock()
+    monkeypatch.setattr(scheme_service, "send_to_ledger", ledger)
+
+    payload, status_code = scheme_service.upload_certification_scheme(
+        {
+            "certificationScheme": {
+                "id": "scheme-duplicate-metrics",
+                "compliance_metrics": [
+                    {"id": "SPAM_Error_Rate"},
+                    {"id": "SPAMErrorRate"},
+                ],
+            }
+        },
+        sync_drm_on_upload=False,
+        sync_scheme_import_on_upload=False,
+    )
+
+    assert status_code == 409
+    assert payload["metric_conflicts"] == [
+        {
+            "normalized_identity": "spamerrorrate",
+            "metric_ids": ["SPAM_Error_Rate", "SPAMErrorRate"],
+        }
+    ]
+    assert collections["metrics"].docs == []
+    ledger.assert_not_called()
 
 
 def test_fully_mapped_scheme_control_references_exist_in_catalog():

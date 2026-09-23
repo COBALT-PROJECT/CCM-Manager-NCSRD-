@@ -129,6 +129,13 @@ If old seed data should be removed, clear the affected collections once before r
 `POST /upload_certification_scheme` now uploads the certification scheme into CCM, sends it to the scheme import service, and automatically syncs it to DRM.
 The response includes `scheme_import_status`, `scheme_import_status_code`, `scheme_import_response`, `drm_sync_status`, `drm_sync_status_code`, and `drm_sync_response` so you can see whether each external component accepted it.
 
+Certification-scheme uploads use replacement semantics for metrics within the same scheme:
+metrics omitted from a later upload are removed from CCM, while metrics belonging to other schemes
+are left untouched. Uploads containing identifiers that differ only by case, spaces, underscores,
+or punctuation are rejected with HTTP `409` before ledger or external synchronization starts. This
+prevents pairs such as `SPAM_Error_Rate` and `SPAMErrorRate` from being registered as separate
+metrics.
+
 By default the scheme import service is `http://10.163.1.127:8080/scheme/import`.
 You can override it with:
 
