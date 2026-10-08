@@ -177,7 +177,7 @@
           "Internal Endpoint"
         ],
         "summary": "Create Or Update Certificate From Evaluation Result",
-        "description": "This is the only endpoint that creates or changes certificate state. The first Manual/OK result for a ToE and scheme creates an INITIATE certificate. Later results for the same ToE and scheme update that certificate in place: OK sets VALID and NOK sets SUSPENDED. The certificate ID is preserved, the history is appended, the updated certificate is uploaded to the DLT, and its PDF is regenerated. The request format does not change. scheme_id can be the CCM scheme UUID or exact human-readable scheme name; evidence_id is optional.",
+        "description": "This is the only endpoint that creates or changes certificate state. The first Manual/OK result for a ToE and scheme creates an INITIATE certificate. Later results for the same ToE and scheme update that certificate in place: OK sets VALID and NOK sets SUSPENDED. The certificate ID is preserved, the history is appended, the updated certificate is uploaded to the DLT, and its PDF is regenerated. If the resolved status is already current (VALID + OK or SUSPENDED + NOK/NOT_OK), the request is an unchanged no-op and DLT upload and PDF regeneration are skipped. The request format does not change. scheme_id can be the CCM scheme UUID or exact human-readable scheme name; evidence_id is optional.",
         "consumes": [
           "application/json"
         ],
@@ -248,7 +248,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Existing certificate updated and uploaded to DLT."
+            "description": "Existing certificate updated and uploaded to DLT, or returned unchanged with DLT upload skipped when its status is already current."
           },
           "201": {
             "description": "Certificate created and uploaded to DLT."
@@ -274,7 +274,7 @@
           "Internal Endpoint"
         ],
         "summary": "Create Or Update Certificate From Evaluation Result",
-        "description": "Alias of POST /certificate-evaluation-result with identical create-or-update behavior. The first Manual/OK result creates INITIATE. Later OK results set VALID and NOK results set SUSPENDED while preserving the certificate ID. The request format does not change. scheme_id can be the CCM scheme UUID or exact human-readable scheme name; evidence_id is optional.",
+        "description": "Alias of POST /certificate-evaluation-result with identical create-or-update behavior. The first Manual/OK result creates INITIATE. Later OK results set VALID and NOK results set SUSPENDED while preserving the certificate ID. If the resolved status is already current (VALID + OK or SUSPENDED + NOK/NOT_OK), the request is an unchanged no-op and DLT upload and PDF regeneration are skipped. The request format does not change. scheme_id can be the CCM scheme UUID or exact human-readable scheme name; evidence_id is optional.",
         "consumes": [
           "application/json"
         ],
@@ -345,7 +345,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Existing certificate updated and uploaded to DLT."
+            "description": "Existing certificate updated and uploaded to DLT, or returned unchanged with DLT upload skipped when its status is already current."
           },
           "201": {
             "description": "Certificate created and uploaded to DLT."

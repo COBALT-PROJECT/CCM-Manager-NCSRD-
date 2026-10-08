@@ -169,6 +169,8 @@ For this endpoint, `scheme_id` may be the CCM scheme UUID or the exact scheme na
 
 Submit the same request format again for the same ToE and scheme to update the existing certificate. `result=OK` changes it to `VALID`; `result=NOK` or `result=NOT_OK` changes it to `SUSPENDED`. CCM normalizes `NOT_OK` to `NOK`, preserves the certificate ID, appends its history, uploads the update to the DLT, and regenerates the PDF.
 
+If the certificate already has the resolved state (`VALID` + `OK`, or `SUSPENDED` + `NOK`/`NOT_OK`), CCM returns `operation: unchanged` and `dlt_upload_status: skipped`. The certificate, history, timestamps, PDF, and DLT record are left unchanged.
+
 `POST /certificate-evaluation-result` is the only endpoint that creates or changes certificate state. `POST /certificates/evaluation-result` remains an alias with identical behavior.
 
 ## Assessment Result Records

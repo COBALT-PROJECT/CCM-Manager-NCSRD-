@@ -144,6 +144,7 @@ SDTM_DIGITAL_TWIN_URL = _env_url("SDTM_DIGITAL_TWIN_URL") or _join_url(SDTM_BASE
 SDTM_DEPLOYMENTS_URL = _env_url("SDTM_DEPLOYMENTS_URL") or _join_url(SDTM_BASE_URL, "/api/SDTM/deployments")
 SDTM_AUTH_STATUS_URL = _env_url("SDTM_AUTH_STATUS_URL") or _join_url(SDTM_BASE_URL, "/api/SDTM/auth")
 SDTM_ADAPT_URL = _env_url("SDTM_ADAPT_URL") or _join_url(SDTM_BASE_URL, "/api/SDTM/adapt")
+SDTM_DEPLOY_TIMEOUT_SECONDS = max(_env_float("SDTM_DEPLOY_TIMEOUT_SECONDS", 120), 1)
 SDTM_DEFAULT_PAYLOAD_TYPE = os.getenv("SDTM_PAYLOAD_TYPE", "BOMS").strip() or "BOMS"
 SDTM_DEFAULT_TOE_ID = (
     os.getenv("SDTM_TOE_ID", "").strip()

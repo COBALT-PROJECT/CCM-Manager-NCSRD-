@@ -62,6 +62,7 @@ def test_send_sdt_uses_sdtm_lifecycle_and_adapt_flow(tmp_path, monkeypatch):
     monkeypatch.setattr(sdt_sender, "SDTM_DEPLOYMENTS_URL", "http://sdtm.example.test/api/SDTM/deployments")
     monkeypatch.setattr(sdt_sender, "SDTM_AUTH_STATUS_URL", "http://sdtm.example.test/api/SDTM/auth")
     monkeypatch.setattr(sdt_sender, "SDTM_ADAPT_URL", "http://sdtm.example.test/api/SDTM/adapt")
+    monkeypatch.setattr(sdt_sender, "SDTM_DEPLOY_TIMEOUT_SECONDS", 120)
     monkeypatch.setattr(sdt_sender, "SDTM_DEFAULT_PAYLOAD_TYPE", "BOMS")
     monkeypatch.setattr(sdt_sender, "SDTM_DEFAULT_TOE_ID", "00000000-0000-0000-0000-000000000000")
 
@@ -87,7 +88,7 @@ def test_send_sdt_uses_sdtm_lifecycle_and_adapt_flow(tmp_path, monkeypatch):
             "POST",
             "http://sdtm.example.test/api/SDTM/digital-twin",
             {
-                "timeout": 30,
+                "timeout": 120,
                 "service": "sdt",
                 "json": {"metadata": {"owner": "ccm"}},
             },
@@ -137,6 +138,7 @@ def test_send_sdt_can_deploy_without_body(tmp_path, monkeypatch):
     monkeypatch.setattr(sdt_sender, "SDTM_DEPLOYMENTS_URL", "")
     monkeypatch.setattr(sdt_sender, "SDTM_AUTH_STATUS_URL", "")
     monkeypatch.setattr(sdt_sender, "SDTM_ADAPT_URL", "http://sdtm.example.test/api/SDTM/adapt")
+    monkeypatch.setattr(sdt_sender, "SDTM_DEPLOY_TIMEOUT_SECONDS", 120)
     monkeypatch.setattr(sdt_sender, "SDTM_DEFAULT_PAYLOAD_TYPE", "BOMS")
     monkeypatch.setattr(sdt_sender, "SDTM_DEFAULT_TOE_ID", "00000000-0000-0000-0000-000000000000")
 
@@ -148,7 +150,7 @@ def test_send_sdt_can_deploy_without_body(tmp_path, monkeypatch):
         (
             "POST",
             "http://sdtm.example.test/api/SDTM/digital-twin",
-            {"timeout": 30, "service": "sdt"},
+            {"timeout": 120, "service": "sdt"},
         ),
         (
             "POST",
@@ -189,6 +191,7 @@ def test_send_sdt_can_resolve_bom_path_from_hash_record(tmp_path, monkeypatch):
     monkeypatch.setattr(sdt_sender, "SDTM_DEPLOYMENTS_URL", "")
     monkeypatch.setattr(sdt_sender, "SDTM_AUTH_STATUS_URL", "")
     monkeypatch.setattr(sdt_sender, "SDTM_ADAPT_URL", "http://sdtm.example.test/api/SDTM/adapt")
+    monkeypatch.setattr(sdt_sender, "SDTM_DEPLOY_TIMEOUT_SECONDS", 120)
     monkeypatch.setattr(sdt_sender, "SDTM_DEFAULT_PAYLOAD_TYPE", "BOMS")
     monkeypatch.setattr(sdt_sender, "SDTM_DEFAULT_TOE_ID", "00000000-0000-0000-0000-000000000000")
 

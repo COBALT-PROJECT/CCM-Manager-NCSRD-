@@ -450,10 +450,35 @@ def update_certificate_evaluation_result(data):
 
     certificate = _active_certificate_for_toe_scheme(toe_id, scheme_id)
     if certificate:
-        operation = "updated"
-        response_status = 200
         previous_state = _normalized_certificate_state(certificate)
         decision_status = "VALID" if result == "OK" else "SUSPENDED"
+
+        if decision_status == previous_state:
+            certification = certificate.get("certification", {})
+            return {
+                "message": (
+                    "Certificate already has the requested status; "
+                    "no changes were applied and DLT upload was skipped."
+                ),
+                "toe_id": str(toe_id),
+                "scheme_id": str(scheme_id),
+                "evaluation_type": evaluation_type,
+                "result": result,
+                "operation": "unchanged",
+                "previous_state": previous_state,
+                "decision_status": decision_status,
+                "certificate_id": certification.get("certification_id"),
+                "ledger_hash": certificate.get("ledger_hash"),
+                "pdf_path": None,
+                "certificate": _certificate_response_doc(certificate),
+                "dlt_upload_status": "skipped",
+                "dlt_upload_reason": "Certificate status did not change.",
+                "outbound_auth": [],
+                "warnings": [],
+            }, 200
+
+        operation = "updated"
+        response_status = 200
         updated_certificate = deepcopy(certificate)
         certification = updated_certificate.setdefault("certification", {})
         decision = certification.setdefault("certification_decision", {})

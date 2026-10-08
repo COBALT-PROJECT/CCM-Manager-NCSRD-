@@ -2,6 +2,7 @@ import copy
 import re
 import uuid
 from datetime import datetime, timezone
+from unittest.mock import Mock
 
 import pytest
 
@@ -235,6 +236,63 @@ def test_certificate_evaluation_creates_then_updates_same_certificate(monkeypatc
     assert restored["certificate_id"] == certificate_id
     assert len(certificates.docs) == 1
     assert len(restored["certificate"]["certification"]["history"]) == 4
+
+
+@pytest.mark.parametrize(
+    ("current_state", "result"),
+    [
+        ("VALID", "OK"),
+        ("SUSPENDED", "NOK"),
+        ("SUSPENDED", "NOT_OK"),
+    ],
+)
+def test_certificate_evaluation_skips_unchanged_state(monkeypatch, current_state, result):
+    scheme_id = "urn:uuid:unchanged-state-scheme"
+    toe_id = str(uuid.uuid4())
+    certificates = _patch_certificate_dependencies(
+        monkeypatch,
+        [_scheme_doc(scheme_id, "Unchanged State Scheme")],
+        [_toe_doc(toe_id, scheme_id)],
+    )
+
+    created, status = service.update_certificate_evaluation_result(
+        {
+            "toe_id": toe_id,
+            "scheme_id": scheme_id,
+            "evaluation_type": "Manual",
+            "result": "OK",
+        }
+    )
+    assert status == 201
+
+    certificate = certificates.docs[0]
+    certificate["certification"]["certification_decision"]["decision_status"] = current_state
+    original_certificate = copy.deepcopy(certificate)
+    ledger = Mock(return_value="duplicate-ledger-hash")
+    pdf_generator = Mock(return_value="/tmp/duplicate-certificate.pdf")
+    monkeypatch.setattr(service, "send_to_ledger", ledger)
+    monkeypatch.setattr(service, "_generate_updated_certificate_pdf", pdf_generator)
+
+    payload, status = service.update_certificate_evaluation_result(
+        {
+            "toe_id": toe_id,
+            "scheme_id": scheme_id,
+            "evaluation_type": "DYNAMIC",
+            "result": result,
+            "evidence_id": str(uuid.uuid4()),
+        }
+    )
+
+    assert status == 200
+    assert payload["operation"] == "unchanged"
+    assert payload["previous_state"] == current_state
+    assert payload["decision_status"] == current_state
+    assert payload["certificate_id"] == created["certificate_id"]
+    assert payload["dlt_upload_status"] == "skipped"
+    assert payload["dlt_upload_reason"] == "Certificate status did not change."
+    assert certificates.docs[0] == original_certificate
+    ledger.assert_not_called()
+    pdf_generator.assert_not_called()
 
 
 def test_assessment_result_stores_without_updating_certificate(monkeypatch):

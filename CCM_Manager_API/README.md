@@ -226,6 +226,7 @@ For SDTM you can configure either a single base URL or explicit endpoint overrid
 - `SDTM_DEPLOYMENTS_URL`, defaults to `<SDTM_BASE_URL>/api/SDTM/deployments`
 - `SDTM_AUTH_STATUS_URL`, defaults to `<SDTM_BASE_URL>/api/SDTM/auth`
 - `SDTM_ADAPT_URL`, defaults to `<SDTM_BASE_URL>/api/SDTM/adapt`
+- `SDTM_DEPLOY_TIMEOUT_SECONDS`, defaults to `120`
 - `SDTM_PAYLOAD_TYPE`, defaults to `BOMS`
 - `SDTM_TOE_ID`, defaults to `00000000-0000-0000-0000-000000000000`
 - `SDT_AUTH_DISABLED`, defaults to `true` for SDTM/SDT calls so CCM calls SDTM without IAM/bearer auth
@@ -313,6 +314,7 @@ sudo docker compose stop toe-workflow-worker
 `POST /certificate-evaluation-result` is the only endpoint that creates or changes certificate state for a ToE and certification scheme.
 The first request must be `evaluation_type` `Manual` with result `OK`; CCM creates the certificate with state `INITIATE`, uploads it to the DLT, and stores the certificate hash. Later requests for the same ToE and scheme update that certificate in place: `OK` sets `VALID`, while `NOK` or `NOT_OK` sets `SUSPENDED`. CCM normalizes `NOT_OK` to `NOK` internally.
 The certificate ID and issuance metadata remain unchanged while CCM appends the evaluation history, uploads the updated certificate to the DLT, and regenerates its PDF.
+If an evaluation resolves to the certificate's current state (`VALID` + `OK`, or `SUSPENDED` + `NOK`/`NOT_OK`), CCM treats it as a no-op. It returns `operation: unchanged` and `dlt_upload_status: skipped` without changing the certificate, appending history, regenerating the PDF, or uploading duplicate certificate data to the DLT.
 The `scheme_id` value can be either the CCM scheme UUID or the exact human-readable scheme name. You can also send `scheme_name` or `certification_scheme_name`.
 The `evidence_id` field is optional for this endpoint; if omitted, CCM stores `N/A` as the evidence reference.
 

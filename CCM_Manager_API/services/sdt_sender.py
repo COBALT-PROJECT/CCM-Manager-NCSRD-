@@ -11,6 +11,7 @@ from config import (
     SDTM_AUTH_STATUS_URL,
     SDTM_DEFAULT_PAYLOAD_TYPE,
     SDTM_DEFAULT_TOE_ID,
+    SDTM_DEPLOY_TIMEOUT_SECONDS,
     SDTM_DEPLOYMENTS_URL,
     SDTM_DIGITAL_TWIN_URL,
 )
@@ -339,7 +340,10 @@ def send_sdt(
             category=payload_type,
             extra_payload=deployment_payload,
         )
-        request_kwargs = {"timeout": 30, "service": "sdt"}
+        request_kwargs = {
+            "timeout": SDTM_DEPLOY_TIMEOUT_SECONDS,
+            "service": "sdt",
+        }
         if payload is not None:
             request_kwargs["json"] = payload
 
